@@ -7,8 +7,9 @@ defmodule Sayfa.Markdown do
 
   ## Examples
 
-      iex> Sayfa.Markdown.render("# Hello")
-      {:ok, "<h1>Hello</h1>"}
+      iex> {:ok, html} = Sayfa.Markdown.render("# Hello")
+      iex> html =~ "Hello"
+      true
 
       iex> Sayfa.Markdown.render!("**bold**")
       "<p><strong>bold</strong></p>"
@@ -18,10 +19,13 @@ defmodule Sayfa.Markdown do
   @doc """
   Renders a Markdown string to HTML.
 
+  Headings include anchor IDs for linking (e.g., `<h1 id="hello">...</h1>`).
+
   ## Examples
 
-      iex> Sayfa.Markdown.render("# Hello")
-      {:ok, "<h1>Hello</h1>"}
+      iex> {:ok, html} = Sayfa.Markdown.render("# Hello")
+      iex> html =~ ~s(id="hello")
+      true
 
       iex> Sayfa.Markdown.render("plain text")
       {:ok, "<p>plain text</p>"}
@@ -37,8 +41,9 @@ defmodule Sayfa.Markdown do
 
   ## Examples
 
-      iex> Sayfa.Markdown.render!("# Hello")
-      "<h1>Hello</h1>"
+      iex> html = Sayfa.Markdown.render!("# Hello")
+      iex> html =~ ~s(id="hello")
+      true
 
   """
   @spec render!(String.t()) :: String.t()
@@ -55,7 +60,8 @@ defmodule Sayfa.Markdown do
         strikethrough: true,
         table: true,
         autolink: true,
-        tasklist: true
+        tasklist: true,
+        header_ids: ""
       ],
       render: [
         unsafe_: true

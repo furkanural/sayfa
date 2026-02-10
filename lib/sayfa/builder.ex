@@ -9,10 +9,13 @@ defmodule Sayfa.Builder do
   3. **Parse** — parse front matter and render Markdown for each file
   4. **Classify** — determine content type from directory structure, enrich with type metadata
   5. **Filter** — exclude drafts (unless `drafts: true`)
-  6. **Render** — apply three-layer template pipeline for individual pages
-  7. **Archives** — generate tag and category archive pages
-  8. **Indexes** — generate paginated content type index pages
-  9. **Write** — output HTML files to the output directory
+  6. **Enrich** — add reading time and table of contents to content metadata
+  7. **Render** — apply three-layer template pipeline for individual pages
+  8. **Archives** — generate tag and category archive pages
+  9. **Indexes** — generate paginated content type index pages
+  10. **Feeds** — generate Atom feeds (main + per-type)
+  11. **Sitemap** — generate XML sitemap
+  12. **Pagefind** — run search indexing (optional, skipped if binary not found)
 
   ## Examples
 
@@ -30,8 +33,14 @@ defmodule Sayfa.Builder do
   alias Sayfa.Config
   alias Sayfa.Content
   alias Sayfa.ContentType
+  alias Sayfa.Feed
   alias Sayfa.Pagination
+  alias Sayfa.ReadingTime
+  alias Sayfa.Sitemap
+  alias Sayfa.TOC
   alias Sayfa.Template
+
+  require Logger
 
   defmodule Result do
     @moduledoc """
@@ -71,14 +80,18 @@ defmodule Sayfa.Builder do
          {:ok, files} <- discover_files(config.content_dir),
          {:ok, contents} <- parse_files(files, config.content_dir),
          contents <- filter_drafts(contents, config.drafts),
+         contents <- enrich_contents(contents),
          {:ok, individual_count} <- render_and_write(contents, config),
          {:ok, archive_count} <- build_archives(contents, config),
-         {:ok, index_count} <- build_type_indexes(contents, config) do
+         {:ok, index_count} <- build_type_indexes(contents, config),
+         {:ok, feed_count} <- build_feeds(contents, config),
+         {:ok, sitemap_count} <- build_sitemap(contents, config) do
+      run_pagefind(config)
       elapsed = System.monotonic_time(:millisecond) - start_time
 
       {:ok,
        %Result{
-         files_written: individual_count + archive_count + index_count,
+         files_written: individual_count + archive_count + index_count + feed_count + sitemap_count,
          content_count: length(contents),
          elapsed_ms: elapsed
        }}
@@ -332,6 +345,126 @@ defmodule Sayfa.Builder do
     case results do
       {:error, _} = error -> error
       count -> {:ok, count}
+    end
+  end
+
+  # --- Content Enrichment ---
+
+  defp enrich_contents(contents) do
+    Enum.map(contents, fn content ->
+      reading_time = ReadingTime.calculate(content.body)
+      toc = TOC.extract(content.body)
+
+      meta =
+        content.meta
+        |> Map.put("reading_time", reading_time)
+        |> Map.put("toc", toc)
+
+      %{content | meta: meta}
+    end)
+  end
+
+  # --- Feeds ---
+
+  defp build_feeds(contents, config) do
+    # Main feed with all dated content
+    main_xml = Feed.generate(contents, config)
+    main_path = Path.join(config.output_dir, "feed.xml")
+    File.mkdir_p!(Path.dirname(main_path))
+    File.write!(main_path, main_xml)
+
+    # Per-type feeds for types that have dated content
+    type_groups =
+      contents
+      |> Enum.filter(& &1.date)
+      |> Enum.group_by(fn c -> c.meta["content_type"] end)
+      |> Enum.reject(fn {type, _} -> type == "pages" end)
+
+    type_count =
+      Enum.reduce(type_groups, 0, fn {type, _items}, count ->
+        xml = Feed.generate_for_type(contents, type, config)
+        path = Path.join([config.output_dir, "feed", "#{type}.xml"])
+        File.mkdir_p!(Path.dirname(path))
+        File.write!(path, xml)
+        count + 1
+      end)
+
+    {:ok, 1 + type_count}
+  end
+
+  # --- Sitemap ---
+
+  defp build_sitemap(contents, config) do
+    # Collect URLs from individual content pages
+    content_urls =
+      Enum.map(contents, fn content ->
+        prefix = content.meta["url_prefix"] || ""
+
+        loc =
+          case prefix do
+            "" -> "/#{content.slug}/"
+            p -> "/#{p}/#{content.slug}/"
+          end
+
+        %{loc: loc, lastmod: content.date}
+      end)
+
+    # Collect URLs from tag archives
+    tag_urls =
+      contents
+      |> Content.group_by_tag()
+      |> Enum.map(fn {tag, _} ->
+        %{loc: "/tags/#{Slug.slugify(tag)}/", lastmod: nil}
+      end)
+
+    # Collect URLs from category archives
+    cat_urls =
+      contents
+      |> Content.group_by_category()
+      |> Enum.map(fn {cat, _} ->
+        %{loc: "/categories/#{Slug.slugify(cat)}/", lastmod: nil}
+      end)
+
+    # Collect URLs from content type indexes
+    index_urls =
+      contents
+      |> Enum.group_by(fn c -> c.meta["content_type"] end)
+      |> Enum.reject(fn {type, _} -> type == "pages" end)
+      |> Enum.map(fn {type, _} ->
+        url_prefix =
+          case ContentType.find_by_directory(type) do
+            nil -> type
+            mod -> mod.url_prefix()
+          end
+
+        %{loc: "/#{url_prefix}/", lastmod: nil}
+      end)
+
+    all_urls = content_urls ++ tag_urls ++ cat_urls ++ index_urls
+
+    xml = Sitemap.generate(all_urls, config)
+    path = Path.join(config.output_dir, "sitemap.xml")
+    File.mkdir_p!(Path.dirname(path))
+    File.write!(path, xml)
+
+    {:ok, 1}
+  end
+
+  # --- Pagefind ---
+
+  defp run_pagefind(config) do
+    case System.find_executable("pagefind") do
+      nil ->
+        Logger.info("Pagefind binary not found, skipping search indexing")
+
+      _path ->
+        case System.cmd("pagefind", ["--site", config.output_dir], stderr_to_stdout: true) do
+          {_output, 0} ->
+            Logger.info("Pagefind indexing complete")
+
+          {output, _code} ->
+            Logger.warning("Pagefind indexing failed: #{output}")
+        end
     end
   end
 

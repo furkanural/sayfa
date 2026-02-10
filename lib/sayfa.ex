@@ -11,7 +11,7 @@ defmodule Sayfa do
       # Parse a markdown string with front matter
       {:ok, content} = Sayfa.parse("---\\ntitle: Hello\\n---\\n# World")
       content.title  #=> "Hello"
-      content.body   #=> "<h1>World</h1>"
+      content.body   #=> "<h1>...World</h1>"  # includes anchor id
 
       # Parse a file
       {:ok, content} = Sayfa.parse_file("content/posts/hello.md")

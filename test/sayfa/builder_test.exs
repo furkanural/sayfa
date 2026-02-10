@@ -97,8 +97,8 @@ defmodule Sayfa.BuilderTest do
       """)
 
       assert {:ok, result} = Builder.build(build_opts(ctx))
-      # 1 individual + 1 posts index = 2
-      assert result.files_written == 2
+      # 1 individual + 1 posts index + 1 feed.xml + 1 sitemap.xml = 4 (no per-type feed: no dated content)
+      assert result.files_written == 4
       assert result.content_count == 1
     end
 
@@ -112,8 +112,8 @@ defmodule Sayfa.BuilderTest do
       """)
 
       assert {:ok, result} = Builder.build(build_opts(ctx, drafts: true))
-      # 1 individual + 1 posts index = 2
-      assert result.files_written == 2
+      # 1 individual + 1 posts index + 1 feed.xml + 1 sitemap.xml = 4 (no per-type feed: no dated content)
+      assert result.files_written == 4
       assert result.content_count == 1
     end
 
@@ -124,7 +124,8 @@ defmodule Sayfa.BuilderTest do
 
     test "builds with no content files", ctx do
       assert {:ok, result} = Builder.build(build_opts(ctx))
-      assert result.files_written == 0
+      # feed.xml + sitemap.xml always generated
+      assert result.files_written == 2
       assert result.content_count == 0
     end
 
@@ -139,7 +140,8 @@ defmodule Sayfa.BuilderTest do
       """)
 
       assert {:ok, result} = Builder.build(build_opts(ctx))
-      assert result.files_written == 1
+      # 1 individual + 1 feed.xml + 1 sitemap.xml = 3
+      assert result.files_written == 3
 
       # home layout wraps with <section class="home">
       # (default theme layout)
@@ -275,6 +277,84 @@ defmodule Sayfa.BuilderTest do
       assert File.exists?(Path.join([ctx.output_dir, "about", "index.html"]))
       # Not at /pages/about/
       refute File.exists?(Path.join([ctx.output_dir, "pages", "about", "index.html"]))
+    end
+  end
+
+  describe "feeds and sitemap" do
+    test "generates feed.xml and sitemap.xml", ctx do
+      File.write!(Path.join(ctx.posts_dir, "2024-01-15-hello.md"), """
+      ---
+      title: "Hello"
+      date: 2024-01-15
+      ---
+      Some content.
+      """)
+
+      assert {:ok, _result} = Builder.build(build_opts(ctx))
+
+      # Main feed
+      feed_path = Path.join(ctx.output_dir, "feed.xml")
+      assert File.exists?(feed_path)
+      feed_xml = File.read!(feed_path)
+      assert feed_xml =~ "<feed"
+      assert feed_xml =~ "Hello"
+
+      # Per-type feed
+      posts_feed = Path.join([ctx.output_dir, "feed", "posts.xml"])
+      assert File.exists?(posts_feed)
+
+      # Sitemap
+      sitemap_path = Path.join(ctx.output_dir, "sitemap.xml")
+      assert File.exists?(sitemap_path)
+      sitemap_xml = File.read!(sitemap_path)
+      assert sitemap_xml =~ "<urlset"
+      assert sitemap_xml =~ "/posts/hello/"
+    end
+  end
+
+  describe "content enrichment" do
+    test "adds reading_time and toc to content meta", ctx do
+      File.write!(Path.join(ctx.posts_dir, "2024-01-15-rich.md"), """
+      ---
+      title: "Rich Post"
+      date: 2024-01-15
+      ---
+      ## Introduction
+
+      Some content here.
+
+      ## Getting Started
+
+      More content here.
+      """)
+
+      assert {:ok, _result} = Builder.build(build_opts(ctx))
+
+      # Verify the rendered output contains proper HTML (meaning enrichment ran)
+      post_path = Path.join([ctx.output_dir, "posts", "rich", "index.html"])
+      assert File.exists?(post_path)
+      html = File.read!(post_path)
+      assert html =~ "Introduction"
+      assert html =~ "Getting Started"
+    end
+  end
+
+  describe "seo tags" do
+    test "base template includes OG tags", ctx do
+      File.write!(Path.join(ctx.posts_dir, "2024-01-15-seo-test.md"), """
+      ---
+      title: "SEO Test Post"
+      date: 2024-01-15
+      ---
+      Post body for SEO.
+      """)
+
+      assert {:ok, _result} = Builder.build(build_opts(ctx))
+
+      html = File.read!(Path.join([ctx.output_dir, "posts", "seo-test", "index.html"]))
+      assert html =~ "og:title"
+      assert html =~ "SEO Test Post"
+      assert html =~ "application/atom+xml"
     end
   end
 

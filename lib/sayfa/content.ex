@@ -10,8 +10,11 @@ defmodule Sayfa.Content do
   Content can be parsed from a raw string (with YAML front matter) or from
   a `Sayfa.Content.Raw` struct:
 
-      iex> Sayfa.Content.parse("---\\ntitle: Hello\\n---\\n# World")
-      {:ok, %Sayfa.Content{title: "Hello", body: "<h1>World</h1>"}}
+      iex> {:ok, content} = Sayfa.Content.parse("---\\ntitle: Hello\\n---\\n# World")
+      iex> content.title
+      "Hello"
+      iex> content.body =~ "World</h1>"
+      true
 
   ## Front Matter
 

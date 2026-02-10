@@ -34,7 +34,9 @@ defmodule Sayfa.Config do
     theme: "default",
     default_lang: :en,
     drafts: false,
-    posts_per_page: 10
+    posts_per_page: 10,
+    author: nil,
+    description: ""
   }
 
   @doc """

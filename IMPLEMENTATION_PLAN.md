@@ -898,7 +898,7 @@ cat test_site/output/posts/hello/index.html
 
 ---
 
-### Phase 4: Features & Feeds
+### Phase 4: Features & Feeds (DONE)
 
 **Goal:** RSS feeds, sitemap, search, SEO, reading time, table of contents.
 
@@ -907,7 +907,7 @@ cat test_site/output/posts/hello/index.html
 1. **RSS/Atom feeds** → `lib/sayfa/feed.ex` (dep: `{:xml_builder, "~> 2.2"}`)
 2. **Sitemap** → `lib/sayfa/sitemap.ex`
 3. **Pagefind integration** — run `pagefind --site <output_dir>` as post-build step
-4. **SEO component** — meta tags, Open Graph, Twitter card tags (as partial template or block)
+4. **SEO component** → `lib/sayfa/seo.ex` — meta tags, Open Graph, Twitter card tags
 5. **Reading time** → `lib/sayfa/reading_time.ex`
 6. **Table of contents** → `lib/sayfa/toc.ex`
 

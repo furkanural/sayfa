@@ -485,13 +485,13 @@ Track implementation progress:
   - [x] Categories and tags (archive pages)
   - [x] Pagination
   - [x] Collections API (filter, sort, recent, group)
-- [ ] Phase 4: Features & Feeds
-  - [ ] RSS/Atom feeds
-  - [ ] Sitemap generation
-  - [ ] Pagefind search integration
-  - [ ] SEO meta tags
-  - [ ] Reading time calculation
-  - [ ] Table of contents extraction
+- [x] Phase 4: Features & Feeds
+  - [x] RSS/Atom feeds
+  - [x] Sitemap generation
+  - [x] Pagefind search integration
+  - [x] SEO meta tags
+  - [x] Reading time calculation
+  - [x] Table of contents extraction
 - [ ] Phase 5: Extensibility & Blocks
   - [ ] Block behaviour + BlockRegistry
   - [ ] @block helper integration in templates
