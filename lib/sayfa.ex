@@ -44,4 +44,20 @@ defmodule Sayfa do
   """
   @spec render_markdown(String.t()) :: {:ok, String.t()} | {:error, term()}
   defdelegate render_markdown(markdown), to: Sayfa.Markdown, as: :render
+
+  @doc """
+  Builds the static site from content files.
+
+  See `Sayfa.Builder.build/1` for details and options.
+  """
+  @spec build(keyword()) :: {:ok, Sayfa.Builder.Result.t()} | {:error, term()}
+  defdelegate build(opts \\ []), to: Sayfa.Builder
+
+  @doc """
+  Removes the output directory.
+
+  See `Sayfa.Builder.clean/1` for details.
+  """
+  @spec clean(keyword()) :: :ok
+  defdelegate clean(opts \\ []), to: Sayfa.Builder
 end

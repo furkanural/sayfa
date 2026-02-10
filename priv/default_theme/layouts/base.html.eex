@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html lang="<%= Map.get(assigns, :lang, "en") %>">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= if assigns[:page_title], do: "#{assigns[:page_title]} — #{@site.title}", else: @site.title %></title>
+</head>
+<body>
+  <%= @inner_content %>
+</body>
+</html>

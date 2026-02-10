@@ -472,13 +472,13 @@ Track implementation progress:
   - [x] Implement Sayfa.Content (parsing + rendering)
   - [x] Implement Sayfa main module (public API)
   - [x] Write unit tests
-- [ ] Phase 2: Build Pipeline
-  - [ ] Implement Sayfa.Config
-  - [ ] Implement Sayfa.Template (EEx rendering, @block stub)
-  - [ ] Create default theme layouts (base, post, page, list, home)
-  - [ ] Implement Sayfa.Builder (orchestration)
-  - [ ] Implement mix sayfa.build task
-  - [ ] Write integration tests
+- [x] Phase 2: Build Pipeline
+  - [x] Implement Sayfa.Config
+  - [x] Implement Sayfa.Template (EEx rendering, @block stub)
+  - [x] Create default theme layouts (base, post, page, list, home)
+  - [x] Implement Sayfa.Builder (orchestration)
+  - [x] Implement mix sayfa.build task
+  - [x] Write integration tests
 - [ ] Phase 3: Content Types & Organization
   - [ ] Content type behaviour + built-in types (post, note, project, talk, page)
   - [ ] Layout selection system (front matter → layout template)

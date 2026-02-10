@@ -1,0 +1,15 @@
+<section>
+  <h1><%= assigns[:page_title] || "Posts" %></h1>
+  <ul>
+<%= for item <- @contents do %>
+    <li>
+      <a href="/<%= item.meta["content_type"] || "posts" %>/<%= item.slug %>/">
+        <%= item.title %>
+      </a>
+<%= if item.date do %>
+      <time datetime="<%= item.date %>"><%= item.date %></time>
+<% end %>
+    </li>
+<% end %>
+  </ul>
+</section>

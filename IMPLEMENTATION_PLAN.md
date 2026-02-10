@@ -810,7 +810,7 @@ iex> Sayfa.Content.parse("---\ntitle: Test\n---\n# Hello")
 
 ---
 
-### Phase 2: Build Pipeline
+### Phase 2: Build Pipeline (DONE)
 
 **Goal:** Orchestrate the full build from content files to HTML output.
 

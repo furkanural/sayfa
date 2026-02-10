@@ -1,0 +1,8 @@
+<article>
+  <header>
+    <h1><%= @content.title %></h1>
+  </header>
+  <div class="content">
+    <%= @inner_content %>
+  </div>
+</article>

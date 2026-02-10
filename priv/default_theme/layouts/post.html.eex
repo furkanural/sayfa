@@ -1,0 +1,18 @@
+<article>
+  <header>
+    <h1><%= @content.title %></h1>
+<%= if @content.date do %>
+    <time datetime="<%= @content.date %>"><%= @content.date %></time>
+<% end %>
+<%= if @content.tags != [] do %>
+    <ul class="tags">
+<%= for tag <- @content.tags do %>
+      <li><%= tag %></li>
+<% end %>
+    </ul>
+<% end %>
+  </header>
+  <div class="content">
+    <%= @inner_content %>
+  </div>
+</article>
