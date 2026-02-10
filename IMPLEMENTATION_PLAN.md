@@ -753,7 +753,7 @@ end
 
 ## Implementation Phases
 
-### Phase 1: Core Parsing
+### Phase 1: Core Parsing (DONE)
 
 **Goal:** Parse markdown files with YAML front matter into structured Elixir data.
 
@@ -961,7 +961,7 @@ Start with Phase 1 → Phase 2 → ... sequentially. Within each phase, follow t
 
 | Phase | Focus | Key Modules |
 |-------|-------|-------------|
-| **1** | Core Parsing | Sayfa.Markdown, Sayfa.Content, Sayfa.Content.Raw |
+| **1** | Core Parsing (DONE) | Sayfa.Markdown, Sayfa.Content, Sayfa.Content.Raw |
 | **2** | Build Pipeline | Sayfa.Config, Sayfa.Template, Sayfa.Builder, mix sayfa.build |
 | **3** | Content Types | Multiple types, categories, tags, pagination |
 | **4** | Features | RSS, sitemap, Pagefind search, SEO |
