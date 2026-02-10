@@ -869,7 +869,7 @@ cat test_site/output/posts/hello/index.html
 
 ---
 
-### Phase 3: Content Types & Organization
+### Phase 3: Content Types & Organization (DONE)
 
 **Goal:** Support multiple content types, categories, tags, pagination, and layout selection.
 

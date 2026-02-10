@@ -479,12 +479,12 @@ Track implementation progress:
   - [x] Implement Sayfa.Builder (orchestration)
   - [x] Implement mix sayfa.build task
   - [x] Write integration tests
-- [ ] Phase 3: Content Types & Organization
-  - [ ] Content type behaviour + built-in types (post, note, project, talk, page)
-  - [ ] Layout selection system (front matter → layout template)
-  - [ ] Categories and tags (archive pages)
-  - [ ] Pagination
-  - [ ] Collections API (filter, sort, recent)
+- [x] Phase 3: Content Types & Organization
+  - [x] Content type behaviour + built-in types (post, note, project, talk, page)
+  - [x] Layout selection system (front matter → default_layout → content type fallback)
+  - [x] Categories and tags (archive pages)
+  - [x] Pagination
+  - [x] Collections API (filter, sort, recent, group)
 - [ ] Phase 4: Features & Feeds
   - [ ] RSS/Atom feeds
   - [ ] Sitemap generation

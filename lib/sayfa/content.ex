@@ -57,6 +57,157 @@ defmodule Sayfa.Content do
 
   @known_keys ~w(title date slug lang categories tags draft)
 
+  # --- Collections API ---
+
+  @doc """
+  Filters contents by content type string.
+
+  ## Examples
+
+      iex> posts = [%Sayfa.Content{title: "A", body: "", meta: %{"content_type" => "posts"}},
+      ...>          %Sayfa.Content{title: "B", body: "", meta: %{"content_type" => "pages"}}]
+      iex> Sayfa.Content.all_of_type(posts, "posts") |> length()
+      1
+
+  """
+  @spec all_of_type([t()], String.t()) :: [t()]
+  def all_of_type(contents, type) do
+    Enum.filter(contents, fn c -> c.meta["content_type"] == type end)
+  end
+
+  @doc """
+  Filters contents that have the given tag.
+
+  ## Examples
+
+      iex> contents = [%Sayfa.Content{title: "A", body: "", tags: ["elixir", "otp"]},
+      ...>             %Sayfa.Content{title: "B", body: "", tags: ["rust"]}]
+      iex> Sayfa.Content.with_tag(contents, "elixir") |> length()
+      1
+
+  """
+  @spec with_tag([t()], String.t()) :: [t()]
+  def with_tag(contents, tag) do
+    Enum.filter(contents, fn c -> tag in c.tags end)
+  end
+
+  @doc """
+  Filters contents that have the given category.
+
+  ## Examples
+
+      iex> contents = [%Sayfa.Content{title: "A", body: "", categories: ["programming"]},
+      ...>             %Sayfa.Content{title: "B", body: "", categories: ["cooking"]}]
+      iex> Sayfa.Content.with_category(contents, "programming") |> length()
+      1
+
+  """
+  @spec with_category([t()], String.t()) :: [t()]
+  def with_category(contents, category) do
+    Enum.filter(contents, fn c -> category in c.categories end)
+  end
+
+  @doc """
+  Sorts contents by date.
+
+  Items with `nil` dates are pushed to the end.
+
+  ## Options
+
+  - `:desc` (default) — newest first
+  - `:asc` — oldest first
+
+  ## Examples
+
+      iex> contents = [%Sayfa.Content{title: "Old", body: "", date: ~D[2024-01-01]},
+      ...>             %Sayfa.Content{title: "New", body: "", date: ~D[2024-06-01]}]
+      iex> sorted = Sayfa.Content.sort_by_date(contents)
+      iex> hd(sorted).title
+      "New"
+
+  """
+  @spec sort_by_date([t()], :asc | :desc) :: [t()]
+  def sort_by_date(contents, order \\ :desc) do
+    {with_dates, without_dates} = Enum.split_with(contents, fn c -> c.date != nil end)
+
+    sorted =
+      case order do
+        :desc -> Enum.sort_by(with_dates, & &1.date, {:desc, Date})
+        :asc -> Enum.sort_by(with_dates, & &1.date, {:asc, Date})
+      end
+
+    sorted ++ without_dates
+  end
+
+  @doc """
+  Returns the N most recent contents (sorted by date descending).
+
+  ## Examples
+
+      iex> contents = [%Sayfa.Content{title: "A", body: "", date: ~D[2024-01-01]},
+      ...>             %Sayfa.Content{title: "B", body: "", date: ~D[2024-06-01]},
+      ...>             %Sayfa.Content{title: "C", body: "", date: ~D[2024-03-01]}]
+      iex> Sayfa.Content.recent(contents, 2) |> Enum.map(& &1.title)
+      ["B", "C"]
+
+  """
+  @spec recent([t()], pos_integer()) :: [t()]
+  def recent(contents, n) do
+    contents |> sort_by_date(:desc) |> Enum.take(n)
+  end
+
+  @doc """
+  Groups contents by tag.
+
+  Returns a map where each key is a tag and the value is a list
+  of contents that have that tag.
+
+  ## Examples
+
+      iex> contents = [%Sayfa.Content{title: "A", body: "", tags: ["elixir", "otp"]},
+      ...>             %Sayfa.Content{title: "B", body: "", tags: ["elixir"]}]
+      iex> groups = Sayfa.Content.group_by_tag(contents)
+      iex> length(groups["elixir"])
+      2
+      iex> length(groups["otp"])
+      1
+
+  """
+  @spec group_by_tag([t()]) :: %{String.t() => [t()]}
+  def group_by_tag(contents) do
+    Enum.reduce(contents, %{}, fn content, acc ->
+      Enum.reduce(content.tags, acc, fn tag, inner_acc ->
+        Map.update(inner_acc, tag, [content], &[content | &1])
+      end)
+    end)
+    |> Map.new(fn {k, v} -> {k, Enum.reverse(v)} end)
+  end
+
+  @doc """
+  Groups contents by category.
+
+  Returns a map where each key is a category and the value is a list
+  of contents that have that category.
+
+  ## Examples
+
+      iex> contents = [%Sayfa.Content{title: "A", body: "", categories: ["programming"]},
+      ...>             %Sayfa.Content{title: "B", body: "", categories: ["programming", "elixir"]}]
+      iex> groups = Sayfa.Content.group_by_category(contents)
+      iex> length(groups["programming"])
+      2
+
+  """
+  @spec group_by_category([t()]) :: %{String.t() => [t()]}
+  def group_by_category(contents) do
+    Enum.reduce(contents, %{}, fn content, acc ->
+      Enum.reduce(content.categories, acc, fn cat, inner_acc ->
+        Map.update(inner_acc, cat, [content], &[content | &1])
+      end)
+    end)
+    |> Map.new(fn {k, v} -> {k, Enum.reverse(v)} end)
+  end
+
   @doc """
   Parses a raw string containing YAML front matter and Markdown body.
 

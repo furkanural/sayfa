@@ -183,4 +183,158 @@ defmodule Sayfa.ContentTest do
       assert Content.slug_from_filename("2024-01-15-post.html.md") == "post.html"
     end
   end
+
+  # --- Collections API Tests ---
+
+  defp make_content(attrs) do
+    defaults = %{title: "default", body: "<p>test</p>", tags: [], categories: [], meta: %{}, date: nil}
+    Map.merge(defaults, attrs) |> then(&struct!(Content, &1))
+  end
+
+  describe "all_of_type/2" do
+    test "filters by content_type in meta" do
+      contents = [
+        make_content(%{title: "Post", meta: %{"content_type" => "posts"}}),
+        make_content(%{title: "Page", meta: %{"content_type" => "pages"}}),
+        make_content(%{title: "Post 2", meta: %{"content_type" => "posts"}})
+      ]
+
+      result = Content.all_of_type(contents, "posts")
+      assert length(result) == 2
+      assert Enum.all?(result, fn c -> c.meta["content_type"] == "posts" end)
+    end
+
+    test "returns empty list when no match" do
+      contents = [make_content(%{title: "Post", meta: %{"content_type" => "posts"}})]
+      assert Content.all_of_type(contents, "notes") == []
+    end
+  end
+
+  describe "with_tag/2" do
+    test "filters by tag" do
+      contents = [
+        make_content(%{title: "A", tags: ["elixir", "otp"]}),
+        make_content(%{title: "B", tags: ["rust"]}),
+        make_content(%{title: "C", tags: ["elixir"]})
+      ]
+
+      result = Content.with_tag(contents, "elixir")
+      assert length(result) == 2
+      assert Enum.map(result, & &1.title) == ["A", "C"]
+    end
+  end
+
+  describe "with_category/2" do
+    test "filters by category" do
+      contents = [
+        make_content(%{title: "A", categories: ["programming"]}),
+        make_content(%{title: "B", categories: ["cooking"]}),
+        make_content(%{title: "C", categories: ["programming", "elixir"]})
+      ]
+
+      result = Content.with_category(contents, "programming")
+      assert length(result) == 2
+    end
+  end
+
+  describe "sort_by_date/2" do
+    test "sorts descending by default" do
+      contents = [
+        make_content(%{title: "Old", date: ~D[2024-01-01]}),
+        make_content(%{title: "New", date: ~D[2024-06-01]}),
+        make_content(%{title: "Mid", date: ~D[2024-03-01]})
+      ]
+
+      result = Content.sort_by_date(contents)
+      assert Enum.map(result, & &1.title) == ["New", "Mid", "Old"]
+    end
+
+    test "sorts ascending when specified" do
+      contents = [
+        make_content(%{title: "Old", date: ~D[2024-01-01]}),
+        make_content(%{title: "New", date: ~D[2024-06-01]})
+      ]
+
+      result = Content.sort_by_date(contents, :asc)
+      assert Enum.map(result, & &1.title) == ["Old", "New"]
+    end
+
+    test "pushes nil dates to end" do
+      contents = [
+        make_content(%{title: "No Date"}),
+        make_content(%{title: "Has Date", date: ~D[2024-01-01]})
+      ]
+
+      result = Content.sort_by_date(contents)
+      assert Enum.map(result, & &1.title) == ["Has Date", "No Date"]
+    end
+  end
+
+  describe "recent/2" do
+    test "returns N most recent items" do
+      contents = [
+        make_content(%{title: "A", date: ~D[2024-01-01]}),
+        make_content(%{title: "B", date: ~D[2024-06-01]}),
+        make_content(%{title: "C", date: ~D[2024-03-01]})
+      ]
+
+      result = Content.recent(contents, 2)
+      assert Enum.map(result, & &1.title) == ["B", "C"]
+    end
+
+    test "returns all items when n > length" do
+      contents = [make_content(%{title: "A", date: ~D[2024-01-01]})]
+      assert length(Content.recent(contents, 5)) == 1
+    end
+  end
+
+  describe "group_by_tag/1" do
+    test "groups contents by their tags" do
+      contents = [
+        make_content(%{title: "A", tags: ["elixir", "otp"]}),
+        make_content(%{title: "B", tags: ["elixir"]}),
+        make_content(%{title: "C", tags: ["rust"]})
+      ]
+
+      groups = Content.group_by_tag(contents)
+      assert length(groups["elixir"]) == 2
+      assert length(groups["otp"]) == 1
+      assert length(groups["rust"]) == 1
+    end
+
+    test "returns empty map for no tags" do
+      contents = [make_content(%{title: "A", tags: []})]
+      assert Content.group_by_tag(contents) == %{}
+    end
+
+    test "preserves order within groups" do
+      contents = [
+        make_content(%{title: "First", tags: ["elixir"]}),
+        make_content(%{title: "Second", tags: ["elixir"]})
+      ]
+
+      groups = Content.group_by_tag(contents)
+      assert Enum.map(groups["elixir"], & &1.title) == ["First", "Second"]
+    end
+  end
+
+  describe "group_by_category/1" do
+    test "groups contents by their categories" do
+      contents = [
+        make_content(%{title: "A", categories: ["programming"]}),
+        make_content(%{title: "B", categories: ["programming", "elixir"]}),
+        make_content(%{title: "C", categories: ["cooking"]})
+      ]
+
+      groups = Content.group_by_category(contents)
+      assert length(groups["programming"]) == 2
+      assert length(groups["elixir"]) == 1
+      assert length(groups["cooking"]) == 1
+    end
+
+    test "returns empty map for no categories" do
+      contents = [make_content(%{title: "A", categories: []})]
+      assert Content.group_by_category(contents) == %{}
+    end
+  end
 end

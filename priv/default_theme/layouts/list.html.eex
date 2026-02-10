@@ -1,9 +1,9 @@
 <section>
-  <h1><%= assigns[:page_title] || "Posts" %></h1>
+  <h1><%= @page_title %></h1>
   <ul>
 <%= for item <- @contents do %>
     <li>
-      <a href="/<%= item.meta["content_type"] || "posts" %>/<%= item.slug %>/">
+      <a href="/<%= if item.meta["url_prefix"] && item.meta["url_prefix"] != "" do %><%= item.meta["url_prefix"] %>/<% end %><%= item.slug %>/">
         <%= item.title %>
       </a>
 <%= if item.date do %>
@@ -12,4 +12,15 @@
     </li>
 <% end %>
   </ul>
+<%= if assigns[:pagination] && @pagination do %>
+  <nav class="pagination">
+<%= if @pagination.has_prev do %>
+    <a href="<%= @pagination.prev_url %>" rel="prev">← Previous</a>
+<% end %>
+    <span>Page <%= @pagination.page_number %> of <%= @pagination.total_pages %></span>
+<%= if @pagination.has_next do %>
+    <a href="<%= @pagination.next_url %>" rel="next">Next →</a>
+<% end %>
+  </nav>
+<% end %>
 </section>

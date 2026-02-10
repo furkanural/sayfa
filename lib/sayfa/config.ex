@@ -33,7 +33,8 @@ defmodule Sayfa.Config do
     output_dir: "output",
     theme: "default",
     default_lang: :en,
-    drafts: false
+    drafts: false,
+    posts_per_page: 10
   }
 
   @doc """

@@ -154,5 +154,116 @@ defmodule Sayfa.TemplateTest do
       assert html =~ "<div>"
       assert html =~ "Content"
     end
+
+    test "uses default_layout from meta when no layout specified", %{layouts_dir: layouts_dir, config: config} do
+      content = %Content{
+        title: "My Post",
+        body: "<p>Post body</p>",
+        tags: [],
+        meta: %{"content_type" => "custom", "default_layout" => "post"}
+      }
+
+      assert {:ok, html} = Template.render_content(content, config: config, layouts_dir: layouts_dir)
+      assert html =~ "<article>"
+    end
+
+    test "layout from front matter takes precedence over default_layout", %{layouts_dir: layouts_dir, config: config} do
+      content = %Content{
+        title: "My Post",
+        body: "<p>Post body</p>",
+        tags: [],
+        meta: %{"layout" => "home", "default_layout" => "post"}
+      }
+
+      assert {:ok, html} = Template.render_content(content, config: config, layouts_dir: layouts_dir)
+      assert html =~ ~s(<section class="home">)
+      refute html =~ "<article>"
+    end
+  end
+
+  describe "render_list_page/1" do
+    setup do
+      tmp_dir = Path.join(System.tmp_dir!(), "sayfa_list_test_#{System.unique_integer([:positive])}")
+      layouts_dir = Path.join(tmp_dir, "layouts")
+      File.mkdir_p!(layouts_dir)
+
+      File.write!(Path.join(layouts_dir, "base.html.eex"), """
+      <!DOCTYPE html>
+      <html>
+      <head><title><%= @page_title %></title></head>
+      <body><%= @inner_content %></body>
+      </html>
+      """)
+
+      File.write!(Path.join(layouts_dir, "list.html.eex"), """
+      <section>
+        <h1><%= @page_title %></h1>
+        <ul>
+      <%= for item <- @contents do %>
+        <li><%= item.title %></li>
+      <% end %>
+        </ul>
+      <%= if assigns[:pagination] && @pagination do %>
+        <nav>Page <%= @pagination.page_number %></nav>
+      <% end %>
+      </section>
+      """)
+
+      on_exit(fn -> File.rm_rf!(tmp_dir) end)
+
+      config = %{
+        title: "Test Site",
+        base_url: "http://localhost:4000",
+        theme: "default",
+        default_lang: :en
+      }
+
+      {:ok, layouts_dir: layouts_dir, config: config}
+    end
+
+    test "renders list page with contents", %{layouts_dir: layouts_dir, config: config} do
+      contents = [
+        %Content{title: "Post A", body: "", tags: [], meta: %{}},
+        %Content{title: "Post B", body: "", tags: [], meta: %{}}
+      ]
+
+      assert {:ok, html} = Template.render_list_page(
+        config: config,
+        layouts_dir: layouts_dir,
+        contents: contents,
+        page_title: "All Posts",
+        pagination: nil
+      )
+
+      assert html =~ "<!DOCTYPE html>"
+      assert html =~ "All Posts"
+      assert html =~ "Post A"
+      assert html =~ "Post B"
+    end
+
+    test "renders list page with pagination", %{layouts_dir: layouts_dir, config: config} do
+      pagination = %Sayfa.Pagination.Page{
+        items: [],
+        page_number: 2,
+        page_size: 10,
+        total_items: 25,
+        total_pages: 3,
+        has_prev: true,
+        has_next: true,
+        prev_url: "/posts/",
+        next_url: "/posts/page/3/",
+        url: "/posts/page/2/"
+      }
+
+      assert {:ok, html} = Template.render_list_page(
+        config: config,
+        layouts_dir: layouts_dir,
+        contents: [],
+        page_title: "Posts",
+        pagination: pagination
+      )
+
+      assert html =~ "Page 2"
+    end
   end
 end

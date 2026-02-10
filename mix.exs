@@ -29,6 +29,7 @@ defmodule Sayfa.MixProject do
     [
       {:mdex, "~> 0.2"},
       {:yaml_elixir, "~> 2.9"},
+      {:slugify, "~> 1.3"},
       {:ex_doc, "~> 0.34", only: :dev, runtime: false},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false}
     ]

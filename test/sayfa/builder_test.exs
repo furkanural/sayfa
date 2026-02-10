@@ -52,7 +52,7 @@ defmodule Sayfa.BuilderTest do
       """)
 
       assert {:ok, result} = Builder.build(build_opts(ctx))
-      assert result.files_written == 2
+      # 2 individual + 1 tag archive (elixir) + 1 posts index = 4
       assert result.content_count == 2
       assert result.elapsed_ms >= 0
 
@@ -70,6 +70,14 @@ defmodule Sayfa.BuilderTest do
       page_html = File.read!(page_path)
       assert page_html =~ "<!DOCTYPE html>"
       assert page_html =~ "About"
+
+      # Verify posts index was generated
+      posts_index = Path.join([ctx.output_dir, "posts", "index.html"])
+      assert File.exists?(posts_index)
+
+      # Verify tag archive was generated
+      tag_archive = Path.join([ctx.output_dir, "tags", "elixir", "index.html"])
+      assert File.exists?(tag_archive)
     end
 
     test "filters drafts by default", ctx do
@@ -89,7 +97,8 @@ defmodule Sayfa.BuilderTest do
       """)
 
       assert {:ok, result} = Builder.build(build_opts(ctx))
-      assert result.files_written == 1
+      # 1 individual + 1 posts index = 2
+      assert result.files_written == 2
       assert result.content_count == 1
     end
 
@@ -103,7 +112,8 @@ defmodule Sayfa.BuilderTest do
       """)
 
       assert {:ok, result} = Builder.build(build_opts(ctx, drafts: true))
-      assert result.files_written == 1
+      # 1 individual + 1 posts index = 2
+      assert result.files_written == 2
       assert result.content_count == 1
     end
 
@@ -152,6 +162,119 @@ defmodule Sayfa.BuilderTest do
 
       note_path = Path.join([ctx.output_dir, "notes", "quick-note", "index.html"])
       assert File.exists?(note_path)
+    end
+  end
+
+  describe "archives" do
+    test "generates tag archive pages", ctx do
+      File.write!(Path.join(ctx.posts_dir, "2024-01-15-post-1.md"), """
+      ---
+      title: "Post One"
+      date: 2024-01-15
+      tags: [elixir, tutorial]
+      ---
+      First post.
+      """)
+
+      File.write!(Path.join(ctx.posts_dir, "2024-01-20-post-2.md"), """
+      ---
+      title: "Post Two"
+      date: 2024-01-20
+      tags: [elixir]
+      ---
+      Second post.
+      """)
+
+      assert {:ok, _result} = Builder.build(build_opts(ctx))
+
+      # Tag archives
+      elixir_path = Path.join([ctx.output_dir, "tags", "elixir", "index.html"])
+      assert File.exists?(elixir_path)
+      elixir_html = File.read!(elixir_path)
+      assert elixir_html =~ "Post One"
+      assert elixir_html =~ "Post Two"
+      assert elixir_html =~ "Tagged: elixir"
+
+      tutorial_path = Path.join([ctx.output_dir, "tags", "tutorial", "index.html"])
+      assert File.exists?(tutorial_path)
+      tutorial_html = File.read!(tutorial_path)
+      assert tutorial_html =~ "Post One"
+      refute tutorial_html =~ "Post Two"
+    end
+
+    test "generates category archive pages", ctx do
+      File.write!(Path.join(ctx.posts_dir, "post.md"), """
+      ---
+      title: "Categorized Post"
+      date: 2024-01-15
+      categories: [programming]
+      ---
+      Content.
+      """)
+
+      assert {:ok, _result} = Builder.build(build_opts(ctx))
+
+      cat_path = Path.join([ctx.output_dir, "categories", "programming", "index.html"])
+      assert File.exists?(cat_path)
+      cat_html = File.read!(cat_path)
+      assert cat_html =~ "Categorized Post"
+      assert cat_html =~ "Category: programming"
+    end
+  end
+
+  describe "type indexes" do
+    test "generates paginated index for content types", ctx do
+      for i <- 1..3 do
+        File.write!(Path.join(ctx.posts_dir, "2024-01-#{String.pad_leading("#{i}", 2, "0")}-post-#{i}.md"), """
+        ---
+        title: "Post #{i}"
+        date: 2024-01-#{String.pad_leading("#{i}", 2, "0")}
+        ---
+        Post #{i} content.
+        """)
+      end
+
+      assert {:ok, _result} = Builder.build(build_opts(ctx, posts_per_page: 2))
+
+      # Page 1
+      index_path = Path.join([ctx.output_dir, "posts", "index.html"])
+      assert File.exists?(index_path)
+      index_html = File.read!(index_path)
+      assert index_html =~ "Posts"
+
+      # Page 2
+      page2_path = Path.join([ctx.output_dir, "posts", "page", "2", "index.html"])
+      assert File.exists?(page2_path)
+    end
+
+    test "does not generate index for pages type", ctx do
+      File.write!(Path.join(ctx.pages_dir, "about.md"), """
+      ---
+      title: "About"
+      ---
+      About content.
+      """)
+
+      assert {:ok, _result} = Builder.build(build_opts(ctx))
+
+      # No pages index
+      refute File.exists?(Path.join([ctx.output_dir, "pages", "index.html"]))
+    end
+
+    test "enriches content with content type metadata", ctx do
+      File.write!(Path.join(ctx.pages_dir, "about.md"), """
+      ---
+      title: "About"
+      ---
+      About content.
+      """)
+
+      assert {:ok, _result} = Builder.build(build_opts(ctx))
+
+      # Page should be at /{slug}/ (empty url_prefix)
+      assert File.exists?(Path.join([ctx.output_dir, "about", "index.html"]))
+      # Not at /pages/about/
+      refute File.exists?(Path.join([ctx.output_dir, "pages", "about", "index.html"]))
     end
   end
 

@@ -120,7 +120,55 @@ defmodule Sayfa.Template do
     end
   end
 
+  @doc """
+  Renders a list page through the three-layer template pipeline.
+
+  Used for archive pages (tags, categories) and content type index pages.
+  Uses the `list.html.eex` layout with `@contents` and `@pagination` assigns.
+
+  ## Options
+
+  - `:config` — resolved config map (required)
+  - `:layouts_dir` — override layouts directory (optional)
+  - `:contents` — list of content items to display (required)
+  - `:page_title` — title for the page (required)
+  - `:pagination` — pagination struct (optional, nil for non-paginated)
+
+  """
+  @spec render_list_page(keyword()) :: {:ok, String.t()} | {:error, term()}
+  def render_list_page(opts) do
+    config = Keyword.fetch!(opts, :config)
+    layouts_dir = Keyword.get(opts, :layouts_dir, Sayfa.Config.theme_layouts_dir(config))
+    contents = Keyword.fetch!(opts, :contents)
+    page_title = Keyword.fetch!(opts, :page_title)
+    pagination = Keyword.get(opts, :pagination)
+    block_fn = fn _name, _opts -> "" end
+
+    list_path = Path.join(layouts_dir, "list.html.eex")
+    base_path = Path.join(layouts_dir, "base.html.eex")
+
+    list_assigns = [
+      contents: contents,
+      pagination: pagination,
+      page_title: page_title,
+      site: config,
+      content: nil,
+      lang: config.default_lang,
+      block: block_fn
+    ]
+
+    with {:ok, list_html} <- render_file(list_path, list_assigns),
+         {:ok, full_html} <-
+           render_file(base_path, [inner_content: list_html] ++ list_assigns) do
+      {:ok, full_html}
+    end
+  end
+
   defp resolve_layout(%Sayfa.Content{meta: %{"layout" => layout}}) when is_binary(layout) do
+    layout
+  end
+
+  defp resolve_layout(%Sayfa.Content{meta: %{"default_layout" => layout}}) when is_binary(layout) do
     layout
   end
 
