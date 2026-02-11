@@ -492,11 +492,11 @@ Track implementation progress:
   - [x] SEO meta tags
   - [x] Reading time calculation
   - [x] Table of contents extraction
-- [ ] Phase 5: Extensibility & Blocks
-  - [ ] Block behaviour + BlockRegistry
-  - [ ] @block helper integration in templates
-  - [ ] Built-in blocks (hero, recent_posts, tag_cloud, social_links, toc, reading_time, code_copy, header, footer)
-  - [ ] Hook behaviour (before/after parse/render/write)
+- [x] Phase 5 (Core): Extensibility & Blocks
+  - [x] Block behaviour + BlockRegistry
+  - [x] @block helper integration in templates
+  - [x] Built-in blocks (hero, recent_posts, tag_cloud, social_links, toc, reading_time, code_copy, header, footer)
+  - [x] Hook behaviour (before/after parse/render)
   - [ ] Theme system (loading, inheritance)
   - [ ] Multilingual support (i18n)
   - [ ] Project generator (mix sayfa.new)

@@ -919,11 +919,11 @@ cat test_site/output/posts/hello/index.html
 
 **Tasks:**
 
-1. **Block behaviour** → `lib/sayfa/behaviours/block.ex`
-2. **Block registry** → `lib/sayfa/block_registry.ex`
-3. **`@block` helper integration** in `Sayfa.Template` — inject anonymous function into all template assigns
-4. **Built-in blocks** → `lib/sayfa/blocks/` — hero, recent_posts, tag_cloud, social_links, toc, reading_time, code_copy, header, footer
-5. **Hook behaviour** → `lib/sayfa/behaviours/hook.ex`
+1. ~~**Block behaviour** → `lib/sayfa/behaviours/block.ex`~~ (DONE)
+2. ~~**Block registry** → `lib/sayfa/block.ex`~~ (DONE)
+3. ~~**`@block` helper integration** in `Sayfa.Template` — inject anonymous function into all template assigns~~ (DONE)
+4. ~~**Built-in blocks** → `lib/sayfa/blocks/` — hero, recent_posts, tag_cloud, social_links, toc, reading_time, code_copy, header, footer~~ (DONE)
+5. ~~**Hook behaviour** → `lib/sayfa/behaviours/hook.ex` — before/after parse/render stages~~ (DONE)
 6. **Theme system** → `lib/sayfa/theme.ex` — loading, inheritance, asset merging
 7. **Multilingual support** → `lib/sayfa/i18n.ex` — subdirectory approach
 8. **Project generator** → `lib/mix/tasks/sayfa.new.ex`
@@ -965,7 +965,7 @@ Start with Phase 1 → Phase 2 → ... sequentially. Within each phase, follow t
 | **2** | Build Pipeline | Sayfa.Config, Sayfa.Template, Sayfa.Builder, mix sayfa.build |
 | **3** | Content Types | Multiple types, categories, tags, pagination |
 | **4** | Features | RSS, sitemap, Pagefind search, SEO |
-| **5** | Extensibility | Blocks, hooks, themes, i18n, mix sayfa.new |
+| **5** | Extensibility (Core DONE) | Blocks, hooks, themes, i18n, mix sayfa.new |
 | **6** | DX | Dev server, hot reload, caching |
 
 ---

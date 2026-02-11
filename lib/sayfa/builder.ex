@@ -81,6 +81,7 @@ defmodule Sayfa.Builder do
          {:ok, contents} <- parse_files(files, config.content_dir),
          contents <- filter_drafts(contents, config.drafts),
          contents <- enrich_contents(contents),
+         {:ok, contents} <- run_hooks(contents, :before_render, config),
          {:ok, individual_count} <- render_and_write(contents, config),
          {:ok, archive_count} <- build_archives(contents, config),
          {:ok, index_count} <- build_type_indexes(contents, config),
@@ -129,13 +130,17 @@ defmodule Sayfa.Builder do
   end
 
   defp parse_files(files, content_dir) do
+    hooks = get_hooks()
+
     results =
       Enum.reduce_while(files, [], fn file, acc ->
-        case Content.parse_file(file) do
-          {:ok, content} ->
-            content = classify_content(content, file, content_dir)
-            {:cont, [content | acc]}
-
+        with {:ok, raw} <- Content.parse_raw_file(file),
+             {:ok, raw} <- run_hook_list(hooks, :before_parse, raw),
+             {:ok, content} <- Content.from_raw(raw),
+             {:ok, content} <- run_hook_list(hooks, :after_parse, content) do
+          content = classify_content(content, file, content_dir)
+          {:cont, [content | acc]}
+        else
           {:error, reason} ->
             {:halt, {:error, {:parse_error, file, reason}}}
         end
@@ -180,9 +185,11 @@ defmodule Sayfa.Builder do
   end
 
   defp render_and_write(contents, config) do
+    hooks = get_hooks()
+
     results =
       Enum.reduce_while(contents, 0, fn content, count ->
-        case render_and_write_one(content, config) do
+        case render_and_write_one(content, contents, hooks, config) do
           :ok -> {:cont, count + 1}
           {:error, _} = error -> {:halt, error}
         end
@@ -194,14 +201,20 @@ defmodule Sayfa.Builder do
     end
   end
 
-  defp render_and_write_one(content, config) do
-    case Template.render_content(content, config: config) do
+  defp render_and_write_one(content, all_contents, hooks, config) do
+    case Template.render_content(content, config: config, all_contents: all_contents) do
       {:ok, html} ->
-        output_path = output_path_for(content, config.output_dir)
-        dir = Path.dirname(output_path)
-        File.mkdir_p!(dir)
-        File.write!(output_path, html)
-        :ok
+        case run_hook_list(hooks, :after_render, {content, html}) do
+          {:ok, {_content, final_html}} ->
+            output_path = output_path_for(content, config.output_dir)
+            dir = Path.dirname(output_path)
+            File.mkdir_p!(dir)
+            File.write!(output_path, final_html)
+            :ok
+
+          {:error, _} = error ->
+            error
+        end
 
       {:error, _} = error ->
         error
@@ -231,22 +244,22 @@ defmodule Sayfa.Builder do
 
   # --- Archives (tags & categories) ---
 
-  defp build_archives(contents, config) do
-    with {:ok, tag_count} <- build_tag_archives(contents, config),
-         {:ok, cat_count} <- build_category_archives(contents, config) do
+  defp build_archives(all_contents, config) do
+    with {:ok, tag_count} <- build_tag_archives(all_contents, config),
+         {:ok, cat_count} <- build_category_archives(all_contents, config) do
       {:ok, tag_count + cat_count}
     end
   end
 
-  defp build_tag_archives(contents, config) do
-    tag_groups = Content.group_by_tag(contents)
+  defp build_tag_archives(all_contents, config) do
+    tag_groups = Content.group_by_tag(all_contents)
 
     results =
       Enum.reduce_while(tag_groups, 0, fn {tag, items}, count ->
         sorted = Content.sort_by_date(items)
         slug = Slug.slugify(tag)
 
-        case render_and_write_list(sorted, "Tagged: #{tag}", "/tags/#{slug}", config) do
+        case render_and_write_list(sorted, "Tagged: #{tag}", "/tags/#{slug}", all_contents, config) do
           :ok -> {:cont, count + 1}
           {:error, _} = error -> {:halt, error}
         end
@@ -258,15 +271,15 @@ defmodule Sayfa.Builder do
     end
   end
 
-  defp build_category_archives(contents, config) do
-    cat_groups = Content.group_by_category(contents)
+  defp build_category_archives(all_contents, config) do
+    cat_groups = Content.group_by_category(all_contents)
 
     results =
       Enum.reduce_while(cat_groups, 0, fn {category, items}, count ->
         sorted = Content.sort_by_date(items)
         slug = Slug.slugify(category)
 
-        case render_and_write_list(sorted, "Category: #{category}", "/categories/#{slug}", config) do
+        case render_and_write_list(sorted, "Category: #{category}", "/categories/#{slug}", all_contents, config) do
           :ok -> {:cont, count + 1}
           {:error, _} = error -> {:halt, error}
         end
@@ -280,12 +293,12 @@ defmodule Sayfa.Builder do
 
   # --- Content Type Indexes ---
 
-  defp build_type_indexes(contents, config) do
+  defp build_type_indexes(all_contents, config) do
     page_size = Map.get(config, :posts_per_page, 10)
 
     # Build an index for each content type that has content
     type_groups =
-      contents
+      all_contents
       |> Enum.group_by(fn c -> c.meta["content_type"] end)
       |> Enum.reject(fn {type, _} -> type == "pages" end)
 
@@ -302,7 +315,7 @@ defmodule Sayfa.Builder do
         base_path = "/#{url_prefix}"
         pages = Pagination.paginate(sorted, page_size: page_size, base_path: base_path)
 
-        case write_paginated_index(pages, url_prefix, config) do
+        case write_paginated_index(pages, url_prefix, all_contents, config) do
           {:ok, page_count} -> {:cont, total_count + page_count}
           {:error, _} = error -> {:halt, error}
         end
@@ -314,7 +327,7 @@ defmodule Sayfa.Builder do
     end
   end
 
-  defp write_paginated_index(pages, url_prefix, config) do
+  defp write_paginated_index(pages, url_prefix, all_contents, config) do
     results =
       Enum.reduce_while(pages, 0, fn page, count ->
         page_title = String.capitalize(url_prefix)
@@ -329,7 +342,8 @@ defmodule Sayfa.Builder do
                config: config,
                contents: page.items,
                page_title: page_title,
-               pagination: page
+               pagination: page,
+               all_contents: all_contents
              ) do
           {:ok, html} ->
             dir = Path.dirname(output_path)
@@ -470,7 +484,7 @@ defmodule Sayfa.Builder do
 
   # --- Shared List Rendering ---
 
-  defp render_and_write_list(contents, page_title, url_path, config) do
+  defp render_and_write_list(contents, page_title, url_path, all_contents, config) do
     output_path =
       Path.join([config.output_dir, String.trim_leading(url_path, "/"), "index.html"])
 
@@ -478,7 +492,8 @@ defmodule Sayfa.Builder do
            config: config,
            contents: contents,
            page_title: page_title,
-           pagination: nil
+           pagination: nil,
+           all_contents: all_contents
          ) do
       {:ok, html} ->
         dir = Path.dirname(output_path)
@@ -489,5 +504,37 @@ defmodule Sayfa.Builder do
       {:error, _} = error ->
         error
     end
+  end
+
+  # --- Hooks ---
+
+  defp get_hooks do
+    Application.get_env(:sayfa, :hooks, [])
+  end
+
+  defp run_hooks(contents, stage, _config) when is_list(contents) do
+    hooks = get_hooks()
+
+    Enum.reduce_while(contents, [], fn content, acc ->
+      case run_hook_list(hooks, stage, content) do
+        {:ok, updated} -> {:cont, [updated | acc]}
+        {:error, _} = error -> {:halt, error}
+      end
+    end)
+    |> case do
+      {:error, _} = error -> error
+      list -> {:ok, Enum.reverse(list)}
+    end
+  end
+
+  defp run_hook_list(hooks, stage, value) do
+    hooks
+    |> Enum.filter(fn mod -> mod.stage() == stage end)
+    |> Enum.reduce_while({:ok, value}, fn mod, {:ok, current} ->
+      case mod.run(current, %{}) do
+        {:ok, updated} -> {:cont, {:ok, updated}}
+        {:error, _} = error -> {:halt, error}
+      end
+    end)
   end
 end

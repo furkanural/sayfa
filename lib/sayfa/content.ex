@@ -250,6 +250,38 @@ defmodule Sayfa.Content do
   end
 
   @doc """
+  Reads a file and returns a `Sayfa.Content.Raw` struct without rendering Markdown.
+
+  This is used by the builder to allow hooks to modify the raw content
+  before Markdown rendering.
+
+  ## Examples
+
+      {:ok, raw} = Sayfa.Content.parse_raw_file("content/posts/hello.md")
+      raw.front_matter["title"]
+      #=> "Hello"
+
+  """
+  @spec parse_raw_file(String.t()) :: {:ok, Raw.t()} | {:error, term()}
+  def parse_raw_file(file_path) do
+    case File.read(file_path) do
+      {:ok, raw_string} ->
+        with {:ok, front_matter, body_markdown} <- split_front_matter(raw_string) do
+          {:ok,
+           %Raw{
+             path: file_path,
+             front_matter: front_matter,
+             body_markdown: body_markdown,
+             filename: Path.basename(file_path)
+           }}
+        end
+
+      {:error, reason} ->
+        {:error, {:file_read_error, file_path, reason}}
+    end
+  end
+
+  @doc """
   Reads and parses a content file from disk.
 
   ## Examples

@@ -358,6 +358,53 @@ defmodule Sayfa.BuilderTest do
     end
   end
 
+  describe "block integration" do
+    test "block helper renders in templates", ctx do
+      # Create a custom layout directory with a layout that uses @block
+      layouts_dir = Path.join(ctx.tmp_dir, "layouts")
+      File.mkdir_p!(layouts_dir)
+
+      # Copy base template from default theme
+      default_base = Sayfa.Config.default_theme_path("layouts/base.html.eex")
+      File.cp!(default_base, Path.join(layouts_dir, "base.html.eex"))
+
+      # Create a home layout that uses the hero block
+      File.write!(Path.join(layouts_dir, "home.html.eex"), """
+      <%= @block.(:hero, title: "Welcome", subtitle: "Test Site") %>
+      <div class="content">
+        <%= @inner_content %>
+      </div>
+      """)
+
+      # Also need page layout as fallback
+      default_page = Sayfa.Config.default_theme_path("layouts/page.html.eex")
+      File.cp!(default_page, Path.join(layouts_dir, "page.html.eex"))
+
+      File.write!(Path.join(ctx.pages_dir, "index.md"), """
+      ---
+      title: "Home"
+      layout: home
+      ---
+      Welcome to my site.
+      """)
+
+      # Build and render, then manually verify via Template since Builder uses theme resolution
+      {:ok, content} = Sayfa.Content.parse_file(Path.join(ctx.pages_dir, "index.md"))
+      content = %{content | meta: Map.put(content.meta, "layout", "home")}
+      config = Sayfa.Config.resolve([])
+
+      {:ok, html} = Sayfa.Template.render_content(content,
+        config: config,
+        layouts_dir: layouts_dir,
+        all_contents: []
+      )
+
+      assert html =~ "<section class=\"hero\">"
+      assert html =~ "Welcome"
+      assert html =~ "Test Site"
+    end
+  end
+
   describe "clean/1" do
     test "removes the output directory", ctx do
       File.mkdir_p!(ctx.output_dir)

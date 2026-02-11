@@ -90,7 +90,16 @@ defmodule Sayfa.Template do
   def render_content(%Sayfa.Content{} = content, opts) do
     config = Keyword.fetch!(opts, :config)
     layouts_dir = Keyword.get(opts, :layouts_dir, Sayfa.Config.theme_layouts_dir(config))
-    block_fn = fn _name, _opts -> "" end
+    all_contents = Keyword.get(opts, :all_contents, [])
+    lang = content.lang || config.default_lang
+
+    block_fn =
+      Sayfa.Block.build_helper(
+        site: config,
+        content: content,
+        contents: all_contents,
+        lang: lang
+      )
 
     layout_name = resolve_layout(content)
     layout_path = Path.join(layouts_dir, "#{layout_name}.html.eex")
@@ -108,7 +117,7 @@ defmodule Sayfa.Template do
       site: config,
       content: content,
       page_title: content.title,
-      lang: content.lang || config.default_lang,
+      lang: lang,
       block: block_fn
     ]
 
@@ -142,7 +151,15 @@ defmodule Sayfa.Template do
     contents = Keyword.fetch!(opts, :contents)
     page_title = Keyword.fetch!(opts, :page_title)
     pagination = Keyword.get(opts, :pagination)
-    block_fn = fn _name, _opts -> "" end
+    all_contents = Keyword.get(opts, :all_contents, [])
+
+    block_fn =
+      Sayfa.Block.build_helper(
+        site: config,
+        content: nil,
+        contents: all_contents,
+        lang: config.default_lang
+      )
 
     list_path = Path.join(layouts_dir, "list.html.eex")
     base_path = Path.join(layouts_dir, "base.html.eex")
