@@ -237,12 +237,7 @@ defmodule Sayfa.Builder do
     relative = Path.relative_to(file_path, content_dir)
 
     # Detect language from path (e.g., "tr/posts/hello.md" → {:tr, "posts/hello.md"})
-    {lang, lang_stripped_path} =
-      if map_size(config) > 0 do
-        I18n.detect_language(relative, config)
-      else
-        {content.lang || :en, relative}
-      end
+    {lang, lang_stripped_path} = I18n.detect_language(relative, config)
 
     parts = Path.split(lang_stripped_path)
 
@@ -252,12 +247,7 @@ defmodule Sayfa.Builder do
         _ -> "pages"
       end
 
-    lang_prefix =
-      if map_size(config) > 0 do
-        I18n.language_prefix(lang, config)
-      else
-        ""
-      end
+    lang_prefix = I18n.language_prefix(lang, config)
 
     meta =
       content.meta

@@ -41,14 +41,64 @@ defmodule Sayfa.MixProject do
   defp docs do
     [
       main: "Sayfa",
-      extras: ["README.md"]
+      homepage_url: @source_url,
+      extras: [
+        "README.md",
+        "CHANGELOG.md",
+        "CONTRIBUTING.md",
+        "LICENSE"
+      ],
+      groups_for_modules: [
+        Core: [Sayfa, Sayfa.Builder, Sayfa.Config, Sayfa.Content, Sayfa.Content.Raw],
+        "Content Types": [
+          Sayfa.ContentTypes.Post,
+          Sayfa.ContentTypes.Note,
+          Sayfa.ContentTypes.Project,
+          Sayfa.ContentTypes.Talk,
+          Sayfa.ContentTypes.Page
+        ],
+        "Templates & Blocks": [Sayfa.Template, Sayfa.Theme, Sayfa.Block],
+        Blocks: [
+          Sayfa.Blocks.Hero,
+          Sayfa.Blocks.Header,
+          Sayfa.Blocks.Footer,
+          Sayfa.Blocks.SocialLinks,
+          Sayfa.Blocks.Toc,
+          Sayfa.Blocks.RecentPosts,
+          Sayfa.Blocks.TagCloud,
+          Sayfa.Blocks.ReadingTime,
+          Sayfa.Blocks.CodeCopy
+        ],
+        Features: [
+          Sayfa.Feed,
+          Sayfa.Sitemap,
+          Sayfa.SEO,
+          Sayfa.Pagination,
+          Sayfa.ReadingTime,
+          Sayfa.Toc,
+          Sayfa.I18n,
+          Sayfa.Markdown
+        ],
+        Behaviours: [
+          Sayfa.Behaviours.Block,
+          Sayfa.Behaviours.Hook,
+          Sayfa.Behaviours.ContentType
+        ],
+        "Dev Server": [
+          Sayfa.DevServer.Supervisor,
+          Sayfa.DevServer.Plug,
+          Sayfa.DevServer.Watcher,
+          Sayfa.DevServer.Rebuilder
+        ]
+      ]
     ]
   end
 
   defp package do
     [
       licenses: ["MIT"],
-      links: %{"GitHub" => @source_url}
+      links: %{"GitHub" => @source_url},
+      files: ~w(lib priv .formatter.exs mix.exs README.md LICENSE CHANGELOG.md)
     ]
   end
 end

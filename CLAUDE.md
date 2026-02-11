@@ -1,37 +1,33 @@
 # CLAUDE.md - Sayfa Project Guidelines
 
-This file provides context for Claude Code when working on the Sayfa project.
-
 ## Project Overview
 
-**Sayfa** (Turkish for "page") is an open-source static site generator built in Elixir. It follows a two-layer architecture:
+**Sayfa** (Turkish for "page") is an open-source static site generator built in Elixir (v0.1.0). It follows a two-layer architecture:
 
-1. **Sayfa (this package)** - Reusable Hex package with core SSG functionality
-2. **User sites** - Projects that depend on Sayfa via `{:sayfa, "~> x.x"}`
+1. **Sayfa (this package)** — Reusable Hex package with core SSG functionality
+2. **User sites** — Projects that depend on Sayfa via `{:sayfa, "~> x.x"}`
 
-### Primary Goals
-- Learn Elixir through building a real project
-- Create a simple, extensible SSG tool
-- Ship something usable quickly
-- Allow others to build their own sites with Sayfa
+Goals: Learn Elixir, create a simple/extensible SSG, ship something usable, allow others to build sites with Sayfa.
 
 ## Requirements
 
-| Requirement | Version | Notes |
-|-------------|---------|-------|
-| Elixir | ~> 1.18 | Latest features |
-| OTP | 27+ | Required by Elixir 1.18 |
-| Rust | Latest stable | Required for MDEx NIF compilation |
+| Requirement | Version | Source |
+|-------------|---------|--------|
+| Elixir | 1.19.5 | `mise.toml` |
+| OTP | 28 | `mise.toml` |
+| Rust | 1.93.0 (stable) | `mise.toml` — required for MDEx NIF |
 
 ## Tech Stack
 
 | Component | Library | Notes |
 |-----------|---------|-------|
-| Markdown | MDEx | Rust NIF, fast, built-in syntax highlighting. **No fallback** - Rust is required. |
+| Markdown | MDEx | Rust NIF, fast, built-in syntax highlighting |
 | Front matter | YamlElixir | YAML parsing |
 | Templates | EEx | Built-in Elixir templating |
-| CSS | TailwindCSS CLI | Standalone, no Node.js |
-| Search | Pagefind | Post-build indexing |
+| Slugs | Slugify | URL slug generation |
+| XML | XmlBuilder | RSS/Atom feeds, sitemap |
+| Dev server | Plug + Cowboy | Optional dependency |
+| File watching | FileSystem | Optional dependency |
 
 ## Project Structure
 
@@ -40,24 +36,28 @@ sayfa/
 ├── lib/
 │   ├── sayfa.ex                    # Main public API
 │   ├── sayfa/
-│   │   ├── builder.ex              # Core build pipeline
-│   │   ├── content.ex              # Content loading/parsing
+│   │   ├── builder.ex              # Core build pipeline orchestration
+│   │   ├── config.ex               # Configuration handling
+│   │   ├── content.ex              # Content loading/parsing → Content struct
 │   │   ├── content/
-│   │   │   └── raw.ex              # Raw parsed content struct
+│   │   │   └── raw.ex              # Raw parsed content struct (intermediate)
+│   │   ├── content_type.ex         # Content type registry & routing
 │   │   ├── markdown.ex             # MDEx wrapper
 │   │   ├── template.ex             # EEx rendering
-│   │   ├── feed.ex                 # RSS generation
+│   │   ├── theme.ex                # Theme loading & inheritance
+│   │   ├── block.ex                # Block registry (name → module lookup)
+│   │   ├── feed.ex                 # RSS/Atom generation
 │   │   ├── sitemap.ex              # Sitemap generation
+│   │   ├── seo.ex                  # SEO meta tags
+│   │   ├── pagination.ex           # Pagination support
+│   │   ├── reading_time.ex         # Reading time calculation
+│   │   ├── toc.ex                  # Table of contents extraction
 │   │   ├── i18n.ex                 # Multilingual support
-│   │   ├── config.ex               # Configuration handling
-│   │   ├── theme.ex                # Theme loading
 │   │   │
 │   │   ├── behaviours/             # Extension contracts
-│   │   │   ├── block.ex
-│   │   │   ├── hook.ex
-│   │   │   └── content_type.ex
-│   │   │
-│   │   ├── block_registry.ex       # Block name → module lookup
+│   │   │   ├── block.ex            # Block behaviour
+│   │   │   ├── hook.ex             # Hook behaviour
+│   │   │   └── content_type.ex     # Content type behaviour
 │   │   │
 │   │   ├── blocks/                 # Built-in blocks (reusable EEx components)
 │   │   │   ├── hero.ex
@@ -70,21 +70,28 @@ sayfa/
 │   │   │   ├── reading_time.ex
 │   │   │   └── code_copy.ex
 │   │   │
-│   │   └── content_types/          # Built-in content types
-│   │       ├── post.ex
-│   │       ├── note.ex
-│   │       ├── project.ex
-│   │       ├── talk.ex
-│   │       └── page.ex
+│   │   ├── content_types/          # Built-in content types
+│   │   │   ├── post.ex
+│   │   │   ├── note.ex
+│   │   │   ├── project.ex
+│   │   │   ├── talk.ex
+│   │   │   └── page.ex
+│   │   │
+│   │   └── dev_server/             # Development server
+│   │       ├── supervisor.ex       # Supervision tree
+│   │       ├── plug.ex             # HTTP request handling
+│   │       ├── watcher.ex          # File system watcher
+│   │       └── rebuilder.ex        # Incremental rebuild on change
 │   │
 │   └── mix/tasks/                  # CLI commands
-│       ├── sayfa.new.ex
-│       ├── sayfa.build.ex
-│       └── sayfa.serve.ex
+│       ├── sayfa.new.ex            # Project generator
+│       ├── sayfa.build.ex          # Build site
+│       └── sayfa.serve.ex          # Dev server
 │
 ├── priv/
-│   ├── templates/new_site/         # mix sayfa.new template
-│   └── default_theme/              # Default theme files
+│   ├── templates/new_site/         # mix sayfa.new scaffolding
+│   └── default_theme/
+│       └── layouts/                # base, home, list, page, post
 │
 └── test/
 ```
@@ -96,229 +103,147 @@ sayfa/
 - Behaviours: `Sayfa.Behaviours.BehaviourName`
 - Blocks: `Sayfa.Blocks.BlockName`
 - Content types: `Sayfa.ContentTypes.TypeName`
+- Dev server: `Sayfa.DevServer.ModuleName`
 - Mix tasks: `Mix.Tasks.Sayfa.TaskName`
 
 ### Function Naming
-- Use `!` suffix for functions that raise on error: `parse!`, `build!`
-- Use `?` suffix for boolean functions: `draft?`, `published?`
+- `!` suffix for functions that raise: `parse!`, `build!`
+- `?` suffix for boolean functions: `draft?`, `published?`
 - Prefer `verb_noun` pattern: `parse_content`, `render_template`, `build_site`
 
 ### Documentation
 - Every public module needs `@moduledoc`
-- Every public function needs `@doc` with examples
+- Every public function needs `@doc` with `## Examples`
 - Add `@spec` typespecs to all public functions
-- Use `## Examples` section in docs
-
-```elixir
-@doc """
-Parses markdown content with front matter.
-
-## Examples
-
-    iex> Sayfa.Content.parse("---\\ntitle: Hello\\n---\\n# World")
-    {:ok, %Sayfa.Content{title: "Hello", body: "<h1>World</h1>"}}
-
-"""
-@spec parse(String.t()) :: {:ok, Content.t()} | {:error, term()}
-def parse(markdown) do
-  # ...
-end
-```
 
 ### Error Handling
 - Return `{:ok, result}` or `{:error, reason}` tuples
 - Provide `!` variants that raise for convenience
 - Use custom exception modules for specific errors
 
-```elixir
-defmodule Sayfa.ParseError do
-  defexception [:message, :file, :line]
-end
-```
-
 ### Structs
 - Define structs with `@enforce_keys` for required fields
 - Add `@type t` for the struct type
 - Use `defstruct` with default values
 
-```elixir
-defmodule Sayfa.Content do
-  @enforce_keys [:title, :body]
-  defstruct [
-    :title,
-    :body,
-    :date,
-    :slug,
-    :lang,
-    :source_path,
-    categories: [],
-    tags: [],
-    draft: false,
-    meta: %{}  # Catch-all for custom front matter fields
-  ]
-
-  @type t :: %__MODULE__{
-    title: String.t(),
-    body: String.t(),
-    date: Date.t() | nil,
-    slug: String.t() | nil,
-    lang: atom(),
-    source_path: String.t() | nil,
-    categories: [String.t()],
-    tags: [String.t()],
-    draft: boolean(),
-    meta: map()
-  }
-end
-
-# Raw struct for intermediate parsing (before markdown rendering)
-defmodule Sayfa.Content.Raw do
-  @enforce_keys [:path, :front_matter, :body_markdown]
-  defstruct [:path, :front_matter, :body_markdown, :filename]
-
-  @type t :: %__MODULE__{
-    path: String.t(),
-    front_matter: map(),
-    body_markdown: String.t(),
-    filename: String.t() | nil
-  }
-end
-```
-
 ## Key Design Patterns
 
 ### Content Pipeline
+
 Content flows through these stages:
-1. **Load** - Read files from disk
-2. **Parse** - Extract front matter + markdown → `Sayfa.Content.Raw`
-3. **Transform** - Apply hooks, generate slugs, render markdown → `Sayfa.Content`
-4. **Render** - Apply EEx templates
-5. **Write** - Output to disk
+
+1. **Load** — Read files from disk
+2. **Parse** — Extract front matter + markdown → `Sayfa.Content.Raw`
+3. **Transform** — Apply hooks, generate slugs, render markdown → `Sayfa.Content`
+4. **Render** — Apply EEx templates (layout → base)
+5. **Write** — Output to disk
 
 ### Two-Struct Design (Raw → Content)
 
-The content parsing uses two structs for a cleaner pipeline:
-
-1. **`Sayfa.Content.Raw`** - Intermediate representation after file parsing
-   - Contains: path, front_matter (map), body_markdown (string), filename
-   - Used for: Hooks that need raw markdown, caching, lazy rendering
-
-2. **`Sayfa.Content`** - Final content ready for templates
-   - Contains: title, body (HTML), date, slug, tags, categories, meta
-   - Used for: Template rendering, collections, queries
+- **`Sayfa.Content.Raw`** — Intermediate: path, front_matter (map), body_markdown (string), filename
+- **`Sayfa.Content`** — Final: title, body (HTML), date, slug, tags, categories, meta
 
 This separation allows hooks to modify content before markdown rendering.
 
-### Block System (Reusable EEx Components)
+### Block System
 
-Blocks replace the original "widgets" concept. A block is a reusable EEx component invoked via a helper function injected into template assigns.
-
-**How it works:**
-1. Blocks implement `Sayfa.Behaviours.Block` with `name/0` and `render/1` callbacks
-2. `Sayfa.BlockRegistry` maps atom names → block modules
-3. A `@block` function is injected into every template's assigns, closing over the registry and site context
-4. Templates call: `<%= @block.(:hero, title: "Welcome", subtitle: "My blog") %>`
-5. The function looks up the module, merges site context with caller opts, calls `render/1`, returns HTML
+`Sayfa.Block` maps atom names → block modules. A `@block` function is injected into every template's assigns.
 
 ```elixir
-# In a template:
+# In templates:
 <%= @block.(:hero, title: "Welcome") %>
 <%= @block.(:recent_posts, limit: 5) %>
-
-# Block implementation:
-defmodule Sayfa.Blocks.Hero do
-  @behaviour Sayfa.Behaviours.Block
-  def name, do: :hero
-  def render(assigns) do
-    # Return HTML string using EEx or string interpolation
-  end
-end
 ```
 
-### Layout Composition (Three-Layer Rendering)
+Blocks implement `Sayfa.Behaviours.Block` with `name/0` and `render/1` callbacks.
+
+### Layout Composition (Three-Layer)
 
 1. **Content body** — markdown rendered to HTML
-2. **Layout template** — wraps content, places blocks (e.g., `home.html.eex`, `post.html.eex`)
-3. **Base template** — HTML shell (`<html>`, `<head>`, etc.), inserts `@inner_content`
+2. **Layout template** — wraps content, places blocks (selected via `layout:` front matter)
+3. **Base template** — HTML shell (`<html>`, `<head>`), inserts `@inner_content`
 
-A page selects its layout via front matter:
-```yaml
----
-title: "Welcome"
-layout: home
----
-```
-
-Each layout uses different block combinations:
-- `home.html.eex` → hero + recent_posts + tag_cloud
-- `post.html.eex` → reading_time + toc + content + social_links
-- `about.html.eex` → content only (minimal)
-- `list.html.eex` → pagination + post cards
-- `page.html.eex` → generic page wrapper
-
-Users can create custom layouts in their theme directory.
+Available layouts: `home`, `post`, `page`, `list` (plus custom user layouts).
 
 ### Behaviours for Extensibility
-Users extend Sayfa by implementing behaviours:
 
-```elixir
-# Block behaviour
-defmodule Sayfa.Behaviours.Block do
-  @callback name() :: atom()
-  @callback render(assigns :: map()) :: String.t()
-end
-
-# Hook behaviour
-defmodule Sayfa.Behaviours.Hook do
-  @callback stage() :: :before_parse | :after_parse | :before_render | :after_render
-  @callback run(content :: term(), opts :: map()) :: {:ok, term()} | {:error, term()}
-end
-```
+- `Sayfa.Behaviours.Block` — `name/0`, `render/1`
+- `Sayfa.Behaviours.Hook` — `stage/0`, `run/2` (stages: `:before_parse`, `:after_parse`, `:before_render`, `:after_render`)
+- `Sayfa.Behaviours.ContentType` — content type contracts
 
 ### Configuration
-Site config lives in user's `config/site.exs`:
 
-```elixir
-config :my_site, :sayfa,
-  title: "My Site",
-  base_url: "https://example.com",
-  # ...
+Site config lives in user's `config/site.exs`, accessed via `Sayfa.Config.get/1`.
+
+## Development Workflow
+
+### Before Committing
+
+All four must pass before committing:
+
+```bash
+mix compile --warnings-as-errors
+mix format --check-formatted
+mix credo --strict
+mix test
 ```
 
-Access via `Sayfa.Config.get/1`:
-
-```elixir
-title = Sayfa.Config.get(:title)
-```
-
-## Common Tasks
+These are the same checks CI runs. Fix any issues before pushing.
 
 ### Running Tests
+
 ```bash
-mix test                    # Run all tests
-mix test test/sayfa/content_test.exs  # Run specific file
-mix test --cover            # With coverage
+mix test                              # All tests
+mix test test/sayfa/content_test.exs  # Specific file
+mix test --cover                      # With coverage
+```
+
+### Linting
+
+```bash
+mix format            # Auto-format
+mix credo --strict    # Static analysis
 ```
 
 ### Building Documentation
+
 ```bash
 mix docs
 open doc/index.html
 ```
 
-### Linting
+### Dev Server
+
 ```bash
-mix credo --strict
-mix format --check-formatted
+mix sayfa.serve  # Starts dev server with file watching + hot reload
 ```
 
-### Local Development
-```bash
-# In a test site directory
-mix deps.get
-mix sayfa.build
-mix sayfa.serve  # If implemented
-```
+The dev server is built on `Sayfa.DevServer.Supervisor` which manages:
+- `Sayfa.DevServer.Plug` — HTTP request handling via Plug/Cowboy
+- `Sayfa.DevServer.Watcher` — File system monitoring
+- `Sayfa.DevServer.Rebuilder` — Incremental rebuilds on file changes
+
+## CI/CD
+
+### GitHub Actions
+
+**CI** (`.github/workflows/ci.yml`) — Runs on push/PR to `main`:
+1. Setup Rust 1.93.0, Elixir 1.19.5/OTP 28
+2. Cache deps and `_build`
+3. `mix compile --warnings-as-errors`
+4. `mix format --check-formatted`
+5. `mix credo --strict`
+6. `mix test`
+
+**Release** (`.github/workflows/release.yml`) — Runs on `v*` tags:
+1. Setup Rust + Elixir/OTP
+2. `mix hex.publish --yes` (requires `HEX_API_KEY` secret)
+
+### Dependabot
+
+Configured in `.github/dependabot.yml` — weekly updates for:
+- Mix dependencies
+- GitHub Actions
 
 ## URL Conventions
 
@@ -331,7 +256,7 @@ mix sayfa.serve  # If implemented
 | Pages | `/{slug}/` |
 | Turkish | `/tr/posts/{slug}/` |
 
-**No dates in URLs** - keeps them clean and evergreen.
+No dates in URLs — keeps them clean and evergreen.
 
 ## Front Matter Schema
 
@@ -354,46 +279,11 @@ layout: custom_layout             # Optional
 
 ## Testing Guidelines
 
-### Unit Tests
-- Test each module in isolation
+- Test each module in isolation with `async: true`
 - Mock external dependencies (file system, MDEx)
 - Use doctest for simple examples
-
-```elixir
-defmodule Sayfa.ContentTest do
-  use ExUnit.Case, async: true
-  doctest Sayfa.Content
-
-  describe "parse/1" do
-    test "extracts front matter" do
-      # ...
-    end
-
-    test "returns error for invalid YAML" do
-      # ...
-    end
-  end
-end
-```
-
-### Integration Tests
-- Test full build pipeline
-- Use temporary directories
-- Clean up after tests
-
-```elixir
-defmodule Sayfa.BuilderIntegrationTest do
-  use ExUnit.Case
-
-  @tmp_dir "test/tmp"
-
-  setup do
-    File.mkdir_p!(@tmp_dir)
-    on_exit(fn -> File.rm_rf!(@tmp_dir) end)
-    :ok
-  end
-end
-```
+- Integration tests use temporary directories with `on_exit` cleanup
+- Follow `describe "function/arity"` → `test "specific case"` structure
 
 ## Git Workflow
 
@@ -403,140 +293,33 @@ end
 - `docs/what-changed`
 
 ### Commit Messages
-Follow conventional commits:
-- `feat: add RSS feed generation`
-- `fix: handle empty front matter`
-- `docs: add widget examples`
-- `refactor: simplify build pipeline`
-- `test: add content parser tests`
+Follow conventional commits: `feat:`, `fix:`, `docs:`, `refactor:`, `test:`, `style:`, `chore:`
 
 ## Dependencies
 
-### Phase 1 (minimal)
+From `mix.exs`:
+
 ```elixir
-{:mdex, "~> 0.2"},            # Markdown parsing (check hex.pm for latest)
-{:yaml_elixir, "~> 2.9"},     # YAML front matter
+# Core
+{:mdex, "~> 0.2"},                                      # Markdown (Rust NIF)
+{:yaml_elixir, "~> 2.9"},                               # YAML front matter
+{:slugify, "~> 1.3"},                                   # URL slugs
+{:xml_builder, "~> 2.2"},                               # RSS/Sitemap XML
+
+# Optional
+{:plug_cowboy, "~> 2.7", optional: true},               # Dev server
+{:file_system, "~> 1.0", optional: true},               # File watching
+
+# Dev/Test only
+{:ex_doc, "~> 0.34", only: :dev, runtime: false},       # Documentation
+{:credo, "~> 1.7", only: [:dev, :test], runtime: false}  # Linting
 ```
-
-### Phase 2+
-```elixir
-{:slugify, "~> 1.3"},         # URL slugs
-{:timex, "~> 3.7"},           # Date handling
-{:xml_builder, "~> 2.2"},     # RSS/Sitemap XML
-```
-
-### Dev dependencies (all phases)
-```elixir
-{:ex_doc, "~> 0.34", only: :dev, runtime: false},
-{:credo, "~> 1.7", only: [:dev, :test], runtime: false},
-```
-
-### Later phases
-```elixir
-{:file_system, "~> 1.0"},     # File watching (Phase 5)
-{:plug_cowboy, "~> 2.6"},     # Dev server (Phase 5)
-{:image, "~> 0.37"},          # Image optimization (Phase 4)
-```
-
-## Performance Considerations
-
-- Use `Stream` for processing large numbers of files
-- Cache parsed content during dev server
-- MDEx is already fast (Rust NIF)
-- Pagefind runs post-build, doesn't affect build time
 
 ## Common Gotchas
 
-1. **MDEx requires Rust** - Users need Rust installed for NIF compilation
-2. **EEx templates** - Remember to use `<%= %>` for output, `<% %>` for logic
-3. **File paths** - Use `Path.join/2` for cross-platform compatibility
-4. **Front matter dates** - YamlElixir returns Date structs, not strings
-5. **Slug generation** - Handle Unicode properly with Slugify
-
-## Asking for Help
-
-When stuck, provide:
-1. The error message (full stack trace)
-2. The relevant code
-3. What you expected to happen
-4. What actually happened
-
-## Phase Status
-
-Track implementation progress:
-- [x] Phase 1: Core Parsing
-  - [x] Create Elixir project with mix
-  - [x] Configure mix.exs (mdex, yaml_elixir, ex_doc, credo)
-  - [x] Implement Sayfa.Markdown (MDEx wrapper)
-  - [x] Implement Sayfa.Content.Raw struct
-  - [x] Implement Sayfa.Content (parsing + rendering)
-  - [x] Implement Sayfa main module (public API)
-  - [x] Write unit tests
-- [x] Phase 2: Build Pipeline
-  - [x] Implement Sayfa.Config
-  - [x] Implement Sayfa.Template (EEx rendering, @block stub)
-  - [x] Create default theme layouts (base, post, page, list, home)
-  - [x] Implement Sayfa.Builder (orchestration)
-  - [x] Implement mix sayfa.build task
-  - [x] Write integration tests
-- [x] Phase 3: Content Types & Organization
-  - [x] Content type behaviour + built-in types (post, note, project, talk, page)
-  - [x] Layout selection system (front matter → default_layout → content type fallback)
-  - [x] Categories and tags (archive pages)
-  - [x] Pagination
-  - [x] Collections API (filter, sort, recent, group)
-- [x] Phase 4: Features & Feeds
-  - [x] RSS/Atom feeds
-  - [x] Sitemap generation
-  - [x] Pagefind search integration
-  - [x] SEO meta tags
-  - [x] Reading time calculation
-  - [x] Table of contents extraction
-- [x] Phase 5 (Core): Extensibility & Blocks
-  - [x] Block behaviour + BlockRegistry
-  - [x] @block helper integration in templates
-  - [x] Built-in blocks (hero, recent_posts, tag_cloud, social_links, toc, reading_time, code_copy, header, footer)
-  - [x] Hook behaviour (before/after parse/render)
-  - [x] Theme system (loading, inheritance)
-  - [x] Multilingual support (i18n)
-  - [x] Project generator (mix sayfa.new)
-- [x] Phase 6: Developer Experience
-  - [x] Dev server (mix sayfa.serve)
-  - [x] File watching + hot reload
-  - [x] Draft preview mode
-  - [x] Build caching
-  - [x] Verbose logging + error messages
-
-## Verification Commands
-
-### Phase 1a Verification
-```bash
-mix deps.get
-mix compile
-mix test
-
-# Manual test in IEx
-iex -S mix
-iex> Sayfa.Markdown.render("# Hello **World**")
-{:ok, "<h1>Hello <strong>World</strong></h1>\n"}
-
-iex> Sayfa.Content.parse("---\\ntitle: Test\\n---\\n# Hello")
-{:ok, %Sayfa.Content{title: "Test", body: "<h1>Hello</h1>\n", ...}}
-```
-
-### Phase 1b Verification
-```bash
-# Create test content
-mkdir -p test_site/content/posts
-echo '---\ntitle: "Hello"\n---\n# Hello World' > test_site/content/posts/hello.md
-
-# Build
-mix sayfa.build --source test_site --output test_site/output
-
-# Verify output
-cat test_site/output/posts/hello/index.html
-```
-
----
-
-*This file helps Claude Code understand Sayfa's architecture and conventions. Update it as the project evolves.*
+1. **MDEx requires Rust** — Users need Rust installed for NIF compilation
+2. **EEx templates** — Use `<%= %>` for output, `<% %>` for logic
+3. **File paths** — Use `Path.join/2` for cross-platform compatibility
+4. **Front matter dates** — YamlElixir returns Date structs, not strings
+5. **Slug generation** — Handle Unicode properly with Slugify
+6. **Optional deps** — `plug_cowboy` and `file_system` are optional; dev server features require them
