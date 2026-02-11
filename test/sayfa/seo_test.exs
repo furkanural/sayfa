@@ -2,8 +2,8 @@ defmodule Sayfa.SEOTest do
   use ExUnit.Case, async: true
   doctest Sayfa.SEO
 
-  alias Sayfa.SEO
   alias Sayfa.Content
+  alias Sayfa.SEO
 
   @config %{title: "My Site", base_url: "https://example.com", description: "A great blog"}
 

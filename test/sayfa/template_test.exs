@@ -1,8 +1,8 @@
 defmodule Sayfa.TemplateTest do
   use ExUnit.Case, async: true
 
-  alias Sayfa.Template
   alias Sayfa.Content
+  alias Sayfa.Template
 
   describe "render_string/2" do
     test "renders EEx with assigns" do

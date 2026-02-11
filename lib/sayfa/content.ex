@@ -365,27 +365,28 @@ defmodule Sayfa.Content do
   # --- Private Functions ---
 
   defp split_front_matter(raw_string) do
-    case String.split(raw_string, ~r/\n---\s*\n/, parts: 2) do
-      [maybe_front_matter, body] ->
-        case String.trim_leading(maybe_front_matter) do
-          "---" <> yaml_string ->
-            case YamlElixir.read_from_string(yaml_string) do
-              {:ok, front_matter} when is_map(front_matter) ->
-                {:ok, front_matter, String.trim(body)}
+    with [maybe_front_matter, body] <- split_on_delimiter(raw_string),
+         "---" <> yaml_string <- String.trim_leading(maybe_front_matter) do
+      parse_yaml_front_matter(yaml_string, body)
+    else
+      _ -> {:error, :missing_front_matter}
+    end
+  end
 
-              {:ok, _} ->
-                {:error, :invalid_front_matter}
+  defp split_on_delimiter(raw_string) do
+    String.split(raw_string, ~r/\n---\s*\n/, parts: 2)
+  end
 
-              {:error, reason} ->
-                {:error, {:yaml_parse_error, reason}}
-            end
+  defp parse_yaml_front_matter(yaml_string, body) do
+    case YamlElixir.read_from_string(yaml_string) do
+      {:ok, front_matter} when is_map(front_matter) ->
+        {:ok, front_matter, String.trim(body)}
 
-          _ ->
-            {:error, :missing_front_matter}
-        end
+      {:ok, _} ->
+        {:error, :invalid_front_matter}
 
-      _ ->
-        {:error, :missing_front_matter}
+      {:error, reason} ->
+        {:error, {:yaml_parse_error, reason}}
     end
   end
 

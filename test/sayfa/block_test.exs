@@ -2,6 +2,16 @@ defmodule Sayfa.BlockTest do
   use ExUnit.Case, async: true
 
   alias Sayfa.Block
+  alias Sayfa.Blocks.CodeCopy
+  alias Sayfa.Blocks.Footer
+  alias Sayfa.Blocks.Header
+  alias Sayfa.Blocks.Hero
+  alias Sayfa.Blocks.ReadingTime, as: ReadingTimeBlock
+  alias Sayfa.Blocks.RecentPosts
+  alias Sayfa.Blocks.SocialLinks
+  alias Sayfa.Blocks.TagCloud
+  alias Sayfa.Blocks.TOC, as: TOCBlock
+  alias Sayfa.Content
 
   describe "default_blocks/0" do
     test "returns 9 built-in blocks" do
@@ -24,7 +34,7 @@ defmodule Sayfa.BlockTest do
 
   describe "find_by_name/1" do
     test "finds hero block" do
-      assert Block.find_by_name(:hero) == Sayfa.Blocks.Hero
+      assert Block.find_by_name(:hero) == Hero
     end
 
     test "finds all built-in blocks by name" do
@@ -93,37 +103,37 @@ defmodule Sayfa.BlockTest do
 
   # --- Individual Block Tests ---
 
-  describe "Sayfa.Blocks.Hero" do
+  describe "Hero" do
     test "renders with title and subtitle" do
-      html = Sayfa.Blocks.Hero.render(%{title: "Hello", subtitle: "World"})
+      html = Hero.render(%{title: "Hello", subtitle: "World"})
       assert html =~ "<section class=\"hero\">"
       assert html =~ "<h1>Hello</h1>"
       assert html =~ "<p>World</p>"
     end
 
     test "renders without subtitle" do
-      html = Sayfa.Blocks.Hero.render(%{title: "Hello"})
+      html = Hero.render(%{title: "Hello"})
       assert html =~ "<h1>Hello</h1>"
       refute html =~ "<p>"
     end
 
     test "escapes HTML in title" do
-      html = Sayfa.Blocks.Hero.render(%{title: "<script>xss</script>"})
+      html = Hero.render(%{title: "<script>xss</script>"})
       assert html =~ "&lt;script&gt;"
       refute html =~ "<script>xss"
     end
   end
 
-  describe "Sayfa.Blocks.Header" do
+  describe "Header" do
     test "renders with site title" do
-      html = Sayfa.Blocks.Header.render(%{site: %{title: "My Blog"}})
+      html = Header.render(%{site: %{title: "My Blog"}})
       assert html =~ "<header>"
       assert html =~ "My Blog"
     end
 
     test "renders with navigation" do
       html =
-        Sayfa.Blocks.Header.render(%{
+        Header.render(%{
           site: %{title: "Blog"},
           nav: [{"Home", "/"}, {"About", "/about/"}]
         })
@@ -134,34 +144,34 @@ defmodule Sayfa.BlockTest do
     end
 
     test "renders without navigation" do
-      html = Sayfa.Blocks.Header.render(%{site: %{title: "Blog"}})
+      html = Header.render(%{site: %{title: "Blog"}})
       refute html =~ "<nav>"
     end
   end
 
-  describe "Sayfa.Blocks.Footer" do
+  describe "Footer" do
     test "renders with year and author" do
-      html = Sayfa.Blocks.Footer.render(%{year: 2024, author: "Jane"})
+      html = Footer.render(%{year: 2024, author: "Jane"})
       assert html =~ "<footer>"
       assert html =~ "2024"
       assert html =~ "Jane"
     end
 
     test "falls back to site author" do
-      html = Sayfa.Blocks.Footer.render(%{site: %{author: "Site Author"}})
+      html = Footer.render(%{site: %{author: "Site Author"}})
       assert html =~ "Site Author"
     end
 
     test "falls back to site title" do
-      html = Sayfa.Blocks.Footer.render(%{site: %{title: "My Blog"}})
+      html = Footer.render(%{site: %{title: "My Blog"}})
       assert html =~ "My Blog"
     end
   end
 
-  describe "Sayfa.Blocks.SocialLinks" do
+  describe "SocialLinks" do
     test "renders links" do
       html =
-        Sayfa.Blocks.SocialLinks.render(%{
+        SocialLinks.render(%{
           links: [{"GitHub", "https://github.com"}, {"Twitter", "https://twitter.com"}]
         })
 
@@ -172,14 +182,14 @@ defmodule Sayfa.BlockTest do
     end
 
     test "returns empty string for no links" do
-      assert Sayfa.Blocks.SocialLinks.render(%{links: []}) == ""
-      assert Sayfa.Blocks.SocialLinks.render(%{}) == ""
+      assert SocialLinks.render(%{links: []}) == ""
+      assert SocialLinks.render(%{}) == ""
     end
   end
 
-  describe "Sayfa.Blocks.TOC" do
+  describe "TOCBlock" do
     test "renders table of contents" do
-      content = %Sayfa.Content{
+      content = %Content{
         title: "Test",
         body: "",
         meta: %{
@@ -190,7 +200,7 @@ defmodule Sayfa.BlockTest do
         }
       }
 
-      html = Sayfa.Blocks.TOC.render(%{content: content})
+      html = TOCBlock.render(%{content: content})
       assert html =~ "<nav class=\"toc\">"
       assert html =~ "#intro"
       assert html =~ "Introduction"
@@ -198,36 +208,36 @@ defmodule Sayfa.BlockTest do
     end
 
     test "returns empty string when no toc" do
-      content = %Sayfa.Content{title: "Test", body: "", meta: %{}}
-      assert Sayfa.Blocks.TOC.render(%{content: content}) == ""
+      content = %Content{title: "Test", body: "", meta: %{}}
+      assert TOCBlock.render(%{content: content}) == ""
     end
 
     test "returns empty string when content is nil" do
-      assert Sayfa.Blocks.TOC.render(%{}) == ""
+      assert TOCBlock.render(%{}) == ""
     end
   end
 
-  describe "Sayfa.Blocks.RecentPosts" do
+  describe "RecentPosts" do
     test "renders recent posts" do
       contents = [
-        %Sayfa.Content{
+        %Content{
           title: "Post A",
           body: "",
           date: ~D[2024-06-01],
           slug: "post-a",
           meta: %{"content_type" => "posts", "url_prefix" => "posts"}
         },
-        %Sayfa.Content{
+        %Content{
           title: "Post B",
           body: "",
           date: ~D[2024-01-01],
           slug: "post-b",
           meta: %{"content_type" => "posts", "url_prefix" => "posts"}
         },
-        %Sayfa.Content{title: "Page", body: "", meta: %{"content_type" => "pages"}}
+        %Content{title: "Page", body: "", meta: %{"content_type" => "pages"}}
       ]
 
-      html = Sayfa.Blocks.RecentPosts.render(%{contents: contents, limit: 2})
+      html = RecentPosts.render(%{contents: contents, limit: 2})
       assert html =~ "<section class=\"recent-posts\">"
       assert html =~ "Post A"
       assert html =~ "Post B"
@@ -235,18 +245,18 @@ defmodule Sayfa.BlockTest do
     end
 
     test "returns empty string with no posts" do
-      assert Sayfa.Blocks.RecentPosts.render(%{contents: []}) == ""
+      assert RecentPosts.render(%{contents: []}) == ""
     end
   end
 
-  describe "Sayfa.Blocks.TagCloud" do
+  describe "TagCloud" do
     test "renders tag cloud" do
       contents = [
-        %Sayfa.Content{title: "A", body: "", tags: ["elixir", "otp"]},
-        %Sayfa.Content{title: "B", body: "", tags: ["elixir"]}
+        %Content{title: "A", body: "", tags: ["elixir", "otp"]},
+        %Content{title: "B", body: "", tags: ["elixir"]}
       ]
 
-      html = Sayfa.Blocks.TagCloud.render(%{contents: contents})
+      html = TagCloud.render(%{contents: contents})
       assert html =~ "<section class=\"tag-cloud\">"
       assert html =~ "elixir"
       assert html =~ "otp"
@@ -254,44 +264,44 @@ defmodule Sayfa.BlockTest do
     end
 
     test "returns empty string with no tags" do
-      assert Sayfa.Blocks.TagCloud.render(%{contents: []}) == ""
+      assert TagCloud.render(%{contents: []}) == ""
     end
   end
 
-  describe "Sayfa.Blocks.ReadingTime" do
+  describe "ReadingTimeBlock" do
     test "renders reading time from meta" do
-      content = %Sayfa.Content{title: "Test", body: "", meta: %{"reading_time" => 5}}
-      html = Sayfa.Blocks.ReadingTime.render(%{content: content})
+      content = %Content{title: "Test", body: "", meta: %{"reading_time" => 5}}
+      html = ReadingTimeBlock.render(%{content: content})
       assert html =~ "<span class=\"reading-time\">"
       assert html =~ "5 min read"
     end
 
     test "renders singular for 1 minute" do
-      content = %Sayfa.Content{title: "Test", body: "", meta: %{"reading_time" => 1}}
-      html = Sayfa.Blocks.ReadingTime.render(%{content: content})
+      content = %Content{title: "Test", body: "", meta: %{"reading_time" => 1}}
+      html = ReadingTimeBlock.render(%{content: content})
       assert html =~ "1 min read"
     end
 
     test "returns empty string when no reading time" do
-      content = %Sayfa.Content{title: "Test", body: "", meta: %{}}
-      assert Sayfa.Blocks.ReadingTime.render(%{content: content}) == ""
+      content = %Content{title: "Test", body: "", meta: %{}}
+      assert ReadingTimeBlock.render(%{content: content}) == ""
     end
 
     test "returns empty string when content is nil" do
-      assert Sayfa.Blocks.ReadingTime.render(%{}) == ""
+      assert ReadingTimeBlock.render(%{}) == ""
     end
   end
 
-  describe "Sayfa.Blocks.CodeCopy" do
+  describe "CodeCopy" do
     test "renders script tag" do
-      html = Sayfa.Blocks.CodeCopy.render(%{})
+      html = CodeCopy.render(%{})
       assert html =~ "<script>"
       assert html =~ "clipboard"
       assert html =~ "pre code"
     end
 
     test "uses custom selector" do
-      html = Sayfa.Blocks.CodeCopy.render(%{selector: ".highlight code"})
+      html = CodeCopy.render(%{selector: ".highlight code"})
       assert html =~ ".highlight code"
     end
   end

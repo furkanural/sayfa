@@ -36,19 +36,20 @@ defmodule Sayfa.Blocks.RecentPosts do
     if posts == [] do
       ""
     else
-      items =
-        Enum.map_join(posts, "\n  ", fn post ->
-          url = post_url(post)
-          title = Block.escape_html(post.title)
-
-          date_html =
-            if post.date, do: " <time datetime=\"#{post.date}\">#{post.date}</time>", else: ""
-
-          "<li><a href=\"#{url}\">#{title}</a>#{date_html}</li>"
-        end)
+      items = Enum.map_join(posts, "\n  ", &render_post_item/1)
 
       "<section class=\"recent-posts\">\n  <h2>Recent Posts</h2>\n  <ul>\n  #{items}\n  </ul>\n</section>"
     end
+  end
+
+  defp render_post_item(post) do
+    url = post_url(post)
+    title = Block.escape_html(post.title)
+
+    date_html =
+      if post.date, do: " <time datetime=\"#{post.date}\">#{post.date}</time>", else: ""
+
+    "<li><a href=\"#{url}\">#{title}</a>#{date_html}</li>"
   end
 
   defp post_url(post) do

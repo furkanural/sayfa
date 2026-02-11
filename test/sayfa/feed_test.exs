@@ -2,8 +2,8 @@ defmodule Sayfa.FeedTest do
   use ExUnit.Case, async: true
   doctest Sayfa.Feed
 
-  alias Sayfa.Feed
   alias Sayfa.Content
+  alias Sayfa.Feed
 
   @config %{title: "My Site", base_url: "https://example.com", author: "Test Author"}
 

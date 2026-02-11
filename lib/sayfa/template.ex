@@ -128,10 +128,8 @@ defmodule Sayfa.Template do
     ]
 
     with {:ok, layout_html} <-
-           render_file(layout_path, [inner_content: content.body] ++ base_assigns),
-         {:ok, full_html} <-
-           render_file(base_path, [inner_content: layout_html] ++ base_assigns) do
-      {:ok, full_html}
+           render_file(layout_path, [inner_content: content.body] ++ base_assigns) do
+      render_file(base_path, [inner_content: layout_html] ++ base_assigns)
     end
   end
 
@@ -188,10 +186,8 @@ defmodule Sayfa.Template do
       block: block_fn
     ]
 
-    with {:ok, list_html} <- render_file(list_path, list_assigns),
-         {:ok, full_html} <-
-           render_file(base_path, [inner_content: list_html] ++ list_assigns) do
-      {:ok, full_html}
+    with {:ok, list_html} <- render_file(list_path, list_assigns) do
+      render_file(base_path, [inner_content: list_html] ++ list_assigns)
     end
   end
 

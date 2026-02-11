@@ -9,6 +9,8 @@ defmodule Sayfa.DevServer.Watcher do
 
   use GenServer
 
+  alias Sayfa.DevServer.Rebuilder
+
   require Logger
 
   @relevant_extensions ~w(.md .eex .html .css .js .exs .yaml .yml .json)
@@ -50,7 +52,7 @@ defmodule Sayfa.DevServer.Watcher do
   def handle_info({:file_event, _pid, {path, _events}}, state) do
     if relevant_file?(path) do
       Logger.debug("[sayfa] File changed: #{path}")
-      Sayfa.DevServer.Rebuilder.trigger_rebuild(path)
+      Rebuilder.trigger_rebuild(path)
     end
 
     {:noreply, state}

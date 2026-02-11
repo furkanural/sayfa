@@ -1,6 +1,8 @@
 defmodule Mix.Tasks.Sayfa.NewTest do
   use ExUnit.Case, async: true
 
+  alias Mix.Tasks.Sayfa.New
+
   setup do
     tmp_dir = Path.join(System.tmp_dir!(), "sayfa_new_#{System.unique_integer([:positive])}")
     on_exit(fn -> File.rm_rf!(tmp_dir) end)
@@ -11,7 +13,7 @@ defmodule Mix.Tasks.Sayfa.NewTest do
     test "creates a new project with default options", ctx do
       project_path = Path.join(ctx.tmp_dir, "my_blog")
 
-      Mix.Tasks.Sayfa.New.run([project_path])
+      New.run([project_path])
 
       # Verify directory structure
       assert File.dir?(project_path)
@@ -48,7 +50,7 @@ defmodule Mix.Tasks.Sayfa.NewTest do
     test "creates project with custom title", ctx do
       project_path = Path.join(ctx.tmp_dir, "cool_site")
 
-      Mix.Tasks.Sayfa.New.run([project_path, "--title", "Cool Site"])
+      New.run([project_path, "--title", "Cool Site"])
 
       config = File.read!(Path.join(project_path, "config/config.exs"))
       assert config =~ "Cool Site"
@@ -60,7 +62,7 @@ defmodule Mix.Tasks.Sayfa.NewTest do
     test "creates project with multiple languages", ctx do
       project_path = Path.join(ctx.tmp_dir, "multi_lang")
 
-      Mix.Tasks.Sayfa.New.run([project_path, "--lang", "en,tr"])
+      New.run([project_path, "--lang", "en,tr"])
 
       config = File.read!(Path.join(project_path, "config/config.exs"))
       assert config =~ "default_lang: :en"
@@ -74,11 +76,11 @@ defmodule Mix.Tasks.Sayfa.NewTest do
       project_path = Path.join(ctx.tmp_dir, "existing")
       File.mkdir_p!(project_path)
 
-      assert catch_exit(Mix.Tasks.Sayfa.New.run([project_path]))
+      assert catch_exit(New.run([project_path]))
     end
 
     test "errors when no path given" do
-      assert catch_exit(Mix.Tasks.Sayfa.New.run([]))
+      assert catch_exit(New.run([]))
     end
   end
 end

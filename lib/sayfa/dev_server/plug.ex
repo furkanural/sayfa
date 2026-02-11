@@ -9,6 +9,8 @@ defmodule Sayfa.DevServer.Plug do
 
   use Plug.Router
 
+  alias Sayfa.DevServer.Rebuilder
+
   plug(:match)
   plug(:dispatch)
 
@@ -31,9 +33,9 @@ defmodule Sayfa.DevServer.Plug do
 
   get "/__sayfa/build_id" do
     build_id =
-      case Process.whereis(Sayfa.DevServer.Rebuilder) do
+      case Process.whereis(Rebuilder) do
         nil -> "0"
-        _pid -> "#{Sayfa.DevServer.Rebuilder.build_id()}"
+        _pid -> "#{Rebuilder.build_id()}"
       end
 
     conn

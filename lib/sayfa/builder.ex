@@ -38,8 +38,8 @@ defmodule Sayfa.Builder do
   alias Sayfa.Pagination
   alias Sayfa.ReadingTime
   alias Sayfa.Sitemap
-  alias Sayfa.TOC
   alias Sayfa.Template
+  alias Sayfa.TOC
 
   require Logger
 
@@ -187,30 +187,34 @@ defmodule Sayfa.Builder do
 
     results =
       Enum.reduce_while(files, {[], %{}}, fn file, {acc, cache} ->
-        case check_cache(file, content_cache) do
-          {:cached, content} ->
-            content = classify_content(content, file, content_dir, config)
+        case parse_single_file(file, content_dir, config, content_cache, hooks) do
+          {:ok, content} ->
             mtime = File.stat!(file).mtime
             {:cont, {[content | acc], Map.put(cache, file, {mtime, content})}}
 
-          :miss ->
-            with {:ok, raw} <- Content.parse_raw_file(file),
-                 {:ok, raw} <- run_hook_list(hooks, :before_parse, raw),
-                 {:ok, content} <- Content.from_raw(raw),
-                 {:ok, content} <- run_hook_list(hooks, :after_parse, content) do
-              content = classify_content(content, file, content_dir, config)
-              mtime = File.stat!(file).mtime
-              {:cont, {[content | acc], Map.put(cache, file, {mtime, content})}}
-            else
-              {:error, reason} ->
-                {:halt, {:error, {:parse_error, file, reason}}}
-            end
+          {:error, reason} ->
+            {:halt, {:error, {:parse_error, file, reason}}}
         end
       end)
 
     case results do
       {:error, _} = error -> error
       {contents, cache} -> {:ok, Enum.reverse(contents), cache}
+    end
+  end
+
+  defp parse_single_file(file, content_dir, config, content_cache, hooks) do
+    case check_cache(file, content_cache) do
+      {:cached, content} ->
+        {:ok, classify_content(content, file, content_dir, config)}
+
+      :miss ->
+        with {:ok, raw} <- Content.parse_raw_file(file),
+             {:ok, raw} <- run_hook_list(hooks, :before_parse, raw),
+             {:ok, content} <- Content.from_raw(raw),
+             {:ok, content} <- run_hook_list(hooks, :after_parse, content) do
+          {:ok, classify_content(content, file, content_dir, config)}
+        end
     end
   end
 
