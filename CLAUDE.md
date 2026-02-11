@@ -500,12 +500,12 @@ Track implementation progress:
   - [x] Theme system (loading, inheritance)
   - [x] Multilingual support (i18n)
   - [x] Project generator (mix sayfa.new)
-- [ ] Phase 6: Developer Experience
-  - [ ] Dev server (mix sayfa.serve)
-  - [ ] File watching + hot reload
-  - [ ] Draft preview mode
-  - [ ] Build caching
-  - [ ] Verbose logging + error messages
+- [x] Phase 6: Developer Experience
+  - [x] Dev server (mix sayfa.serve)
+  - [x] File watching + hot reload
+  - [x] Draft preview mode
+  - [x] Build caching
+  - [x] Verbose logging + error messages
 
 ## Verification Commands
 

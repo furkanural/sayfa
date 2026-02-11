@@ -47,12 +47,13 @@ defmodule Sayfa.Builder do
     @moduledoc """
     Result of a successful build.
     """
-    defstruct files_written: 0, content_count: 0, elapsed_ms: 0
+    defstruct files_written: 0, content_count: 0, elapsed_ms: 0, content_cache: %{}
 
     @type t :: %__MODULE__{
             files_written: non_neg_integer(),
             content_count: non_neg_integer(),
-            elapsed_ms: non_neg_integer()
+            elapsed_ms: non_neg_integer(),
+            content_cache: map()
           }
   end
 
@@ -76,27 +77,36 @@ defmodule Sayfa.Builder do
   def build(opts \\ []) do
     start_time = System.monotonic_time(:millisecond)
     config = Config.resolve(opts)
+    verbose = Map.get(config, :verbose, false)
+    content_cache = Map.get(config, :content_cache, %{})
 
     with :ok <- verify_content_dir(config.content_dir),
-         {:ok, files} <- discover_files(config.content_dir),
-         {:ok, contents} <- parse_files(files, config.content_dir, config),
-         contents <- filter_drafts(contents, config.drafts),
-         contents <- enrich_contents(contents),
-         {:ok, contents} <- run_hooks(contents, :before_render, config),
-         {:ok, individual_count} <- render_and_write(contents, config),
-         {:ok, archive_count} <- build_archives(contents, config),
-         {:ok, index_count} <- build_type_indexes(contents, config),
-         {:ok, feed_count} <- build_feeds(contents, config),
-         {:ok, sitemap_count} <- build_sitemap(contents, config) do
-      Sayfa.Theme.copy_assets(config, config.output_dir)
-      run_pagefind(config)
+         {:ok, files} <- timed("Discover files", verbose, fn -> discover_files(config.content_dir) end),
+         _ <- verbose_log(verbose, "Discovered #{length(files)} files"),
+         {:ok, contents, new_cache} <-
+           timed("Parse files", verbose, fn -> parse_files(files, config.content_dir, config, content_cache) end),
+         _ <- verbose_log(verbose, "Parsed #{length(contents)} contents"),
+         contents <- timed_sync("Filter drafts", verbose, fn -> filter_drafts(contents, config.drafts) end),
+         _ <- verbose_log(verbose, "#{length(contents)} contents after filtering"),
+         contents <- timed_sync("Enrich contents", verbose, fn -> enrich_contents(contents) end),
+         {:ok, contents} <- timed("Run before_render hooks", verbose, fn -> run_hooks(contents, :before_render, config) end),
+         {:ok, individual_count} <- timed("Render pages", verbose, fn -> render_and_write(contents, config) end),
+         {:ok, archive_count} <- timed("Build archives", verbose, fn -> build_archives(contents, config) end),
+         {:ok, index_count} <- timed("Build indexes", verbose, fn -> build_type_indexes(contents, config) end),
+         {:ok, feed_count} <- timed("Generate feeds", verbose, fn -> build_feeds(contents, config) end),
+         {:ok, sitemap_count} <- timed("Generate sitemap", verbose, fn -> build_sitemap(contents, config) end) do
+      timed_sync("Copy theme assets", verbose, fn -> Sayfa.Theme.copy_assets(config, config.output_dir) end)
+      timed_sync("Pagefind indexing", verbose, fn -> run_pagefind(config) end)
       elapsed = System.monotonic_time(:millisecond) - start_time
+
+      verbose_log(verbose, "Build complete in #{elapsed}ms")
 
       {:ok,
        %Result{
          files_written: individual_count + archive_count + index_count + feed_count + sitemap_count,
          content_count: length(contents),
-         elapsed_ms: elapsed
+         elapsed_ms: elapsed,
+         content_cache: new_cache
        }}
     end
   end
@@ -116,6 +126,31 @@ defmodule Sayfa.Builder do
     :ok
   end
 
+  # --- Timing & Logging Helpers ---
+
+  defp timed(_label, false, fun), do: fun.()
+
+  defp timed(label, true, fun) do
+    start = System.monotonic_time(:millisecond)
+    result = fun.()
+    elapsed = System.monotonic_time(:millisecond) - start
+    Logger.info("[sayfa] #{label} (#{elapsed}ms)")
+    result
+  end
+
+  defp timed_sync(_label, false, fun), do: fun.()
+
+  defp timed_sync(label, true, fun) do
+    start = System.monotonic_time(:millisecond)
+    result = fun.()
+    elapsed = System.monotonic_time(:millisecond) - start
+    Logger.info("[sayfa] #{label} (#{elapsed}ms)")
+    result
+  end
+
+  defp verbose_log(false, _msg), do: :ok
+  defp verbose_log(true, msg), do: Logger.info("[sayfa] #{msg}")
+
   # --- Private Functions ---
 
   defp verify_content_dir(content_dir) do
@@ -131,26 +166,50 @@ defmodule Sayfa.Builder do
     {:ok, files}
   end
 
-  defp parse_files(files, content_dir, config) do
+  defp parse_files(files, content_dir, config, content_cache) do
     hooks = get_hooks()
 
     results =
-      Enum.reduce_while(files, [], fn file, acc ->
-        with {:ok, raw} <- Content.parse_raw_file(file),
-             {:ok, raw} <- run_hook_list(hooks, :before_parse, raw),
-             {:ok, content} <- Content.from_raw(raw),
-             {:ok, content} <- run_hook_list(hooks, :after_parse, content) do
-          content = classify_content(content, file, content_dir, config)
-          {:cont, [content | acc]}
-        else
-          {:error, reason} ->
-            {:halt, {:error, {:parse_error, file, reason}}}
+      Enum.reduce_while(files, {[], %{}}, fn file, {acc, cache} ->
+        case check_cache(file, content_cache) do
+          {:cached, content} ->
+            content = classify_content(content, file, content_dir, config)
+            mtime = File.stat!(file).mtime
+            {:cont, {[content | acc], Map.put(cache, file, {mtime, content})}}
+
+          :miss ->
+            with {:ok, raw} <- Content.parse_raw_file(file),
+                 {:ok, raw} <- run_hook_list(hooks, :before_parse, raw),
+                 {:ok, content} <- Content.from_raw(raw),
+                 {:ok, content} <- run_hook_list(hooks, :after_parse, content) do
+              content = classify_content(content, file, content_dir, config)
+              mtime = File.stat!(file).mtime
+              {:cont, {[content | acc], Map.put(cache, file, {mtime, content})}}
+            else
+              {:error, reason} ->
+                {:halt, {:error, {:parse_error, file, reason}}}
+            end
         end
       end)
 
     case results do
       {:error, _} = error -> error
-      contents -> {:ok, Enum.reverse(contents)}
+      {contents, cache} -> {:ok, Enum.reverse(contents), cache}
+    end
+  end
+
+  defp check_cache(_file, cache) when map_size(cache) == 0, do: :miss
+
+  defp check_cache(file, cache) do
+    case Map.fetch(cache, file) do
+      {:ok, {cached_mtime, content}} ->
+        case File.stat(file) do
+          {:ok, %{mtime: ^cached_mtime}} -> {:cached, content}
+          _ -> :miss
+        end
+
+      :error ->
+        :miss
     end
   end
 

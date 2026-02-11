@@ -36,6 +36,8 @@ defmodule Sayfa.Config do
     default_lang: :en,
     languages: [en: [name: "English"]],
     drafts: false,
+    verbose: false,
+    port: 4000,
     posts_per_page: 10,
     author: nil,
     description: ""

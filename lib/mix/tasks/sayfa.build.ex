@@ -35,6 +35,7 @@ defmodule Mix.Tasks.Sayfa.Build do
       |> maybe_put(:content_dir, opts[:source])
       |> maybe_put(:output_dir, opts[:output])
       |> maybe_put(:drafts, opts[:drafts])
+      |> maybe_put(:verbose, opts[:verbose])
 
     verbose = Keyword.get(opts, :verbose, false)
 
@@ -47,11 +48,36 @@ defmodule Mix.Tasks.Sayfa.Build do
         )
 
       {:error, reason} ->
-        Mix.shell().error("Build failed: #{inspect(reason)}")
+        Mix.shell().error("Build failed: #{format_error(reason)}")
         exit({:shutdown, 1})
     end
   end
 
   defp maybe_put(opts, _key, nil), do: opts
   defp maybe_put(opts, key, value), do: Keyword.put(opts, key, value)
+
+  @doc false
+  def format_error({:content_dir_not_found, dir}) do
+    "Content directory not found: #{dir}"
+  end
+
+  def format_error({:parse_error, file, {:yaml_error, reason}}) do
+    "YAML parse error in #{file}: #{inspect(reason)}"
+  end
+
+  def format_error({:parse_error, file, :missing_title}) do
+    "Missing required 'title' in front matter: #{file}"
+  end
+
+  def format_error({:parse_error, file, reason}) do
+    "Failed to parse #{file}: #{inspect(reason)}"
+  end
+
+  def format_error({:template_error, file, reason}) do
+    "Template error in #{file}: #{inspect(reason)}"
+  end
+
+  def format_error(reason) do
+    inspect(reason)
+  end
 end
