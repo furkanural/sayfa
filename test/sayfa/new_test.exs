@@ -1,5 +1,5 @@
 defmodule Mix.Tasks.Sayfa.NewTest do
-  use ExUnit.Case, async: true
+  use ExUnit.Case, async: false
 
   alias Mix.Tasks.Sayfa.New
 
