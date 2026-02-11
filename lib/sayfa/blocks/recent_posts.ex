@@ -40,7 +40,10 @@ defmodule Sayfa.Blocks.RecentPosts do
         Enum.map_join(posts, "\n  ", fn post ->
           url = post_url(post)
           title = Block.escape_html(post.title)
-          date_html = if post.date, do: " <time datetime=\"#{post.date}\">#{post.date}</time>", else: ""
+
+          date_html =
+            if post.date, do: " <time datetime=\"#{post.date}\">#{post.date}</time>", else: ""
+
           "<li><a href=\"#{url}\">#{title}</a>#{date_html}</li>"
         end)
 

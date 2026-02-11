@@ -39,6 +39,7 @@ defmodule Sayfa.Blocks.TagCloud do
           count = length(items)
           size = size_class(count, max_count)
           slug = Slug.slugify(tag)
+
           "<a href=\"/tags/#{Block.escape_html(slug)}/\" class=\"tag-#{size}\" title=\"#{count} posts\">#{Block.escape_html(tag)}</a>"
         end)
 

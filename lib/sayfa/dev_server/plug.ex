@@ -9,8 +9,8 @@ defmodule Sayfa.DevServer.Plug do
 
   use Plug.Router
 
-  plug :match
-  plug :dispatch
+  plug(:match)
+  plug(:dispatch)
 
   @live_reload_script """
   <script>

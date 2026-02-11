@@ -25,7 +25,9 @@ defmodule Sayfa.TemplateTest do
 
   describe "render_file/2" do
     setup do
-      tmp_dir = Path.join(System.tmp_dir!(), "sayfa_tpl_test_#{System.unique_integer([:positive])}")
+      tmp_dir =
+        Path.join(System.tmp_dir!(), "sayfa_tpl_test_#{System.unique_integer([:positive])}")
+
       File.mkdir_p!(tmp_dir)
       on_exit(fn -> File.rm_rf!(tmp_dir) end)
       {:ok, tmp_dir: tmp_dir}
@@ -47,7 +49,9 @@ defmodule Sayfa.TemplateTest do
 
   describe "render_content/2" do
     setup do
-      tmp_dir = Path.join(System.tmp_dir!(), "sayfa_tpl_test_#{System.unique_integer([:positive])}")
+      tmp_dir =
+        Path.join(System.tmp_dir!(), "sayfa_tpl_test_#{System.unique_integer([:positive])}")
+
       layouts_dir = Path.join(tmp_dir, "layouts")
       File.mkdir_p!(layouts_dir)
 
@@ -92,7 +96,9 @@ defmodule Sayfa.TemplateTest do
         meta: %{"content_type" => "posts"}
       }
 
-      assert {:ok, html} = Template.render_content(content, config: config, layouts_dir: layouts_dir)
+      assert {:ok, html} =
+               Template.render_content(content, config: config, layouts_dir: layouts_dir)
+
       assert html =~ "<!DOCTYPE html>"
       assert html =~ "<title>My Post</title>"
       assert html =~ "<article>"
@@ -100,7 +106,10 @@ defmodule Sayfa.TemplateTest do
       assert html =~ "Post body"
     end
 
-    test "renders content with page layout by default", %{layouts_dir: layouts_dir, config: config} do
+    test "renders content with page layout by default", %{
+      layouts_dir: layouts_dir,
+      config: config
+    } do
       content = %Content{
         title: "About",
         body: "<p>About page</p>",
@@ -108,7 +117,9 @@ defmodule Sayfa.TemplateTest do
         meta: %{}
       }
 
-      assert {:ok, html} = Template.render_content(content, config: config, layouts_dir: layouts_dir)
+      assert {:ok, html} =
+               Template.render_content(content, config: config, layouts_dir: layouts_dir)
+
       assert html =~ ~s(<div class="page">)
       assert html =~ "About page"
     end
@@ -121,11 +132,16 @@ defmodule Sayfa.TemplateTest do
         meta: %{"layout" => "home"}
       }
 
-      assert {:ok, html} = Template.render_content(content, config: config, layouts_dir: layouts_dir)
+      assert {:ok, html} =
+               Template.render_content(content, config: config, layouts_dir: layouts_dir)
+
       assert html =~ ~s(<section class="home">)
     end
 
-    test "falls back to page layout for unknown layout", %{layouts_dir: layouts_dir, config: config} do
+    test "falls back to page layout for unknown layout", %{
+      layouts_dir: layouts_dir,
+      config: config
+    } do
       content = %Content{
         title: "Test",
         body: "<p>Content</p>",
@@ -133,7 +149,9 @@ defmodule Sayfa.TemplateTest do
         meta: %{"layout" => "nonexistent"}
       }
 
-      assert {:ok, html} = Template.render_content(content, config: config, layouts_dir: layouts_dir)
+      assert {:ok, html} =
+               Template.render_content(content, config: config, layouts_dir: layouts_dir)
+
       assert html =~ ~s(<div class="page">)
     end
 
@@ -150,12 +168,17 @@ defmodule Sayfa.TemplateTest do
         meta: %{"layout" => "with_block"}
       }
 
-      assert {:ok, html} = Template.render_content(content, config: config, layouts_dir: layouts_dir)
+      assert {:ok, html} =
+               Template.render_content(content, config: config, layouts_dir: layouts_dir)
+
       assert html =~ "<div>"
       assert html =~ "Content"
     end
 
-    test "uses default_layout from meta when no layout specified", %{layouts_dir: layouts_dir, config: config} do
+    test "uses default_layout from meta when no layout specified", %{
+      layouts_dir: layouts_dir,
+      config: config
+    } do
       content = %Content{
         title: "My Post",
         body: "<p>Post body</p>",
@@ -163,11 +186,16 @@ defmodule Sayfa.TemplateTest do
         meta: %{"content_type" => "custom", "default_layout" => "post"}
       }
 
-      assert {:ok, html} = Template.render_content(content, config: config, layouts_dir: layouts_dir)
+      assert {:ok, html} =
+               Template.render_content(content, config: config, layouts_dir: layouts_dir)
+
       assert html =~ "<article>"
     end
 
-    test "layout from front matter takes precedence over default_layout", %{layouts_dir: layouts_dir, config: config} do
+    test "layout from front matter takes precedence over default_layout", %{
+      layouts_dir: layouts_dir,
+      config: config
+    } do
       content = %Content{
         title: "My Post",
         body: "<p>Post body</p>",
@@ -175,7 +203,9 @@ defmodule Sayfa.TemplateTest do
         meta: %{"layout" => "home", "default_layout" => "post"}
       }
 
-      assert {:ok, html} = Template.render_content(content, config: config, layouts_dir: layouts_dir)
+      assert {:ok, html} =
+               Template.render_content(content, config: config, layouts_dir: layouts_dir)
+
       assert html =~ ~s(<section class="home">)
       refute html =~ "<article>"
     end
@@ -183,7 +213,9 @@ defmodule Sayfa.TemplateTest do
 
   describe "render_list_page/1" do
     setup do
-      tmp_dir = Path.join(System.tmp_dir!(), "sayfa_list_test_#{System.unique_integer([:positive])}")
+      tmp_dir =
+        Path.join(System.tmp_dir!(), "sayfa_list_test_#{System.unique_integer([:positive])}")
+
       layouts_dir = Path.join(tmp_dir, "layouts")
       File.mkdir_p!(layouts_dir)
 
@@ -227,13 +259,14 @@ defmodule Sayfa.TemplateTest do
         %Content{title: "Post B", body: "", tags: [], meta: %{}}
       ]
 
-      assert {:ok, html} = Template.render_list_page(
-        config: config,
-        layouts_dir: layouts_dir,
-        contents: contents,
-        page_title: "All Posts",
-        pagination: nil
-      )
+      assert {:ok, html} =
+               Template.render_list_page(
+                 config: config,
+                 layouts_dir: layouts_dir,
+                 contents: contents,
+                 page_title: "All Posts",
+                 pagination: nil
+               )
 
       assert html =~ "<!DOCTYPE html>"
       assert html =~ "All Posts"
@@ -255,13 +288,14 @@ defmodule Sayfa.TemplateTest do
         url: "/posts/page/2/"
       }
 
-      assert {:ok, html} = Template.render_list_page(
-        config: config,
-        layouts_dir: layouts_dir,
-        contents: [],
-        page_title: "Posts",
-        pagination: pagination
-      )
+      assert {:ok, html} =
+               Template.render_list_page(
+                 config: config,
+                 layouts_dir: layouts_dir,
+                 contents: [],
+                 page_title: "Posts",
+                 pagination: pagination
+               )
 
       assert html =~ "Page 2"
     end

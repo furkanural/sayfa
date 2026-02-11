@@ -5,7 +5,9 @@ defmodule Sayfa.DevServer.PlugTest do
   alias Sayfa.DevServer.Plug, as: DevPlug
 
   setup do
-    tmp_dir = Path.join(System.tmp_dir!(), "sayfa_plug_test_#{System.unique_integer([:positive])}")
+    tmp_dir =
+      Path.join(System.tmp_dir!(), "sayfa_plug_test_#{System.unique_integer([:positive])}")
+
     File.mkdir_p!(tmp_dir)
 
     # Create test files

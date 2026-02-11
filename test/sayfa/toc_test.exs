@@ -35,7 +35,9 @@ defmodule Sayfa.TOCTest do
     end
 
     test "handles inline tags in heading text" do
-      html = ~s(<h2><a href="#code" aria-hidden="true" class="anchor" id="code"></a>Using <code>IO.puts</code></h2>)
+      html =
+        ~s(<h2><a href="#code" aria-hidden="true" class="anchor" id="code"></a>Using <code>IO.puts</code></h2>)
+
       result = TOC.extract(html)
       assert [%{text: "Using IO.puts", id: "code"}] = result
     end

@@ -66,7 +66,11 @@ defmodule Sayfa.ThemeTest do
       # Create a custom theme with a page layout
       custom_layouts = Path.join([ctx.tmp_dir, "custom_theme", "layouts"])
       File.mkdir_p!(custom_layouts)
-      File.write!(Path.join(custom_layouts, "page.html.eex"), "<custom><%= @inner_content %></custom>")
+
+      File.write!(
+        Path.join(custom_layouts, "page.html.eex"),
+        "<custom><%= @inner_content %></custom>"
+      )
 
       # We need to work in the tmp_dir context
       original_dir = File.cwd!()
@@ -75,7 +79,11 @@ defmodule Sayfa.ThemeTest do
       # Create themes/custom_theme/layouts in CWD
       theme_layouts = Path.join(["themes", "custom_theme", "layouts"])
       File.mkdir_p!(theme_layouts)
-      File.write!(Path.join(theme_layouts, "page.html.eex"), "<custom><%= @inner_content %></custom>")
+
+      File.write!(
+        Path.join(theme_layouts, "page.html.eex"),
+        "<custom><%= @inner_content %></custom>"
+      )
 
       config = %{theme: "custom_theme", theme_parent: "default"}
       path = Theme.resolve_layout("page", config)
@@ -128,7 +136,9 @@ defmodule Sayfa.ThemeTest do
       Theme.copy_assets(config, output_dir)
 
       assert File.exists?(Path.join([output_dir, "assets", "css", "style.css"]))
-      assert File.read!(Path.join([output_dir, "assets", "css", "style.css"])) == "body { color: red; }"
+
+      assert File.read!(Path.join([output_dir, "assets", "css", "style.css"])) ==
+               "body { color: red; }"
 
       File.cd!(original_dir)
     end

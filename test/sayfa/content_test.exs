@@ -187,7 +187,15 @@ defmodule Sayfa.ContentTest do
   # --- Collections API Tests ---
 
   defp make_content(attrs) do
-    defaults = %{title: "default", body: "<p>test</p>", tags: [], categories: [], meta: %{}, date: nil}
+    defaults = %{
+      title: "default",
+      body: "<p>test</p>",
+      tags: [],
+      categories: [],
+      meta: %{},
+      date: nil
+    }
+
     Map.merge(defaults, attrs) |> then(&struct!(Content, &1))
   end
 

@@ -81,21 +81,36 @@ defmodule Sayfa.Builder do
     content_cache = Map.get(config, :content_cache, %{})
 
     with :ok <- verify_content_dir(config.content_dir),
-         {:ok, files} <- timed("Discover files", verbose, fn -> discover_files(config.content_dir) end),
+         {:ok, files} <-
+           timed("Discover files", verbose, fn -> discover_files(config.content_dir) end),
          _ <- verbose_log(verbose, "Discovered #{length(files)} files"),
          {:ok, contents, new_cache} <-
-           timed("Parse files", verbose, fn -> parse_files(files, config.content_dir, config, content_cache) end),
+           timed("Parse files", verbose, fn ->
+             parse_files(files, config.content_dir, config, content_cache)
+           end),
          _ <- verbose_log(verbose, "Parsed #{length(contents)} contents"),
-         contents <- timed_sync("Filter drafts", verbose, fn -> filter_drafts(contents, config.drafts) end),
+         contents <-
+           timed_sync("Filter drafts", verbose, fn -> filter_drafts(contents, config.drafts) end),
          _ <- verbose_log(verbose, "#{length(contents)} contents after filtering"),
          contents <- timed_sync("Enrich contents", verbose, fn -> enrich_contents(contents) end),
-         {:ok, contents} <- timed("Run before_render hooks", verbose, fn -> run_hooks(contents, :before_render, config) end),
-         {:ok, individual_count} <- timed("Render pages", verbose, fn -> render_and_write(contents, config) end),
-         {:ok, archive_count} <- timed("Build archives", verbose, fn -> build_archives(contents, config) end),
-         {:ok, index_count} <- timed("Build indexes", verbose, fn -> build_type_indexes(contents, config) end),
-         {:ok, feed_count} <- timed("Generate feeds", verbose, fn -> build_feeds(contents, config) end),
-         {:ok, sitemap_count} <- timed("Generate sitemap", verbose, fn -> build_sitemap(contents, config) end) do
-      timed_sync("Copy theme assets", verbose, fn -> Sayfa.Theme.copy_assets(config, config.output_dir) end)
+         {:ok, contents} <-
+           timed("Run before_render hooks", verbose, fn ->
+             run_hooks(contents, :before_render, config)
+           end),
+         {:ok, individual_count} <-
+           timed("Render pages", verbose, fn -> render_and_write(contents, config) end),
+         {:ok, archive_count} <-
+           timed("Build archives", verbose, fn -> build_archives(contents, config) end),
+         {:ok, index_count} <-
+           timed("Build indexes", verbose, fn -> build_type_indexes(contents, config) end),
+         {:ok, feed_count} <-
+           timed("Generate feeds", verbose, fn -> build_feeds(contents, config) end),
+         {:ok, sitemap_count} <-
+           timed("Generate sitemap", verbose, fn -> build_sitemap(contents, config) end) do
+      timed_sync("Copy theme assets", verbose, fn ->
+        Sayfa.Theme.copy_assets(config, config.output_dir)
+      end)
+
       timed_sync("Pagefind indexing", verbose, fn -> run_pagefind(config) end)
       elapsed = System.monotonic_time(:millisecond) - start_time
 
@@ -103,7 +118,8 @@ defmodule Sayfa.Builder do
 
       {:ok,
        %Result{
-         files_written: individual_count + archive_count + index_count + feed_count + sitemap_count,
+         files_written:
+           individual_count + archive_count + index_count + feed_count + sitemap_count,
          content_count: length(contents),
          elapsed_ms: elapsed,
          content_cache: new_cache
@@ -348,7 +364,13 @@ defmodule Sayfa.Builder do
         sorted = Content.sort_by_date(items)
         slug = Slug.slugify(tag)
 
-        case render_and_write_list(sorted, "Tagged: #{tag}", "/tags/#{slug}", all_contents, config) do
+        case render_and_write_list(
+               sorted,
+               "Tagged: #{tag}",
+               "/tags/#{slug}",
+               all_contents,
+               config
+             ) do
           :ok -> {:cont, count + 1}
           {:error, _} = error -> {:halt, error}
         end
@@ -368,7 +390,13 @@ defmodule Sayfa.Builder do
         sorted = Content.sort_by_date(items)
         slug = Slug.slugify(category)
 
-        case render_and_write_list(sorted, "Category: #{category}", "/categories/#{slug}", all_contents, config) do
+        case render_and_write_list(
+               sorted,
+               "Category: #{category}",
+               "/categories/#{slug}",
+               all_contents,
+               config
+             ) do
           :ok -> {:cont, count + 1}
           {:error, _} = error -> {:halt, error}
         end

@@ -81,7 +81,8 @@ defmodule Sayfa.HookTest do
       Application.delete_env(:sayfa, :hooks)
     end)
 
-    {:ok, tmp_dir: tmp_dir, content_dir: content_dir, output_dir: output_dir, posts_dir: posts_dir}
+    {:ok,
+     tmp_dir: tmp_dir, content_dir: content_dir, output_dir: output_dir, posts_dir: posts_dir}
   end
 
   describe "after_parse hook" do
@@ -96,7 +97,9 @@ defmodule Sayfa.HookTest do
       Content here.
       """)
 
-      assert {:ok, result} = Builder.build(content_dir: ctx.content_dir, output_dir: ctx.output_dir)
+      assert {:ok, result} =
+               Builder.build(content_dir: ctx.content_dir, output_dir: ctx.output_dir)
+
       assert result.content_count == 1
 
       html = File.read!(Path.join([ctx.output_dir, "posts", "test", "index.html"]))
@@ -116,7 +119,8 @@ defmodule Sayfa.HookTest do
       Original content.
       """)
 
-      assert {:ok, _result} = Builder.build(content_dir: ctx.content_dir, output_dir: ctx.output_dir)
+      assert {:ok, _result} =
+               Builder.build(content_dir: ctx.content_dir, output_dir: ctx.output_dir)
 
       html = File.read!(Path.join([ctx.output_dir, "posts", "test", "index.html"]))
       assert html =~ "Injected by hook"
@@ -135,7 +139,8 @@ defmodule Sayfa.HookTest do
       Content.
       """)
 
-      assert {:ok, _result} = Builder.build(content_dir: ctx.content_dir, output_dir: ctx.output_dir)
+      assert {:ok, _result} =
+               Builder.build(content_dir: ctx.content_dir, output_dir: ctx.output_dir)
 
       html = File.read!(Path.join([ctx.output_dir, "posts", "test", "index.html"]))
       assert html =~ "<!-- hook -->"
@@ -170,7 +175,8 @@ defmodule Sayfa.HookTest do
       Content.
       """)
 
-      assert {:ok, _result} = Builder.build(content_dir: ctx.content_dir, output_dir: ctx.output_dir)
+      assert {:ok, _result} =
+               Builder.build(content_dir: ctx.content_dir, output_dir: ctx.output_dir)
 
       html = File.read!(Path.join([ctx.output_dir, "posts", "test", "index.html"]))
       assert html =~ "HELLO"

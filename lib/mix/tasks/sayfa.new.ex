@@ -92,8 +92,20 @@ defmodule Mix.Tasks.Sayfa.New do
 
     write_template(templates_dir, "mix.exs.eex", Path.join(path, "mix.exs"), assigns)
     write_template(templates_dir, "config.exs.eex", Path.join(path, "config/config.exs"), assigns)
-    write_template(templates_dir, "welcome.md.eex", Path.join(path, "content/posts/welcome.md"), assigns)
-    write_template(templates_dir, "about.md.eex", Path.join(path, "content/pages/about.md"), assigns)
+
+    write_template(
+      templates_dir,
+      "welcome.md.eex",
+      Path.join(path, "content/posts/welcome.md"),
+      assigns
+    )
+
+    write_template(
+      templates_dir,
+      "about.md.eex",
+      Path.join(path, "content/pages/about.md"),
+      assigns
+    )
 
     # Copy static files (no EEx processing)
     copy_static(templates_dir, "formatter.exs", Path.join(path, ".formatter.exs"))

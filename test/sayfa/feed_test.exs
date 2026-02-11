@@ -8,7 +8,14 @@ defmodule Sayfa.FeedTest do
   @config %{title: "My Site", base_url: "https://example.com", author: "Test Author"}
 
   defp make_content(attrs) do
-    defaults = %{body: "<p>Body</p>", tags: [], categories: [], draft: false, meta: %{"url_prefix" => "posts"}}
+    defaults = %{
+      body: "<p>Body</p>",
+      tags: [],
+      categories: [],
+      draft: false,
+      meta: %{"url_prefix" => "posts"}
+    }
+
     struct!(Content, Map.merge(defaults, attrs))
   end
 
@@ -67,7 +74,12 @@ defmodule Sayfa.FeedTest do
 
     test "includes entry content" do
       contents = [
-        make_content(%{title: "Post", date: ~D[2024-01-15], slug: "post", body: "<p>Hello world</p>"})
+        make_content(%{
+          title: "Post",
+          date: ~D[2024-01-15],
+          slug: "post",
+          body: "<p>Hello world</p>"
+        })
       ]
 
       xml = Feed.generate(contents, @config)
@@ -84,8 +96,18 @@ defmodule Sayfa.FeedTest do
   describe "generate_for_type/3" do
     test "filters by content type" do
       contents = [
-        make_content(%{title: "Post", date: ~D[2024-01-15], slug: "post", meta: %{"content_type" => "posts", "url_prefix" => "posts"}}),
-        make_content(%{title: "Note", date: ~D[2024-01-10], slug: "note", meta: %{"content_type" => "notes", "url_prefix" => "notes"}})
+        make_content(%{
+          title: "Post",
+          date: ~D[2024-01-15],
+          slug: "post",
+          meta: %{"content_type" => "posts", "url_prefix" => "posts"}
+        }),
+        make_content(%{
+          title: "Note",
+          date: ~D[2024-01-10],
+          slug: "note",
+          meta: %{"content_type" => "notes", "url_prefix" => "notes"}
+        })
       ]
 
       xml = Feed.generate_for_type(contents, "posts", @config)

@@ -110,7 +110,7 @@ defmodule Sayfa.I18n do
   @spec configured_language_codes(map()) :: [atom()]
   def configured_language_codes(config) do
     config
-    |> Map.get(:languages, [en: [name: "English"]])
+    |> Map.get(:languages, en: [name: "English"])
     |> Keyword.keys()
   end
 end

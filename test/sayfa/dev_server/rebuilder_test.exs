@@ -4,7 +4,9 @@ defmodule Sayfa.DevServer.RebuilderTest do
   alias Sayfa.DevServer.Rebuilder
 
   setup do
-    tmp_dir = Path.join(System.tmp_dir!(), "sayfa_rebuilder_#{System.unique_integer([:positive])}")
+    tmp_dir =
+      Path.join(System.tmp_dir!(), "sayfa_rebuilder_#{System.unique_integer([:positive])}")
+
     content_dir = Path.join(tmp_dir, "content")
     output_dir = Path.join(tmp_dir, "output")
     posts_dir = Path.join(content_dir, "posts")
@@ -28,18 +30,14 @@ defmodule Sayfa.DevServer.RebuilderTest do
 
   test "initial build increments build_id to 1", ctx do
     {:ok, _pid} =
-      Rebuilder.start_link(
-        config: [content_dir: ctx.content_dir, output_dir: ctx.output_dir]
-      )
+      Rebuilder.start_link(config: [content_dir: ctx.content_dir, output_dir: ctx.output_dir])
 
     assert Rebuilder.build_id() == 1
   end
 
   test "trigger_rebuild increments build_id after debounce", ctx do
     {:ok, _pid} =
-      Rebuilder.start_link(
-        config: [content_dir: ctx.content_dir, output_dir: ctx.output_dir]
-      )
+      Rebuilder.start_link(config: [content_dir: ctx.content_dir, output_dir: ctx.output_dir])
 
     assert Rebuilder.build_id() == 1
 
@@ -52,9 +50,7 @@ defmodule Sayfa.DevServer.RebuilderTest do
 
   test "rapid triggers are debounced into single rebuild", ctx do
     {:ok, _pid} =
-      Rebuilder.start_link(
-        config: [content_dir: ctx.content_dir, output_dir: ctx.output_dir]
-      )
+      Rebuilder.start_link(config: [content_dir: ctx.content_dir, output_dir: ctx.output_dir])
 
     assert Rebuilder.build_id() == 1
 

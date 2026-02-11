@@ -199,7 +199,8 @@ defmodule Sayfa.Template do
     layout
   end
 
-  defp resolve_layout(%Sayfa.Content{meta: %{"default_layout" => layout}}) when is_binary(layout) do
+  defp resolve_layout(%Sayfa.Content{meta: %{"default_layout" => layout}})
+       when is_binary(layout) do
     layout
   end
 

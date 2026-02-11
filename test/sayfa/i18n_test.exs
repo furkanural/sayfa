@@ -30,7 +30,8 @@ defmodule Sayfa.I18nTest do
     end
 
     test "handles deeply nested paths" do
-      assert {:tr, "posts/2024/merhaba.md"} = I18n.detect_language("tr/posts/2024/merhaba.md", @config)
+      assert {:tr, "posts/2024/merhaba.md"} =
+               I18n.detect_language("tr/posts/2024/merhaba.md", @config)
     end
   end
 

@@ -28,7 +28,17 @@ defmodule Sayfa.BlockTest do
     end
 
     test "finds all built-in blocks by name" do
-      expected_names = [:hero, :header, :footer, :social_links, :toc, :recent_posts, :tag_cloud, :reading_time, :code_copy]
+      expected_names = [
+        :hero,
+        :header,
+        :footer,
+        :social_links,
+        :toc,
+        :recent_posts,
+        :tag_cloud,
+        :reading_time,
+        :code_copy
+      ]
 
       for name <- expected_names do
         assert Block.find_by_name(name), "Expected to find block #{name}"
@@ -59,7 +69,9 @@ defmodule Sayfa.BlockTest do
     end
 
     test "merges context with caller opts" do
-      helper = Block.build_helper(site: %{title: "My Site"}, content: nil, contents: [], lang: :en)
+      helper =
+        Block.build_helper(site: %{title: "My Site"}, content: nil, contents: [], lang: :en)
+
       result = helper.(:header, nav: [{"Home", "/"}])
       assert result =~ "My Site"
       assert result =~ "Home"
@@ -110,10 +122,12 @@ defmodule Sayfa.BlockTest do
     end
 
     test "renders with navigation" do
-      html = Sayfa.Blocks.Header.render(%{
-        site: %{title: "Blog"},
-        nav: [{"Home", "/"}, {"About", "/about/"}]
-      })
+      html =
+        Sayfa.Blocks.Header.render(%{
+          site: %{title: "Blog"},
+          nav: [{"Home", "/"}, {"About", "/about/"}]
+        })
+
       assert html =~ "<nav>"
       assert html =~ "Home"
       assert html =~ "/about/"
@@ -146,9 +160,11 @@ defmodule Sayfa.BlockTest do
 
   describe "Sayfa.Blocks.SocialLinks" do
     test "renders links" do
-      html = Sayfa.Blocks.SocialLinks.render(%{
-        links: [{"GitHub", "https://github.com"}, {"Twitter", "https://twitter.com"}]
-      })
+      html =
+        Sayfa.Blocks.SocialLinks.render(%{
+          links: [{"GitHub", "https://github.com"}, {"Twitter", "https://twitter.com"}]
+        })
+
       assert html =~ "<ul class=\"social-links\">"
       assert html =~ "GitHub"
       assert html =~ "https://github.com"
@@ -166,10 +182,12 @@ defmodule Sayfa.BlockTest do
       content = %Sayfa.Content{
         title: "Test",
         body: "",
-        meta: %{"toc" => [
-          %{id: "intro", text: "Introduction", level: 2},
-          %{id: "details", text: "Details", level: 3}
-        ]}
+        meta: %{
+          "toc" => [
+            %{id: "intro", text: "Introduction", level: 2},
+            %{id: "details", text: "Details", level: 3}
+          ]
+        }
       }
 
       html = Sayfa.Blocks.TOC.render(%{content: content})
@@ -192,10 +210,20 @@ defmodule Sayfa.BlockTest do
   describe "Sayfa.Blocks.RecentPosts" do
     test "renders recent posts" do
       contents = [
-        %Sayfa.Content{title: "Post A", body: "", date: ~D[2024-06-01], slug: "post-a",
-          meta: %{"content_type" => "posts", "url_prefix" => "posts"}},
-        %Sayfa.Content{title: "Post B", body: "", date: ~D[2024-01-01], slug: "post-b",
-          meta: %{"content_type" => "posts", "url_prefix" => "posts"}},
+        %Sayfa.Content{
+          title: "Post A",
+          body: "",
+          date: ~D[2024-06-01],
+          slug: "post-a",
+          meta: %{"content_type" => "posts", "url_prefix" => "posts"}
+        },
+        %Sayfa.Content{
+          title: "Post B",
+          body: "",
+          date: ~D[2024-01-01],
+          slug: "post-b",
+          meta: %{"content_type" => "posts", "url_prefix" => "posts"}
+        },
         %Sayfa.Content{title: "Page", body: "", meta: %{"content_type" => "pages"}}
       ]
 

@@ -97,6 +97,7 @@ defmodule Sayfa.BuilderTest do
       """)
 
       assert {:ok, result} = Builder.build(build_opts(ctx))
+
       # 1 individual + 1 posts index + 1 feed.xml + 1 sitemap.xml = 4 (no per-type feed: no dated content)
       assert result.files_written == 4
       assert result.content_count == 1
@@ -112,6 +113,7 @@ defmodule Sayfa.BuilderTest do
       """)
 
       assert {:ok, result} = Builder.build(build_opts(ctx, drafts: true))
+
       # 1 individual + 1 posts index + 1 feed.xml + 1 sitemap.xml = 4 (no per-type feed: no dated content)
       assert result.files_written == 4
       assert result.content_count == 1
@@ -227,13 +229,16 @@ defmodule Sayfa.BuilderTest do
   describe "type indexes" do
     test "generates paginated index for content types", ctx do
       for i <- 1..3 do
-        File.write!(Path.join(ctx.posts_dir, "2024-01-#{String.pad_leading("#{i}", 2, "0")}-post-#{i}.md"), """
-        ---
-        title: "Post #{i}"
-        date: 2024-01-#{String.pad_leading("#{i}", 2, "0")}
-        ---
-        Post #{i} content.
-        """)
+        File.write!(
+          Path.join(ctx.posts_dir, "2024-01-#{String.pad_leading("#{i}", 2, "0")}-post-#{i}.md"),
+          """
+          ---
+          title: "Post #{i}"
+          date: 2024-01-#{String.pad_leading("#{i}", 2, "0")}
+          ---
+          Post #{i} content.
+          """
+        )
       end
 
       assert {:ok, _result} = Builder.build(build_opts(ctx, posts_per_page: 2))
@@ -393,11 +398,12 @@ defmodule Sayfa.BuilderTest do
       content = %{content | meta: Map.put(content.meta, "layout", "home")}
       config = Sayfa.Config.resolve([])
 
-      {:ok, html} = Sayfa.Template.render_content(content,
-        config: config,
-        layouts_dir: layouts_dir,
-        all_contents: []
-      )
+      {:ok, html} =
+        Sayfa.Template.render_content(content,
+          config: config,
+          layouts_dir: layouts_dir,
+          all_contents: []
+        )
 
       assert html =~ "<section class=\"hero\">"
       assert html =~ "Welcome"
@@ -429,7 +435,11 @@ defmodule Sayfa.BuilderTest do
       Turkish content.
       """)
 
-      assert {:ok, result} = Builder.build(build_opts(ctx, languages: [en: [name: "English"], tr: [name: "Türkçe"]]))
+      assert {:ok, result} =
+               Builder.build(
+                 build_opts(ctx, languages: [en: [name: "English"], tr: [name: "Türkçe"]])
+               )
+
       assert result.content_count == 2
 
       # English post at /posts/hello/
