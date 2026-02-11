@@ -26,6 +26,7 @@ defmodule Mix.Tasks.Sayfa.Serve do
   use Mix.Task
 
   @shortdoc "Start dev server with live reload"
+  @requirements ["app.start"]
 
   @switches [
     port: :integer,
@@ -37,6 +38,8 @@ defmodule Mix.Tasks.Sayfa.Serve do
 
   @impl Mix.Task
   def run(args) do
+    Mix.Task.run("app.start")
+
     unless Code.ensure_loaded?(Plug.Cowboy) do
       Mix.raise("""
       plug_cowboy is required for mix sayfa.serve.

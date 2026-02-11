@@ -18,6 +18,7 @@ defmodule Mix.Tasks.Sayfa.Build do
   use Mix.Task
 
   @shortdoc "Build the static site"
+  @requirements ["app.start"]
 
   @switches [
     source: :string,
@@ -28,6 +29,7 @@ defmodule Mix.Tasks.Sayfa.Build do
 
   @impl Mix.Task
   def run(args) do
+    Mix.Task.run("app.start")
     {opts, _, _} = OptionParser.parse(args, switches: @switches)
 
     build_opts =
