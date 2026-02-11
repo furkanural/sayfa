@@ -21,7 +21,12 @@ defmodule Sayfa.DevServer.RebuilderTest do
     """)
 
     on_exit(fn ->
-      if Process.whereis(Rebuilder), do: GenServer.stop(Rebuilder)
+      try do
+        if Process.whereis(Rebuilder), do: GenServer.stop(Rebuilder)
+      catch
+        :exit, _ -> :ok
+      end
+
       File.rm_rf!(tmp_dir)
     end)
 
