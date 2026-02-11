@@ -405,6 +405,53 @@ defmodule Sayfa.BuilderTest do
     end
   end
 
+  describe "multilingual build" do
+    test "outputs non-default language content with language prefix", ctx do
+      # Create Turkish content subdirectory
+      tr_posts_dir = Path.join([ctx.content_dir, "tr", "posts"])
+      File.mkdir_p!(tr_posts_dir)
+
+      # English post (default language)
+      File.write!(Path.join(ctx.posts_dir, "2024-01-15-hello.md"), """
+      ---
+      title: "Hello World"
+      date: 2024-01-15
+      ---
+      English content.
+      """)
+
+      # Turkish post
+      File.write!(Path.join(tr_posts_dir, "2024-01-15-merhaba.md"), """
+      ---
+      title: "Merhaba Dünya"
+      date: 2024-01-15
+      ---
+      Turkish content.
+      """)
+
+      assert {:ok, result} = Builder.build(build_opts(ctx, languages: [en: [name: "English"], tr: [name: "Türkçe"]]))
+      assert result.content_count == 2
+
+      # English post at /posts/hello/
+      en_path = Path.join([ctx.output_dir, "posts", "hello", "index.html"])
+      assert File.exists?(en_path)
+      assert File.read!(en_path) =~ "Hello World"
+
+      # Turkish post at /tr/posts/merhaba/
+      tr_path = Path.join([ctx.output_dir, "tr", "posts", "merhaba", "index.html"])
+      assert File.exists?(tr_path)
+      assert File.read!(tr_path) =~ "Merhaba"
+
+      # Turkish feed at /tr/feed.xml
+      tr_feed = Path.join([ctx.output_dir, "tr", "feed.xml"])
+      assert File.exists?(tr_feed)
+
+      # Main feed at /feed.xml
+      main_feed = Path.join(ctx.output_dir, "feed.xml")
+      assert File.exists?(main_feed)
+    end
+  end
+
   describe "clean/1" do
     test "removes the output directory", ctx do
       File.mkdir_p!(ctx.output_dir)

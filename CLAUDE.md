@@ -497,9 +497,9 @@ Track implementation progress:
   - [x] @block helper integration in templates
   - [x] Built-in blocks (hero, recent_posts, tag_cloud, social_links, toc, reading_time, code_copy, header, footer)
   - [x] Hook behaviour (before/after parse/render)
-  - [ ] Theme system (loading, inheritance)
-  - [ ] Multilingual support (i18n)
-  - [ ] Project generator (mix sayfa.new)
+  - [x] Theme system (loading, inheritance)
+  - [x] Multilingual support (i18n)
+  - [x] Project generator (mix sayfa.new)
 - [ ] Phase 6: Developer Experience
   - [ ] Dev server (mix sayfa.serve)
   - [ ] File watching + hot reload

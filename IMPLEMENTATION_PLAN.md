@@ -924,9 +924,9 @@ cat test_site/output/posts/hello/index.html
 3. ~~**`@block` helper integration** in `Sayfa.Template` — inject anonymous function into all template assigns~~ (DONE)
 4. ~~**Built-in blocks** → `lib/sayfa/blocks/` — hero, recent_posts, tag_cloud, social_links, toc, reading_time, code_copy, header, footer~~ (DONE)
 5. ~~**Hook behaviour** → `lib/sayfa/behaviours/hook.ex` — before/after parse/render stages~~ (DONE)
-6. **Theme system** → `lib/sayfa/theme.ex` — loading, inheritance, asset merging
-7. **Multilingual support** → `lib/sayfa/i18n.ex` — subdirectory approach
-8. **Project generator** → `lib/mix/tasks/sayfa.new.ex`
+6. ~~**Theme system** → `lib/sayfa/theme.ex` — loading, inheritance, asset merging~~ (DONE)
+7. ~~**Multilingual support** → `lib/sayfa/i18n.ex` — subdirectory approach~~ (DONE)
+8. ~~**Project generator** → `lib/mix/tasks/sayfa.new.ex`~~ (DONE)
 
 **Verification:**
 ```bash

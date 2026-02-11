@@ -1,0 +1,16 @@
+---
+title: "Welcome to <%= @title %>"
+date: <%= Date.utc_today() |> Date.to_iso8601() %>
+tags: [welcome]
+---
+
+# Welcome!
+
+This is your first post. Edit it or create new `.md` files in `content/posts/`.
+
+## Getting Started
+
+1. Edit this post in `content/posts/welcome.md`
+2. Add new posts as Markdown files with YAML front matter
+3. Run `mix sayfa.build` to generate your site
+4. Find your site in the `output/` directory

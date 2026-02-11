@@ -34,6 +34,7 @@ defmodule Sayfa.Builder do
   alias Sayfa.Content
   alias Sayfa.ContentType
   alias Sayfa.Feed
+  alias Sayfa.I18n
   alias Sayfa.Pagination
   alias Sayfa.ReadingTime
   alias Sayfa.Sitemap
@@ -78,7 +79,7 @@ defmodule Sayfa.Builder do
 
     with :ok <- verify_content_dir(config.content_dir),
          {:ok, files} <- discover_files(config.content_dir),
-         {:ok, contents} <- parse_files(files, config.content_dir),
+         {:ok, contents} <- parse_files(files, config.content_dir, config),
          contents <- filter_drafts(contents, config.drafts),
          contents <- enrich_contents(contents),
          {:ok, contents} <- run_hooks(contents, :before_render, config),
@@ -87,6 +88,7 @@ defmodule Sayfa.Builder do
          {:ok, index_count} <- build_type_indexes(contents, config),
          {:ok, feed_count} <- build_feeds(contents, config),
          {:ok, sitemap_count} <- build_sitemap(contents, config) do
+      Sayfa.Theme.copy_assets(config, config.output_dir)
       run_pagefind(config)
       elapsed = System.monotonic_time(:millisecond) - start_time
 
@@ -129,7 +131,7 @@ defmodule Sayfa.Builder do
     {:ok, files}
   end
 
-  defp parse_files(files, content_dir) do
+  defp parse_files(files, content_dir, config) do
     hooks = get_hooks()
 
     results =
@@ -138,7 +140,7 @@ defmodule Sayfa.Builder do
              {:ok, raw} <- run_hook_list(hooks, :before_parse, raw),
              {:ok, content} <- Content.from_raw(raw),
              {:ok, content} <- run_hook_list(hooks, :after_parse, content) do
-          content = classify_content(content, file, content_dir)
+          content = classify_content(content, file, content_dir, config)
           {:cont, [content | acc]}
         else
           {:error, reason} ->
@@ -152,9 +154,18 @@ defmodule Sayfa.Builder do
     end
   end
 
-  defp classify_content(content, file_path, content_dir) do
+  defp classify_content(content, file_path, content_dir, config) do
     relative = Path.relative_to(file_path, content_dir)
-    parts = Path.split(relative)
+
+    # Detect language from path (e.g., "tr/posts/hello.md" → {:tr, "posts/hello.md"})
+    {lang, lang_stripped_path} =
+      if map_size(config) > 0 do
+        I18n.detect_language(relative, config)
+      else
+        {content.lang || :en, relative}
+      end
+
+    parts = Path.split(lang_stripped_path)
 
     directory =
       case parts do
@@ -162,7 +173,17 @@ defmodule Sayfa.Builder do
         _ -> "pages"
       end
 
-    meta = Map.put(content.meta, "content_type", directory)
+    lang_prefix =
+      if map_size(config) > 0 do
+        I18n.language_prefix(lang, config)
+      else
+        ""
+      end
+
+    meta =
+      content.meta
+      |> Map.put("content_type", directory)
+      |> Map.put("lang_prefix", lang_prefix)
 
     meta =
       case ContentType.find_by_directory(directory) do
@@ -175,7 +196,7 @@ defmodule Sayfa.Builder do
           |> Map.put("url_prefix", type_mod.url_prefix())
       end
 
-    %{content | meta: meta}
+    %{content | meta: meta, lang: lang}
   end
 
   defp filter_drafts(contents, true), do: contents
@@ -223,23 +244,32 @@ defmodule Sayfa.Builder do
 
   defp output_path_for(content, output_dir) do
     url_prefix = content.meta["url_prefix"]
+    lang_prefix = content.meta["lang_prefix"] || ""
 
-    case url_prefix do
-      nil ->
-        # Fallback for unrecognized content types
-        content_type = content.meta["content_type"]
+    base_parts =
+      case url_prefix do
+        nil ->
+          content_type = content.meta["content_type"]
 
-        case content_type do
-          "pages" -> Path.join([output_dir, content.slug, "index.html"])
-          type -> Path.join([output_dir, type, content.slug, "index.html"])
-        end
+          case content_type do
+            "pages" -> [content.slug, "index.html"]
+            type -> [type, content.slug, "index.html"]
+          end
 
-      "" ->
-        Path.join([output_dir, content.slug, "index.html"])
+        "" ->
+          [content.slug, "index.html"]
 
-      prefix ->
-        Path.join([output_dir, prefix, content.slug, "index.html"])
-    end
+        prefix ->
+          [prefix, content.slug, "index.html"]
+      end
+
+    parts =
+      case lang_prefix do
+        "" -> [output_dir | base_parts]
+        lp -> [output_dir, lp | base_parts]
+      end
+
+    Path.join(parts)
   end
 
   # --- Archives (tags & categories) ---
@@ -381,29 +411,50 @@ defmodule Sayfa.Builder do
   # --- Feeds ---
 
   defp build_feeds(contents, config) do
-    # Main feed with all dated content
-    main_xml = Feed.generate(contents, config)
-    main_path = Path.join(config.output_dir, "feed.xml")
-    File.mkdir_p!(Path.dirname(main_path))
-    File.write!(main_path, main_xml)
+    # Group contents by language, ensure default language always has a feed
+    lang_groups = Enum.group_by(contents, fn c -> c.meta["lang_prefix"] || "" end)
 
-    # Per-type feeds for types that have dated content
-    type_groups =
-      contents
-      |> Enum.filter(& &1.date)
-      |> Enum.group_by(fn c -> c.meta["content_type"] end)
-      |> Enum.reject(fn {type, _} -> type == "pages" end)
+    # Always generate a main feed for the default language
+    lang_groups = Map.put_new(lang_groups, "", [])
 
-    type_count =
-      Enum.reduce(type_groups, 0, fn {type, _items}, count ->
-        xml = Feed.generate_for_type(contents, type, config)
-        path = Path.join([config.output_dir, "feed", "#{type}.xml"])
-        File.mkdir_p!(Path.dirname(path))
-        File.write!(path, xml)
-        count + 1
+    total =
+      Enum.reduce(lang_groups, 0, fn {lang_prefix, lang_contents}, count ->
+        # Main feed for this language
+        main_xml = Feed.generate(lang_contents, config)
+
+        main_path =
+          [config.output_dir, lang_prefix, "feed.xml"]
+          |> Enum.reject(&(&1 == ""))
+          |> Path.join()
+
+        File.mkdir_p!(Path.dirname(main_path))
+        File.write!(main_path, main_xml)
+
+        # Per-type feeds for types that have dated content
+        type_groups =
+          lang_contents
+          |> Enum.filter(& &1.date)
+          |> Enum.group_by(fn c -> c.meta["content_type"] end)
+          |> Enum.reject(fn {type, _} -> type == "pages" end)
+
+        type_count =
+          Enum.reduce(type_groups, 0, fn {type, _items}, tc ->
+            xml = Feed.generate_for_type(lang_contents, type, config)
+
+            path =
+              [config.output_dir, lang_prefix, "feed", "#{type}.xml"]
+              |> Enum.reject(&(&1 == ""))
+              |> Path.join()
+
+            File.mkdir_p!(Path.dirname(path))
+            File.write!(path, xml)
+            tc + 1
+          end)
+
+        count + 1 + type_count
       end)
 
-    {:ok, 1 + type_count}
+    {:ok, total}
   end
 
   # --- Sitemap ---
@@ -413,11 +464,18 @@ defmodule Sayfa.Builder do
     content_urls =
       Enum.map(contents, fn content ->
         prefix = content.meta["url_prefix"] || ""
+        lang_prefix = content.meta["lang_prefix"] || ""
 
-        loc =
+        base_loc =
           case prefix do
             "" -> "/#{content.slug}/"
             p -> "/#{p}/#{content.slug}/"
+          end
+
+        loc =
+          case lang_prefix do
+            "" -> base_loc
+            lp -> "/#{lp}#{base_loc}"
           end
 
         %{loc: loc, lastmod: content.date}

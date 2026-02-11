@@ -1,0 +1,84 @@
+defmodule Mix.Tasks.Sayfa.NewTest do
+  use ExUnit.Case, async: true
+
+  setup do
+    tmp_dir = Path.join(System.tmp_dir!(), "sayfa_new_#{System.unique_integer([:positive])}")
+    on_exit(fn -> File.rm_rf!(tmp_dir) end)
+    {:ok, tmp_dir: tmp_dir}
+  end
+
+  describe "run/1" do
+    test "creates a new project with default options", ctx do
+      project_path = Path.join(ctx.tmp_dir, "my_blog")
+
+      Mix.Tasks.Sayfa.New.run([project_path])
+
+      # Verify directory structure
+      assert File.dir?(project_path)
+      assert File.dir?(Path.join(project_path, "config"))
+      assert File.dir?(Path.join(project_path, "content/posts"))
+      assert File.dir?(Path.join(project_path, "content/pages"))
+
+      # Verify generated files
+      assert File.exists?(Path.join(project_path, "mix.exs"))
+      assert File.exists?(Path.join(project_path, "config/config.exs"))
+      assert File.exists?(Path.join(project_path, "content/posts/welcome.md"))
+      assert File.exists?(Path.join(project_path, "content/pages/about.md"))
+      assert File.exists?(Path.join(project_path, ".formatter.exs"))
+      assert File.exists?(Path.join(project_path, ".gitignore"))
+
+      # Verify content
+      mix_exs = File.read!(Path.join(project_path, "mix.exs"))
+      assert mix_exs =~ "MyBlog.MixProject"
+      assert mix_exs =~ ":my_blog"
+      assert mix_exs =~ "{:sayfa"
+
+      config = File.read!(Path.join(project_path, "config/config.exs"))
+      assert config =~ "My Blog"
+      assert config =~ "default_lang: :en"
+
+      welcome = File.read!(Path.join(project_path, "content/posts/welcome.md"))
+      assert welcome =~ "Welcome to My Blog"
+      assert welcome =~ "tags: [welcome]"
+
+      about = File.read!(Path.join(project_path, "content/pages/about.md"))
+      assert about =~ "About My Blog"
+    end
+
+    test "creates project with custom title", ctx do
+      project_path = Path.join(ctx.tmp_dir, "cool_site")
+
+      Mix.Tasks.Sayfa.New.run([project_path, "--title", "Cool Site"])
+
+      config = File.read!(Path.join(project_path, "config/config.exs"))
+      assert config =~ "Cool Site"
+
+      welcome = File.read!(Path.join(project_path, "content/posts/welcome.md"))
+      assert welcome =~ "Welcome to Cool Site"
+    end
+
+    test "creates project with multiple languages", ctx do
+      project_path = Path.join(ctx.tmp_dir, "multi_lang")
+
+      Mix.Tasks.Sayfa.New.run([project_path, "--lang", "en,tr"])
+
+      config = File.read!(Path.join(project_path, "config/config.exs"))
+      assert config =~ "default_lang: :en"
+      assert config =~ "tr:"
+
+      # Turkish content directory created
+      assert File.dir?(Path.join([project_path, "content", "tr", "posts"]))
+    end
+
+    test "errors when directory already exists", ctx do
+      project_path = Path.join(ctx.tmp_dir, "existing")
+      File.mkdir_p!(project_path)
+
+      assert catch_exit(Mix.Tasks.Sayfa.New.run([project_path]))
+    end
+
+    test "errors when no path given" do
+      assert catch_exit(Mix.Tasks.Sayfa.New.run([]))
+    end
+  end
+end

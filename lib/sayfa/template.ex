@@ -89,7 +89,6 @@ defmodule Sayfa.Template do
   @spec render_content(Sayfa.Content.t(), keyword()) :: {:ok, String.t()} | {:error, term()}
   def render_content(%Sayfa.Content{} = content, opts) do
     config = Keyword.fetch!(opts, :config)
-    layouts_dir = Keyword.get(opts, :layouts_dir, Sayfa.Config.theme_layouts_dir(config))
     all_contents = Keyword.get(opts, :all_contents, [])
     lang = content.lang || config.default_lang
 
@@ -102,16 +101,23 @@ defmodule Sayfa.Template do
       )
 
     layout_name = resolve_layout(content)
-    layout_path = Path.join(layouts_dir, "#{layout_name}.html.eex")
 
     layout_path =
-      if File.exists?(layout_path) do
-        layout_path
-      else
-        Path.join(layouts_dir, "page.html.eex")
+      case Keyword.get(opts, :layouts_dir) do
+        nil ->
+          Sayfa.Theme.resolve_layout(layout_name, config) ||
+            Sayfa.Theme.resolve_layout("page", config)
+
+        dir ->
+          path = Path.join(dir, "#{layout_name}.html.eex")
+          if File.exists?(path), do: path, else: Path.join(dir, "page.html.eex")
       end
 
-    base_path = Path.join(layouts_dir, "base.html.eex")
+    base_path =
+      case Keyword.get(opts, :layouts_dir) do
+        nil -> Sayfa.Theme.resolve_layout("base", config)
+        dir -> Path.join(dir, "base.html.eex")
+      end
 
     base_assigns = [
       site: config,
@@ -147,7 +153,6 @@ defmodule Sayfa.Template do
   @spec render_list_page(keyword()) :: {:ok, String.t()} | {:error, term()}
   def render_list_page(opts) do
     config = Keyword.fetch!(opts, :config)
-    layouts_dir = Keyword.get(opts, :layouts_dir, Sayfa.Config.theme_layouts_dir(config))
     contents = Keyword.fetch!(opts, :contents)
     page_title = Keyword.fetch!(opts, :page_title)
     pagination = Keyword.get(opts, :pagination)
@@ -161,8 +166,17 @@ defmodule Sayfa.Template do
         lang: config.default_lang
       )
 
-    list_path = Path.join(layouts_dir, "list.html.eex")
-    base_path = Path.join(layouts_dir, "base.html.eex")
+    list_path =
+      case Keyword.get(opts, :layouts_dir) do
+        nil -> Sayfa.Theme.resolve_layout("list", config)
+        dir -> Path.join(dir, "list.html.eex")
+      end
+
+    base_path =
+      case Keyword.get(opts, :layouts_dir) do
+        nil -> Sayfa.Theme.resolve_layout("base", config)
+        dir -> Path.join(dir, "base.html.eex")
+      end
 
     list_assigns = [
       contents: contents,

@@ -1,0 +1,8 @@
+---
+title: "About"
+layout: page
+---
+
+# About <%= @title %>
+
+This is the about page. Edit it in `content/pages/about.md`.

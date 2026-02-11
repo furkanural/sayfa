@@ -1,0 +1,7 @@
+import Config
+
+config :sayfa, :site,
+  title: "<%= @title %>",
+  base_url: "http://localhost:4000",
+  default_lang: :<%= @default_lang %>,
+  languages: [<%= Enum.map_join(@languages, ", ", fn lang -> "#{lang}: [name: \"#{String.capitalize(lang)}\"]" end) %>]
