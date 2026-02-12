@@ -13,6 +13,7 @@ defmodule Sayfa.ConfigTest do
       assert defaults.theme == "default"
       assert defaults.default_lang == :en
       assert defaults.drafts == false
+      assert defaults.social_links == []
     end
   end
 

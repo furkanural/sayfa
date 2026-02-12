@@ -109,21 +109,306 @@ defmodule Sayfa.SEOTest do
     end
   end
 
+  describe "meta_tags/2 article OG tags" do
+    test "adds article:published_time for posts" do
+      content = %Content{
+        title: "Hello",
+        body: "<p>Body</p>",
+        slug: "hello",
+        date: ~D[2024-01-15],
+        meta: %{"url_prefix" => "posts", "content_type" => "posts"}
+      }
+
+      html = SEO.meta_tags(content, @config)
+      assert html =~ ~s(property="article:published_time" content="2024-01-15")
+    end
+
+    test "adds article:modified_time when updated is present" do
+      content = %Content{
+        title: "Hello",
+        body: "<p>Body</p>",
+        slug: "hello",
+        date: ~D[2024-01-15],
+        meta: %{
+          "url_prefix" => "posts",
+          "content_type" => "posts",
+          "updated" => ~D[2024-02-01]
+        }
+      }
+
+      html = SEO.meta_tags(content, @config)
+      assert html =~ ~s(property="article:modified_time" content="2024-02-01")
+    end
+
+    test "adds article:author from config" do
+      content = %Content{
+        title: "Hello",
+        body: "<p>Body</p>",
+        slug: "hello",
+        meta: %{"url_prefix" => "posts", "content_type" => "posts"}
+      }
+
+      config = Map.put(@config, :author, "Jane Doe")
+      html = SEO.meta_tags(content, config)
+      assert html =~ ~s(property="article:author" content="Jane Doe")
+    end
+
+    test "adds article:tag for each tag" do
+      content = %Content{
+        title: "Hello",
+        body: "<p>Body</p>",
+        slug: "hello",
+        tags: ["elixir", "phoenix"],
+        meta: %{"url_prefix" => "posts", "content_type" => "posts"}
+      }
+
+      html = SEO.meta_tags(content, @config)
+      assert html =~ ~s(property="article:tag" content="elixir")
+      assert html =~ ~s(property="article:tag" content="phoenix")
+    end
+
+    test "does not add article tags for pages" do
+      content = %Content{
+        title: "About",
+        body: "<p>Body</p>",
+        slug: "about",
+        date: ~D[2024-01-15],
+        meta: %{"url_prefix" => "", "content_type" => "pages"}
+      }
+
+      html = SEO.meta_tags(content, @config)
+      refute html =~ "article:published_time"
+    end
+
+    test "adds article tags for notes" do
+      content = %Content{
+        title: "A Note",
+        body: "<p>Body</p>",
+        slug: "note",
+        date: ~D[2024-01-15],
+        meta: %{"url_prefix" => "notes", "content_type" => "notes"}
+      }
+
+      html = SEO.meta_tags(content, @config)
+      assert html =~ ~s(property="article:published_time" content="2024-01-15")
+    end
+  end
+
+  describe "meta_tags/2 dynamic twitter:card" do
+    test "uses summary by default" do
+      content = %Content{
+        title: "Hello",
+        body: "<p>Body</p>",
+        slug: "hello",
+        meta: %{"url_prefix" => "posts"}
+      }
+
+      html = SEO.meta_tags(content, @config)
+      assert html =~ ~s(property="twitter:card" content="summary")
+    end
+
+    test "uses summary_large_image when image is present" do
+      content = %Content{
+        title: "Hello",
+        body: "<p>Body</p>",
+        slug: "hello",
+        meta: %{"url_prefix" => "posts", "image" => "/images/cover.jpg"}
+      }
+
+      html = SEO.meta_tags(content, @config)
+      assert html =~ ~s(property="twitter:card" content="summary_large_image")
+    end
+  end
+
+  describe "json_ld/2" do
+    test "generates BlogPosting for posts" do
+      content = %Content{
+        title: "Hello World",
+        body: "<p>Body text</p>",
+        slug: "hello",
+        date: ~D[2024-01-15],
+        tags: ["elixir"],
+        meta: %{
+          "content_type" => "posts",
+          "url_prefix" => "posts",
+          "lang_prefix" => ""
+        }
+      }
+
+      config = Map.put(@config, :author, "Jane")
+      html = SEO.json_ld(content, config)
+
+      assert html =~ ~s(application/ld+json)
+      assert html =~ ~s("BlogPosting")
+      assert html =~ ~s("Hello World")
+      assert html =~ ~s("2024-01-15")
+      assert html =~ ~s("Jane")
+      assert html =~ ~s("elixir")
+    end
+
+    test "generates WebPage for pages" do
+      content = %Content{
+        title: "About",
+        body: "<p>About me</p>",
+        slug: "about",
+        meta: %{
+          "content_type" => "pages",
+          "url_prefix" => "",
+          "lang_prefix" => ""
+        }
+      }
+
+      html = SEO.json_ld(content, @config)
+      assert html =~ ~s("WebPage")
+      assert html =~ ~s("About")
+    end
+
+    test "generates WebSite for nil content" do
+      html = SEO.json_ld(nil, @config)
+      assert html =~ ~s("WebSite")
+      assert html =~ ~s("My Site")
+    end
+
+    test "includes dateModified when updated is present" do
+      content = %Content{
+        title: "Hello",
+        body: "<p>Body</p>",
+        slug: "hello",
+        date: ~D[2024-01-15],
+        meta: %{
+          "content_type" => "posts",
+          "url_prefix" => "posts",
+          "lang_prefix" => "",
+          "updated" => ~D[2024-02-01]
+        }
+      }
+
+      html = SEO.json_ld(content, @config)
+      assert html =~ ~s("2024-02-01")
+    end
+  end
+
+  describe "hreflang_tags/2" do
+    test "renders hreflang links from alternates" do
+      content = %Content{
+        title: "Hello",
+        body: "",
+        slug: "hello",
+        meta: %{
+          "url_prefix" => "posts",
+          "lang_prefix" => "",
+          "hreflang_alternates" => [
+            {"en", "/posts/hello"},
+            {"tr", "/tr/posts/merhaba"}
+          ]
+        }
+      }
+
+      html = SEO.hreflang_tags(content, @config)
+      assert html =~ ~s(hreflang="en")
+      assert html =~ ~s(hreflang="tr")
+      assert html =~ ~s(href="https://example.com/posts/hello")
+      assert html =~ ~s(href="https://example.com/tr/posts/merhaba")
+    end
+
+    test "adds x-default when multiple alternates exist" do
+      content = %Content{
+        title: "Hello",
+        body: "",
+        slug: "hello",
+        meta: %{
+          "url_prefix" => "posts",
+          "lang_prefix" => "",
+          "hreflang_alternates" => [
+            {"en", "/posts/hello"},
+            {"tr", "/tr/posts/merhaba"}
+          ]
+        }
+      }
+
+      html = SEO.hreflang_tags(content, @config)
+      assert html =~ ~s(hreflang="x-default")
+      # x-default points to the first (self) entry
+      assert html =~ ~s(hreflang="x-default" href="https://example.com/posts/hello")
+    end
+
+    test "does not add x-default for single alternate" do
+      content = %Content{
+        title: "Hello",
+        body: "",
+        slug: "hello",
+        meta: %{
+          "url_prefix" => "posts",
+          "lang_prefix" => "",
+          "hreflang_alternates" => [{"en", "/posts/hello"}]
+        }
+      }
+
+      html = SEO.hreflang_tags(content, @config)
+      assert html =~ ~s(hreflang="en")
+      refute html =~ "x-default"
+    end
+
+    test "returns empty string for nil content" do
+      assert SEO.hreflang_tags(nil, @config) == ""
+    end
+
+    test "returns empty string when no alternates" do
+      content = %Content{
+        title: "Hello",
+        body: "",
+        slug: "hello",
+        meta: %{"url_prefix" => "posts"}
+      }
+
+      assert SEO.hreflang_tags(content, @config) == ""
+    end
+  end
+
   describe "content_url/2" do
     test "builds URL with prefix" do
-      content = %Content{title: "T", body: "", slug: "hello", meta: %{"url_prefix" => "posts"}}
+      content = %Content{
+        title: "T",
+        body: "",
+        slug: "hello",
+        meta: %{"url_prefix" => "posts", "lang_prefix" => ""}
+      }
+
       assert SEO.content_url(content, @config) == "https://example.com/posts/hello"
     end
 
     test "builds URL without prefix" do
-      content = %Content{title: "T", body: "", slug: "about", meta: %{"url_prefix" => ""}}
+      content = %Content{
+        title: "T",
+        body: "",
+        slug: "about",
+        meta: %{"url_prefix" => "", "lang_prefix" => ""}
+      }
+
       assert SEO.content_url(content, @config) == "https://example.com/about"
     end
 
     test "handles trailing slash in base_url" do
-      content = %Content{title: "T", body: "", slug: "hello", meta: %{"url_prefix" => "posts"}}
+      content = %Content{
+        title: "T",
+        body: "",
+        slug: "hello",
+        meta: %{"url_prefix" => "posts", "lang_prefix" => ""}
+      }
+
       config = %{base_url: "https://example.com/"}
       assert SEO.content_url(content, config) == "https://example.com/posts/hello"
+    end
+
+    test "includes lang_prefix in URL" do
+      content = %Content{
+        title: "T",
+        body: "",
+        slug: "merhaba",
+        meta: %{"url_prefix" => "posts", "lang_prefix" => "tr"}
+      }
+
+      assert SEO.content_url(content, @config) == "https://example.com/tr/posts/merhaba"
     end
   end
 end

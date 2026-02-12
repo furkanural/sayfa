@@ -5,9 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title><%= if assigns[:page_title], do: "#{assigns[:page_title]} — #{@site.title}", else: @site.title %></title>
   <%= Sayfa.SEO.meta_tags(assigns[:content], @site) %>
+  <%= Sayfa.SEO.json_ld(assigns[:content], @site) %>
+  <%= Sayfa.SEO.hreflang_tags(assigns[:content], @site) %>
   <link rel="alternate" type="application/atom+xml" title="<%= @site.title %>" href="<%= String.trim_trailing(@site.base_url, "/") %>/feed.xml">
 </head>
 <body>
   <%= @inner_content %>
 </body>
+<!-- Built with Sayfa https://hex.pm/packages/sayfa -->
 </html>

@@ -40,7 +40,8 @@ defmodule Sayfa.Config do
     port: 4000,
     posts_per_page: 10,
     author: nil,
-    description: ""
+    description: "",
+    social_links: []
   }
 
   @doc """
