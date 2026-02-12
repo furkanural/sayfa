@@ -147,7 +147,7 @@ defmodule Sayfa.BuilderTest do
 
       # home layout wraps with <section class="home">
       # (default theme layout)
-      html = File.read!(Path.join([ctx.output_dir, "index", "index.html"]))
+      html = File.read!(Path.join(ctx.output_dir, "index.html"))
       assert html =~ "<!DOCTYPE html>"
     end
 
@@ -268,6 +268,33 @@ defmodule Sayfa.BuilderTest do
       refute File.exists?(Path.join([ctx.output_dir, "pages", "index.html"]))
     end
 
+    test "user posts/index.md overrides auto-generated posts index", ctx do
+      File.write!(Path.join(ctx.posts_dir, "index.md"), """
+      ---
+      title: "My Custom Posts Index"
+      layout: page
+      ---
+
+      Welcome to my custom posts listing.
+      """)
+
+      File.write!(Path.join(ctx.posts_dir, "2024-01-15-hello.md"), """
+      ---
+      title: "Hello"
+      date: 2024-01-15
+      ---
+      Hello content.
+      """)
+
+      assert {:ok, _result} = Builder.build(build_opts(ctx))
+
+      index_path = Path.join([ctx.output_dir, "posts", "index.html"])
+      assert File.exists?(index_path)
+      html = File.read!(index_path)
+      assert html =~ "My Custom Posts Index"
+      assert html =~ "custom posts listing"
+    end
+
     test "enriches content with content type metadata", ctx do
       File.write!(Path.join(ctx.pages_dir, "about.md"), """
       ---
@@ -313,7 +340,26 @@ defmodule Sayfa.BuilderTest do
       assert File.exists?(sitemap_path)
       sitemap_xml = File.read!(sitemap_path)
       assert sitemap_xml =~ "<urlset"
-      assert sitemap_xml =~ "/posts/hello/"
+      assert sitemap_xml =~ "/posts/hello"
+    end
+
+    test "sitemap uses root path for index page", ctx do
+      pages_dir = Path.join(ctx.content_dir, "pages")
+      File.mkdir_p!(pages_dir)
+
+      File.write!(Path.join(pages_dir, "index.md"), """
+      ---
+      title: "Home"
+      ---
+      Welcome home.
+      """)
+
+      assert {:ok, _result} = Builder.build(build_opts(ctx))
+
+      sitemap_path = Path.join(ctx.output_dir, "sitemap.xml")
+      sitemap_xml = File.read!(sitemap_path)
+      assert sitemap_xml =~ "<loc>http://localhost:4000/</loc>"
+      refute sitemap_xml =~ "/index/"
     end
   end
 

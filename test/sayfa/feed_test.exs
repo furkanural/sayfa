@@ -69,7 +69,7 @@ defmodule Sayfa.FeedTest do
     test "includes entry URLs" do
       contents = [make_content(%{title: "Post", date: ~D[2024-01-15], slug: "post"})]
       xml = Feed.generate(contents, @config)
-      assert xml =~ "https://example.com/posts/post/"
+      assert xml =~ "https://example.com/posts/post"
     end
 
     test "includes entry content" do

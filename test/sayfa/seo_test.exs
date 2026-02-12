@@ -19,7 +19,7 @@ defmodule Sayfa.SEOTest do
       html = SEO.meta_tags(content, @config)
       assert html =~ ~s(property="og:title" content="Hello World")
       assert html =~ ~s(property="og:type" content="article")
-      assert html =~ ~s(property="og:url" content="https://example.com/posts/hello-world/")
+      assert html =~ ~s(property="og:url" content="https://example.com/posts/hello-world")
       assert html =~ ~s(property="og:site_name" content="My Site")
     end
 
@@ -69,7 +69,7 @@ defmodule Sayfa.SEOTest do
       }
 
       html = SEO.meta_tags(content, @config)
-      assert html =~ ~s(rel="canonical" href="https://example.com/posts/hello/")
+      assert html =~ ~s(rel="canonical" href="https://example.com/posts/hello")
     end
 
     test "includes image tags when image is in meta" do
@@ -112,18 +112,18 @@ defmodule Sayfa.SEOTest do
   describe "content_url/2" do
     test "builds URL with prefix" do
       content = %Content{title: "T", body: "", slug: "hello", meta: %{"url_prefix" => "posts"}}
-      assert SEO.content_url(content, @config) == "https://example.com/posts/hello/"
+      assert SEO.content_url(content, @config) == "https://example.com/posts/hello"
     end
 
     test "builds URL without prefix" do
       content = %Content{title: "T", body: "", slug: "about", meta: %{"url_prefix" => ""}}
-      assert SEO.content_url(content, @config) == "https://example.com/about/"
+      assert SEO.content_url(content, @config) == "https://example.com/about"
     end
 
     test "handles trailing slash in base_url" do
       content = %Content{title: "T", body: "", slug: "hello", meta: %{"url_prefix" => "posts"}}
       config = %{base_url: "https://example.com/"}
-      assert SEO.content_url(content, config) == "https://example.com/posts/hello/"
+      assert SEO.content_url(content, config) == "https://example.com/posts/hello"
     end
   end
 end

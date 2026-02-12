@@ -75,12 +75,12 @@ defmodule Sayfa.SEO do
       iex> content = %Sayfa.Content{title: "T", body: "", slug: "hello", meta: %{"url_prefix" => "posts"}}
       iex> config = %{base_url: "https://example.com"}
       iex> Sayfa.SEO.content_url(content, config)
-      "https://example.com/posts/hello/"
+      "https://example.com/posts/hello"
 
       iex> content = %Sayfa.Content{title: "T", body: "", slug: "about", meta: %{"url_prefix" => ""}}
       iex> config = %{base_url: "https://example.com"}
       iex> Sayfa.SEO.content_url(content, config)
-      "https://example.com/about/"
+      "https://example.com/about"
 
   """
   @spec content_url(Content.t(), map()) :: String.t()
@@ -88,9 +88,11 @@ defmodule Sayfa.SEO do
     base = String.trim_trailing(config.base_url, "/")
     prefix = content.meta["url_prefix"] || ""
 
-    case prefix do
-      "" -> "#{base}/#{content.slug}/"
-      p -> "#{base}/#{p}/#{content.slug}/"
+    case {prefix, content.slug} do
+      {"", "index"} -> base
+      {"", slug} -> "#{base}/#{slug}"
+      {p, "index"} -> "#{base}/#{p}"
+      {p, slug} -> "#{base}/#{p}/#{slug}"
     end
   end
 

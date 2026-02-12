@@ -9,8 +9,8 @@ defmodule Sayfa.SitemapTest do
   describe "generate/2" do
     test "generates valid sitemap XML" do
       urls = [
-        %{loc: "/posts/hello/", lastmod: ~D[2024-01-15]},
-        %{loc: "/about/", lastmod: nil}
+        %{loc: "/posts/hello", lastmod: ~D[2024-01-15]},
+        %{loc: "/about", lastmod: nil}
       ]
 
       xml = Sitemap.generate(urls, @config)
@@ -20,19 +20,19 @@ defmodule Sayfa.SitemapTest do
     end
 
     test "includes full URLs" do
-      urls = [%{loc: "/posts/hello/", lastmod: nil}]
+      urls = [%{loc: "/posts/hello", lastmod: nil}]
       xml = Sitemap.generate(urls, @config)
-      assert xml =~ "<loc>https://example.com/posts/hello/</loc>"
+      assert xml =~ "<loc>https://example.com/posts/hello</loc>"
     end
 
     test "includes lastmod when present" do
-      urls = [%{loc: "/posts/hello/", lastmod: ~D[2024-01-15]}]
+      urls = [%{loc: "/posts/hello", lastmod: ~D[2024-01-15]}]
       xml = Sitemap.generate(urls, @config)
       assert xml =~ "<lastmod>2024-01-15</lastmod>"
     end
 
     test "omits lastmod when nil" do
-      urls = [%{loc: "/about/", lastmod: nil}]
+      urls = [%{loc: "/about", lastmod: nil}]
       xml = Sitemap.generate(urls, @config)
       refute xml =~ "<lastmod>"
     end
@@ -45,9 +45,9 @@ defmodule Sayfa.SitemapTest do
 
     test "handles trailing slash in base_url" do
       config = %{base_url: "https://example.com/"}
-      urls = [%{loc: "/posts/hello/", lastmod: nil}]
+      urls = [%{loc: "/posts/hello", lastmod: nil}]
       xml = Sitemap.generate(urls, config)
-      assert xml =~ "<loc>https://example.com/posts/hello/</loc>"
+      assert xml =~ "<loc>https://example.com/posts/hello</loc>"
     end
   end
 end

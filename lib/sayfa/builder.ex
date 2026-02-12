@@ -314,23 +314,7 @@ defmodule Sayfa.Builder do
   defp output_path_for(content, output_dir) do
     url_prefix = content.meta["url_prefix"]
     lang_prefix = content.meta["lang_prefix"] || ""
-
-    base_parts =
-      case url_prefix do
-        nil ->
-          content_type = content.meta["content_type"]
-
-          case content_type do
-            "pages" -> [content.slug, "index.html"]
-            type -> [type, content.slug, "index.html"]
-          end
-
-        "" ->
-          [content.slug, "index.html"]
-
-        prefix ->
-          [prefix, content.slug, "index.html"]
-      end
+    base_parts = output_base_parts(url_prefix, content)
 
     parts =
       case lang_prefix do
@@ -339,6 +323,40 @@ defmodule Sayfa.Builder do
       end
 
     Path.join(parts)
+  end
+
+  defp output_base_parts(nil, content) do
+    case content.meta["content_type"] do
+      "pages" -> slug_path_parts(content.slug)
+      type -> [type | slug_path_parts(content.slug)]
+    end
+  end
+
+  defp output_base_parts("", content), do: slug_path_parts(content.slug)
+  defp output_base_parts(prefix, content), do: [prefix | slug_path_parts(content.slug)]
+
+  defp slug_path_parts("index"), do: ["index.html"]
+  defp slug_path_parts(slug), do: [slug, "index.html"]
+
+  defp content_sitemap_url(content) do
+    prefix = content.meta["url_prefix"] || ""
+    lang_prefix = content.meta["lang_prefix"] || ""
+
+    base_loc =
+      case {prefix, content.slug} do
+        {"", "index"} -> "/"
+        {"", slug} -> "/#{slug}"
+        {p, "index"} -> "/#{p}"
+        {p, slug} -> "/#{p}/#{slug}"
+      end
+
+    loc =
+      case lang_prefix do
+        "" -> base_loc
+        lp -> "/#{lp}#{base_loc}"
+      end
+
+    %{loc: loc, lastmod: content.date}
   end
 
   # --- Archives (tags & categories) ---
@@ -411,7 +429,9 @@ defmodule Sayfa.Builder do
     type_groups =
       all_contents
       |> Enum.group_by(fn c -> c.meta["content_type"] end)
-      |> Enum.reject(fn {type, _} -> type == "pages" end)
+      |> Enum.reject(fn {type, items} ->
+        type == "pages" or Enum.any?(items, fn c -> c.slug == "index" end)
+      end)
 
     results =
       Enum.reduce_while(type_groups, 0, fn {type, items}, total_count ->
@@ -542,32 +562,14 @@ defmodule Sayfa.Builder do
 
   defp build_sitemap(contents, config) do
     # Collect URLs from individual content pages
-    content_urls =
-      Enum.map(contents, fn content ->
-        prefix = content.meta["url_prefix"] || ""
-        lang_prefix = content.meta["lang_prefix"] || ""
-
-        base_loc =
-          case prefix do
-            "" -> "/#{content.slug}/"
-            p -> "/#{p}/#{content.slug}/"
-          end
-
-        loc =
-          case lang_prefix do
-            "" -> base_loc
-            lp -> "/#{lp}#{base_loc}"
-          end
-
-        %{loc: loc, lastmod: content.date}
-      end)
+    content_urls = Enum.map(contents, &content_sitemap_url/1)
 
     # Collect URLs from tag archives
     tag_urls =
       contents
       |> Content.group_by_tag()
       |> Enum.map(fn {tag, _} ->
-        %{loc: "/tags/#{Slug.slugify(tag)}/", lastmod: nil}
+        %{loc: "/tags/#{Slug.slugify(tag)}", lastmod: nil}
       end)
 
     # Collect URLs from category archives
@@ -575,7 +577,7 @@ defmodule Sayfa.Builder do
       contents
       |> Content.group_by_category()
       |> Enum.map(fn {cat, _} ->
-        %{loc: "/categories/#{Slug.slugify(cat)}/", lastmod: nil}
+        %{loc: "/categories/#{Slug.slugify(cat)}", lastmod: nil}
       end)
 
     # Collect URLs from content type indexes
@@ -590,7 +592,7 @@ defmodule Sayfa.Builder do
             mod -> mod.url_prefix()
           end
 
-        %{loc: "/#{url_prefix}/", lastmod: nil}
+        %{loc: "/#{url_prefix}", lastmod: nil}
       end)
 
     all_urls = content_urls ++ tag_urls ++ cat_urls ++ index_urls
@@ -608,7 +610,11 @@ defmodule Sayfa.Builder do
   defp run_pagefind(config) do
     case System.find_executable("pagefind") do
       nil ->
-        Logger.info("Pagefind binary not found, skipping search indexing")
+        Logger.info(
+          "Pagefind binary not found, skipping search indexing. " <>
+            "Install it with: npm install -g pagefind " <>
+            "(or see https://pagefind.app/docs/installation/)"
+        )
 
       _path ->
         case System.cmd("pagefind", ["--site", config.output_dir], stderr_to_stdout: true) do
