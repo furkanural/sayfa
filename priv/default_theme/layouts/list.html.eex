@@ -3,11 +3,18 @@
   <ul>
 <%= for item <- @contents do %>
     <li>
-      <a href="/<%= if item.meta["url_prefix"] && item.meta["url_prefix"] != "" do %><%= item.meta["url_prefix"] %>/<% end %><%= item.slug %>/">
+      <a href="<%= Sayfa.Content.url(item) %>">
         <%= item.title %>
       </a>
 <%= if item.date do %>
       <time datetime="<%= item.date %>"><%= item.date %></time>
+<% end %>
+<%= if item.tags != [] do %>
+      <span class="tags">
+<%= for tag <- item.tags do %>
+        <a href="/tags/<%= Slug.slugify(tag) %>/"><%= tag %></a>
+<% end %>
+      </span>
 <% end %>
     </li>
 <% end %>

@@ -7,7 +7,7 @@
 <%= if @content.tags != [] do %>
     <ul class="tags">
 <%= for tag <- @content.tags do %>
-      <li><%= tag %></li>
+      <li><a href="/tags/<%= Slug.slugify(tag) %>/"><%= tag %></a></li>
 <% end %>
     </ul>
 <% end %>
