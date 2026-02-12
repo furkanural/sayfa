@@ -77,7 +77,8 @@ defmodule Mix.Tasks.Sayfa.New do
       path,
       Path.join(path, "config"),
       Path.join(path, "content/posts"),
-      Path.join(path, "content/pages")
+      Path.join(path, "content/pages"),
+      Path.join(path, ".github/workflows")
     ]
 
     Enum.each(dirs, &File.mkdir_p!/1)
@@ -126,6 +127,13 @@ defmodule Mix.Tasks.Sayfa.New do
     # Copy static files (no EEx processing)
     copy_static(templates_dir, "formatter.exs", Path.join(path, ".formatter.exs"))
     copy_static(templates_dir, "gitignore", Path.join(path, ".gitignore"))
+    copy_static(templates_dir, "Dockerfile", Path.join(path, "Dockerfile"))
+
+    copy_static(
+      templates_dir,
+      "github/workflows/deploy.yml",
+      Path.join(path, ".github/workflows/deploy.yml")
+    )
 
     # Initialize git repository
     git_init(path)

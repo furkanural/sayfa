@@ -54,6 +54,22 @@ defmodule Mix.Tasks.Sayfa.NewTest do
       # Verify README
       readme = File.read!(Path.join(project_path, "README.md"))
       assert readme =~ "My Blog"
+      assert readme =~ "## Deployment"
+
+      # Verify Dockerfile
+      assert File.exists?(Path.join(project_path, "Dockerfile"))
+      dockerfile = File.read!(Path.join(project_path, "Dockerfile"))
+      assert dockerfile =~ "nginx"
+      assert dockerfile =~ "mix sayfa.build"
+
+      # Verify GitHub Actions deploy workflow
+      assert File.exists?(Path.join(project_path, ".github/workflows/deploy.yml"))
+      deploy_yml = File.read!(Path.join(project_path, ".github/workflows/deploy.yml"))
+      assert deploy_yml =~ "Deploy to GitHub Pages"
+
+      # Verify .gitignore has descriptive comment
+      gitignore = File.read!(Path.join(project_path, ".gitignore"))
+      assert gitignore =~ "Build artifact"
 
       # Verify git init (if git is available)
       if System.find_executable("git") do

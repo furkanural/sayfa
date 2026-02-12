@@ -26,6 +26,7 @@ A simple, extensible static site generator built in Elixir. **Sayfa** means "pag
 - [Configuration](#configuration)
 - [CLI Commands](#cli-commands)
 - [Project Structure](#project-structure)
+- [Deployment](#deployment)
 - [Extensibility](#extensibility)
 - [Roadmap](#roadmap)
 - [Contributing](#contributing)
@@ -573,6 +574,36 @@ my_site/
 
 ---
 
+## Deployment
+
+`mix sayfa.new` generates a **Dockerfile** and a **GitHub Actions workflow** so you can deploy immediately.
+
+### GitHub Pages
+
+Your generated project includes `.github/workflows/deploy.yml`. Enable GitHub Pages in your repo settings (set Source to **GitHub Actions**), and every push to `main` will build and deploy your site automatically.
+
+### Docker / Coolify
+
+A multi-stage `Dockerfile` is included — it builds your site with Elixir + Rust, then serves it with nginx:
+
+```bash
+docker build -t my-site .
+docker run -p 8080:80 my-site
+```
+
+For [Coolify](https://coolify.io/), select the **Dockerfile** build pack.
+
+### VPS (rsync)
+
+Build locally and sync to your server:
+
+```bash
+mix sayfa.build
+rsync -avz --delete output/ user@server:/var/www/my-site/
+```
+
+---
+
 ## Extensibility
 
 Sayfa is designed to be extended via three behaviours:
@@ -627,7 +658,6 @@ Future plans for Sayfa:
 - Image optimization (automatic resizing, WebP conversion)
 - TailwindCSS integration (build step)
 - Dark mode toggle in default theme
-- Deployment helpers (GitHub Pages, Netlify, Vercel)
 - Plugin system for third-party extensions
 - Asset fingerprinting
 

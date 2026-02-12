@@ -50,6 +50,40 @@ mix sayfa.gen.layout post
 This copies the layout to `themes/custom/layouts/` where you can edit it freely.
 Then set `theme: "custom"` in `config/config.exs`.
 
+## Deployment
+
+The `output/` directory is gitignored because it's a build artifact — CI/CD builds the site fresh on every deploy. Before deploying, make sure to update `base_url` in `config/config.exs` to your production URL.
+
+### GitHub Pages
+
+This project includes a GitHub Actions workflow (`.github/workflows/deploy.yml`) that automatically builds and deploys your site on every push to `main`.
+
+To enable it:
+1. Go to your repo's **Settings → Pages**
+2. Set **Source** to **GitHub Actions**
+
+That's it — pushes to `main` will deploy automatically.
+
+### Docker / Coolify
+
+A `Dockerfile` is included that builds your site and serves it with nginx:
+
+```bash
+docker build -t my-site .
+docker run -p 8080:80 my-site
+```
+
+For [Coolify](https://coolify.io/), select the **Dockerfile** build pack and point it at your repo.
+
+### VPS (rsync)
+
+Build locally and sync to your server:
+
+```bash
+mix sayfa.build
+rsync -avz --delete output/ user@server:/var/www/my-site/
+```
+
 ## Learn More
 
 - [Sayfa on Hex](https://hex.pm/packages/sayfa)
