@@ -184,6 +184,49 @@ defmodule Sayfa.ContentTest do
     end
   end
 
+  describe "url/1" do
+    test "builds URL with url_prefix" do
+      content =
+        make_content(%{slug: "hello", meta: %{"url_prefix" => "posts", "lang_prefix" => ""}})
+
+      assert Content.url(content) == "/posts/hello"
+    end
+
+    test "builds URL with lang_prefix" do
+      content =
+        make_content(%{slug: "merhaba", meta: %{"url_prefix" => "posts", "lang_prefix" => "tr"}})
+
+      assert Content.url(content) == "/tr/posts/merhaba"
+    end
+
+    test "builds URL for pages (empty url_prefix)" do
+      content = make_content(%{slug: "about", meta: %{"url_prefix" => "", "lang_prefix" => ""}})
+      assert Content.url(content) == "/about"
+    end
+
+    test "builds URL for index slug" do
+      content = make_content(%{slug: "index", meta: %{"url_prefix" => "", "lang_prefix" => ""}})
+      assert Content.url(content) == "/"
+    end
+
+    test "builds URL for index with prefix" do
+      content =
+        make_content(%{slug: "index", meta: %{"url_prefix" => "posts", "lang_prefix" => ""}})
+
+      assert Content.url(content) == "/posts"
+    end
+
+    test "builds URL for index with lang_prefix" do
+      content = make_content(%{slug: "index", meta: %{"url_prefix" => "", "lang_prefix" => "tr"}})
+      assert Content.url(content) == "/tr/"
+    end
+
+    test "handles nil lang_prefix and url_prefix" do
+      content = make_content(%{slug: "hello", meta: %{}})
+      assert Content.url(content) == "/hello"
+    end
+  end
+
   # --- Collections API Tests ---
 
   defp make_content(attrs) do

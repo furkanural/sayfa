@@ -337,6 +337,46 @@ defmodule Sayfa.Content do
   end
 
   @doc """
+  Returns the URL path for a content item.
+
+  Combines `lang_prefix`, `url_prefix`, and `slug` from the content's metadata
+  to build the correct path. This is the single source of truth for content URLs.
+
+  ## Examples
+
+      iex> content = %Sayfa.Content{title: "T", body: "", slug: "hello", meta: %{"url_prefix" => "posts", "lang_prefix" => ""}}
+      iex> Sayfa.Content.url(content)
+      "/posts/hello"
+
+      iex> content = %Sayfa.Content{title: "T", body: "", slug: "merhaba", meta: %{"url_prefix" => "posts", "lang_prefix" => "tr"}}
+      iex> Sayfa.Content.url(content)
+      "/tr/posts/merhaba"
+
+      iex> content = %Sayfa.Content{title: "T", body: "", slug: "index", meta: %{"url_prefix" => "", "lang_prefix" => ""}}
+      iex> Sayfa.Content.url(content)
+      "/"
+
+  """
+  @spec url(t()) :: String.t()
+  def url(content) do
+    prefix = content.meta["url_prefix"] || ""
+    lang_prefix = content.meta["lang_prefix"] || ""
+
+    base =
+      case {prefix, content.slug} do
+        {"", "index"} -> "/"
+        {"", slug} -> "/#{slug}"
+        {p, "index"} -> "/#{p}"
+        {p, slug} -> "/#{p}/#{slug}"
+      end
+
+    case lang_prefix do
+      "" -> base
+      lp -> "/#{lp}#{base}"
+    end
+  end
+
+  @doc """
   Generates a URL-friendly slug from a filename.
 
   Strips date prefixes (e.g., `2024-01-15-`) and the `.md` extension.

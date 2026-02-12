@@ -43,22 +43,12 @@ defmodule Sayfa.Blocks.RecentPosts do
   end
 
   defp render_post_item(post) do
-    url = post_url(post)
+    url = Content.url(post)
     title = Block.escape_html(post.title)
 
     date_html =
       if post.date, do: " <time datetime=\"#{post.date}\">#{post.date}</time>", else: ""
 
     "<li><a href=\"#{url}\">#{title}</a>#{date_html}</li>"
-  end
-
-  defp post_url(post) do
-    prefix = post.meta["url_prefix"]
-
-    case prefix do
-      nil -> "/#{post.slug}/"
-      "" -> "/#{post.slug}/"
-      p -> "/#{p}/#{post.slug}/"
-    end
   end
 end
