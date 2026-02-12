@@ -63,6 +63,8 @@ defmodule Sayfa.BuilderTest do
       assert post_html =~ "<!DOCTYPE html>"
       assert post_html =~ "Hello World"
       assert post_html =~ "first post"
+      # Tags should be clickable links
+      assert post_html =~ ~s(<a href="/tags/elixir/">elixir</a>)
 
       # Verify page output
       page_path = Path.join([ctx.output_dir, "about", "index.html"])
@@ -198,6 +200,8 @@ defmodule Sayfa.BuilderTest do
       assert elixir_html =~ "Post One"
       assert elixir_html =~ "Post Two"
       assert elixir_html =~ "Tagged: elixir"
+      # Tag archive list items should have clickable tag links
+      assert elixir_html =~ ~s(<a href="/tags/elixir/">elixir</a>)
 
       tutorial_path = Path.join([ctx.output_dir, "tags", "tutorial", "index.html"])
       assert File.exists?(tutorial_path)
@@ -363,6 +367,108 @@ defmodule Sayfa.BuilderTest do
     end
   end
 
+  describe "robots.txt" do
+    test "generates robots.txt with sitemap directive", ctx do
+      File.write!(Path.join(ctx.posts_dir, "2024-01-15-hello.md"), """
+      ---
+      title: "Hello"
+      date: 2024-01-15
+      ---
+      Content.
+      """)
+
+      assert {:ok, _result} = Builder.build(build_opts(ctx))
+
+      robots_path = Path.join(ctx.output_dir, "robots.txt")
+      assert File.exists?(robots_path)
+      robots = File.read!(robots_path)
+      assert robots =~ "User-agent: *"
+      assert robots =~ "Allow: /"
+      assert robots =~ "Sitemap: http://localhost:4000/sitemap.xml"
+    end
+  end
+
+  describe "root feed includes all languages" do
+    test "root feed.xml contains content from all languages", ctx do
+      tr_posts_dir = Path.join([ctx.content_dir, "tr", "posts"])
+      File.mkdir_p!(tr_posts_dir)
+
+      File.write!(Path.join(ctx.posts_dir, "2024-01-15-hello.md"), """
+      ---
+      title: "Hello World"
+      date: 2024-01-15
+      ---
+      English content.
+      """)
+
+      File.write!(Path.join(tr_posts_dir, "2024-01-15-merhaba.md"), """
+      ---
+      title: "Merhaba Dünya"
+      date: 2024-01-15
+      ---
+      Turkish content.
+      """)
+
+      assert {:ok, _result} =
+               Builder.build(
+                 build_opts(ctx, languages: [en: [name: "English"], tr: [name: "Türkçe"]])
+               )
+
+      # Root feed should contain both languages
+      root_feed = File.read!(Path.join(ctx.output_dir, "feed.xml"))
+      assert root_feed =~ "Hello World"
+      assert root_feed =~ "Merhaba"
+
+      # Turkish-specific feed should only have Turkish content
+      tr_feed = File.read!(Path.join([ctx.output_dir, "tr", "feed.xml"]))
+      assert tr_feed =~ "Merhaba"
+      refute tr_feed =~ "Hello World"
+    end
+  end
+
+  describe "hreflang enrichment" do
+    test "adds hreflang_alternates to content with translations", ctx do
+      tr_posts_dir = Path.join([ctx.content_dir, "tr", "posts"])
+      File.mkdir_p!(tr_posts_dir)
+
+      File.write!(Path.join(ctx.posts_dir, "2024-01-15-hello.md"), """
+      ---
+      title: "Hello World"
+      date: 2024-01-15
+      translations:
+        tr: "merhaba"
+      ---
+      English content.
+      """)
+
+      File.write!(Path.join(tr_posts_dir, "2024-01-15-merhaba.md"), """
+      ---
+      title: "Merhaba Dünya"
+      date: 2024-01-15
+      translations:
+        en: "hello"
+      ---
+      Turkish content.
+      """)
+
+      assert {:ok, _result} =
+               Builder.build(
+                 build_opts(ctx, languages: [en: [name: "English"], tr: [name: "Türkçe"]])
+               )
+
+      # English post should have hreflang tags
+      en_html = File.read!(Path.join([ctx.output_dir, "posts", "hello", "index.html"]))
+      assert en_html =~ ~s(hreflang="en")
+      assert en_html =~ ~s(hreflang="tr")
+      assert en_html =~ ~s(hreflang="x-default")
+
+      # Turkish post should also have hreflang tags
+      tr_html = File.read!(Path.join([ctx.output_dir, "tr", "posts", "merhaba", "index.html"]))
+      assert tr_html =~ ~s(hreflang="tr")
+      assert tr_html =~ ~s(hreflang="en")
+    end
+  end
+
   describe "content enrichment" do
     test "adds reading_time and toc to content meta", ctx do
       File.write!(Path.join(ctx.posts_dir, "2024-01-15-rich.md"), """
@@ -505,6 +611,19 @@ defmodule Sayfa.BuilderTest do
       # Main feed at /feed.xml
       main_feed = Path.join(ctx.output_dir, "feed.xml")
       assert File.exists?(main_feed)
+
+      # Turkish posts index at /tr/posts/index.html
+      tr_posts_index = Path.join([ctx.output_dir, "tr", "posts", "index.html"])
+      assert File.exists?(tr_posts_index)
+      tr_index_html = File.read!(tr_posts_index)
+      assert tr_index_html =~ "Merhaba"
+
+      # English posts index at /posts/index.html (no Turkish posts)
+      en_posts_index = Path.join([ctx.output_dir, "posts", "index.html"])
+      assert File.exists?(en_posts_index)
+      en_index_html = File.read!(en_posts_index)
+      assert en_index_html =~ "Hello World"
+      refute en_index_html =~ "Merhaba"
     end
   end
 

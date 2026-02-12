@@ -93,6 +93,8 @@ defmodule Sayfa.Builder do
            timed_sync("Filter drafts", verbose, fn -> filter_drafts(contents, config.drafts) end),
          _ <- verbose_log(verbose, "#{length(contents)} contents after filtering"),
          contents <- timed_sync("Enrich contents", verbose, fn -> enrich_contents(contents) end),
+         contents <-
+           timed_sync("Enrich hreflang", verbose, fn -> enrich_hreflang(contents, config) end),
          {:ok, contents} <-
            timed("Run before_render hooks", verbose, fn ->
              run_hooks(contents, :before_render, config)
@@ -107,6 +109,8 @@ defmodule Sayfa.Builder do
            timed("Generate feeds", verbose, fn -> build_feeds(contents, config) end),
          {:ok, sitemap_count} <-
            timed("Generate sitemap", verbose, fn -> build_sitemap(contents, config) end) do
+      timed_sync("Generate robots.txt", verbose, fn -> build_robots_txt(config) end)
+
       timed_sync("Copy theme assets", verbose, fn ->
         Sayfa.Theme.copy_assets(config, config.output_dir)
       end)
@@ -339,24 +343,7 @@ defmodule Sayfa.Builder do
   defp slug_path_parts(slug), do: [slug, "index.html"]
 
   defp content_sitemap_url(content) do
-    prefix = content.meta["url_prefix"] || ""
-    lang_prefix = content.meta["lang_prefix"] || ""
-
-    base_loc =
-      case {prefix, content.slug} do
-        {"", "index"} -> "/"
-        {"", slug} -> "/#{slug}"
-        {p, "index"} -> "/#{p}"
-        {p, slug} -> "/#{p}/#{slug}"
-      end
-
-    loc =
-      case lang_prefix do
-        "" -> base_loc
-        lp -> "/#{lp}#{base_loc}"
-      end
-
-    %{loc: loc, lastmod: content.date}
+    %{loc: Content.url(content), lastmod: content.date}
   end
 
   # --- Archives (tags & categories) ---
@@ -425,28 +412,17 @@ defmodule Sayfa.Builder do
   defp build_type_indexes(all_contents, config) do
     page_size = Map.get(config, :posts_per_page, 10)
 
-    # Build an index for each content type that has content
-    type_groups =
+    # Build an index for each {content_type, lang_prefix} group
+    type_lang_groups =
       all_contents
-      |> Enum.group_by(fn c -> c.meta["content_type"] end)
-      |> Enum.reject(fn {type, items} ->
+      |> Enum.group_by(fn c -> {c.meta["content_type"], c.meta["lang_prefix"] || ""} end)
+      |> Enum.reject(fn {{type, _lang}, items} ->
         type == "pages" or Enum.any?(items, fn c -> c.slug == "index" end)
       end)
 
     results =
-      Enum.reduce_while(type_groups, 0, fn {type, items}, total_count ->
-        sorted = Content.sort_by_date(items)
-
-        url_prefix =
-          case ContentType.find_by_directory(type) do
-            nil -> type
-            mod -> mod.url_prefix()
-          end
-
-        base_path = "/#{url_prefix}"
-        pages = Pagination.paginate(sorted, page_size: page_size, base_path: base_path)
-
-        case write_paginated_index(pages, url_prefix, all_contents, config) do
+      Enum.reduce_while(type_lang_groups, 0, fn {{type, lang_prefix}, items}, total_count ->
+        case build_type_lang_index(type, lang_prefix, items, page_size, all_contents, config) do
           {:ok, page_count} -> {:cont, total_count + page_count}
           {:error, _} = error -> {:halt, error}
         end
@@ -458,15 +434,40 @@ defmodule Sayfa.Builder do
     end
   end
 
-  defp write_paginated_index(pages, url_prefix, all_contents, config) do
+  defp build_type_lang_index(type, lang_prefix, items, page_size, all_contents, config) do
+    sorted = Content.sort_by_date(items)
+
+    url_prefix =
+      case ContentType.find_by_directory(type) do
+        nil -> type
+        mod -> mod.url_prefix()
+      end
+
+    base_path =
+      case lang_prefix do
+        "" -> "/#{url_prefix}"
+        lp -> "/#{lp}/#{url_prefix}"
+      end
+
+    pages = Pagination.paginate(sorted, page_size: page_size, base_path: base_path)
+    write_paginated_index(pages, url_prefix, lang_prefix, all_contents, config)
+  end
+
+  defp write_paginated_index(pages, url_prefix, lang_prefix, all_contents, config) do
+    output_base =
+      case lang_prefix do
+        "" -> [config.output_dir, url_prefix]
+        lp -> [config.output_dir, lp, url_prefix]
+      end
+
     results =
       Enum.reduce_while(pages, 0, fn page, count ->
         page_title = String.capitalize(url_prefix)
 
         output_path =
           case page.page_number do
-            1 -> Path.join([config.output_dir, url_prefix, "index.html"])
-            n -> Path.join([config.output_dir, url_prefix, "page", "#{n}", "index.html"])
+            1 -> Path.join(output_base ++ ["index.html"])
+            n -> Path.join(output_base ++ ["page", "#{n}", "index.html"])
           end
 
         case Template.render_list_page(
@@ -512,50 +513,50 @@ defmodule Sayfa.Builder do
   # --- Feeds ---
 
   defp build_feeds(contents, config) do
-    # Group contents by language, ensure default language always has a feed
-    lang_groups = Enum.group_by(contents, fn c -> c.meta["lang_prefix"] || "" end)
+    # 1. Root feed: ALL content across all languages
+    root_xml = Feed.generate(contents, config)
+    root_path = Path.join(config.output_dir, "feed.xml")
+    File.mkdir_p!(Path.dirname(root_path))
+    File.write!(root_path, root_xml)
 
-    # Always generate a main feed for the default language
-    lang_groups = Map.put_new(lang_groups, "", [])
+    # 2. Per-language feeds (only for non-default languages that have content)
+    lang_groups =
+      contents
+      |> Enum.group_by(fn c -> c.meta["lang_prefix"] || "" end)
+      |> Enum.reject(fn {lp, _} -> lp == "" end)
 
-    total =
+    lang_count =
       Enum.reduce(lang_groups, 0, fn {lang_prefix, lang_contents}, count ->
-        # Main feed for this language
-        main_xml = Feed.generate(lang_contents, config)
+        xml = Feed.generate(lang_contents, config)
 
-        main_path =
+        path =
           [config.output_dir, lang_prefix, "feed.xml"]
           |> Enum.reject(&(&1 == ""))
           |> Path.join()
 
-        File.mkdir_p!(Path.dirname(main_path))
-        File.write!(main_path, main_xml)
-
-        # Per-type feeds for types that have dated content
-        type_groups =
-          lang_contents
-          |> Enum.filter(& &1.date)
-          |> Enum.group_by(fn c -> c.meta["content_type"] end)
-          |> Enum.reject(fn {type, _} -> type == "pages" end)
-
-        type_count =
-          Enum.reduce(type_groups, 0, fn {type, _items}, tc ->
-            xml = Feed.generate_for_type(lang_contents, type, config)
-
-            path =
-              [config.output_dir, lang_prefix, "feed", "#{type}.xml"]
-              |> Enum.reject(&(&1 == ""))
-              |> Path.join()
-
-            File.mkdir_p!(Path.dirname(path))
-            File.write!(path, xml)
-            tc + 1
-          end)
-
-        count + 1 + type_count
+        File.mkdir_p!(Path.dirname(path))
+        File.write!(path, xml)
+        count + 1
       end)
 
-    {:ok, total}
+    # 3. Per-type feeds (across all content)
+    type_groups =
+      contents
+      |> Enum.filter(& &1.date)
+      |> Enum.group_by(fn c -> c.meta["content_type"] end)
+      |> Enum.reject(fn {type, _} -> type == "pages" end)
+
+    type_count =
+      Enum.reduce(type_groups, 0, fn {type, _items}, tc ->
+        xml = Feed.generate_for_type(contents, type, config)
+
+        path = Path.join([config.output_dir, "feed", "#{type}.xml"])
+        File.mkdir_p!(Path.dirname(path))
+        File.write!(path, xml)
+        tc + 1
+      end)
+
+    {:ok, 1 + lang_count + type_count}
   end
 
   # --- Sitemap ---
@@ -580,19 +581,25 @@ defmodule Sayfa.Builder do
         %{loc: "/categories/#{Slug.slugify(cat)}", lastmod: nil}
       end)
 
-    # Collect URLs from content type indexes
+    # Collect URLs from content type indexes (per language)
     index_urls =
       contents
-      |> Enum.group_by(fn c -> c.meta["content_type"] end)
-      |> Enum.reject(fn {type, _} -> type == "pages" end)
-      |> Enum.map(fn {type, _} ->
+      |> Enum.group_by(fn c -> {c.meta["content_type"], c.meta["lang_prefix"] || ""} end)
+      |> Enum.reject(fn {{type, _}, _} -> type == "pages" end)
+      |> Enum.map(fn {{type, lang_prefix}, _} ->
         url_prefix =
           case ContentType.find_by_directory(type) do
             nil -> type
             mod -> mod.url_prefix()
           end
 
-        %{loc: "/#{url_prefix}", lastmod: nil}
+        loc =
+          case lang_prefix do
+            "" -> "/#{url_prefix}"
+            lp -> "/#{lp}/#{url_prefix}"
+          end
+
+        %{loc: loc, lastmod: nil}
       end)
 
     all_urls = content_urls ++ tag_urls ++ cat_urls ++ index_urls
@@ -603,6 +610,71 @@ defmodule Sayfa.Builder do
     File.write!(path, xml)
 
     {:ok, 1}
+  end
+
+  # --- robots.txt ---
+
+  defp build_robots_txt(config) do
+    base_url = String.trim_trailing(config.base_url, "/")
+
+    content = """
+    User-agent: *
+    Allow: /
+
+    Sitemap: #{base_url}/sitemap.xml
+    """
+
+    path = Path.join(config.output_dir, "robots.txt")
+    File.mkdir_p!(Path.dirname(path))
+    File.write!(path, content)
+  end
+
+  # --- hreflang enrichment ---
+
+  defp enrich_hreflang(contents, config) do
+    default_lang = Map.get(config, :default_language, :en)
+
+    # Build lookup: {content_type, lang, slug} => content
+    lookup =
+      Map.new(contents, fn c ->
+        lang = c.lang || default_lang
+        content_type = c.meta["content_type"]
+        {{content_type, lang, c.slug}, c}
+      end)
+
+    Enum.map(contents, fn content ->
+      alternates = resolve_hreflang_alternates(content, lookup, default_lang)
+
+      if alternates do
+        %{content | meta: Map.put(content.meta, "hreflang_alternates", alternates)}
+      else
+        content
+      end
+    end)
+  end
+
+  defp resolve_hreflang_alternates(content, lookup, default_lang) do
+    case content.meta["translations"] do
+      map when is_map(map) and map_size(map) > 0 ->
+        own_lang = content.lang || default_lang
+        self_entry = {to_string(own_lang), Content.url(content)}
+        other_entries = resolve_translation_entries(map, content.meta["content_type"], lookup)
+        [self_entry | other_entries]
+
+      _ ->
+        nil
+    end
+  end
+
+  defp resolve_translation_entries(translations, content_type, lookup) do
+    Enum.flat_map(translations, fn {lang_str, slug} ->
+      lang_atom = String.to_atom(lang_str)
+
+      case Map.get(lookup, {content_type, lang_atom, slug}) do
+        %Content{} = translated -> [{lang_str, Content.url(translated)}]
+        nil -> []
+      end
+    end)
   end
 
   # --- Pagefind ---
