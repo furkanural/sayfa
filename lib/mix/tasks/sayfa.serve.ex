@@ -40,22 +40,6 @@ defmodule Mix.Tasks.Sayfa.Serve do
   def run(args) do
     Mix.Task.run("app.start")
 
-    unless Code.ensure_loaded?(Plug.Cowboy) do
-      Mix.raise("""
-      plug_cowboy is required for mix sayfa.serve.
-
-      Add {:plug_cowboy, "~> 2.7"} to your deps in mix.exs.
-      """)
-    end
-
-    unless Code.ensure_loaded?(FileSystem) do
-      Mix.raise("""
-      file_system is required for mix sayfa.serve.
-
-      Add {:file_system, "~> 1.0"} to your deps in mix.exs.
-      """)
-    end
-
     {opts, _, _} = OptionParser.parse(args, switches: @switches)
 
     port = Keyword.get(opts, :port, 4000)
