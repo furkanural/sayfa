@@ -8,14 +8,15 @@ defmodule Sayfa.BlockTest do
   alias Sayfa.Blocks.Hero
   alias Sayfa.Blocks.ReadingTime, as: ReadingTimeBlock
   alias Sayfa.Blocks.RecentPosts
+  alias Sayfa.Blocks.Search
   alias Sayfa.Blocks.SocialLinks
   alias Sayfa.Blocks.TagCloud
   alias Sayfa.Blocks.TOC, as: TOCBlock
   alias Sayfa.Content
 
   describe "default_blocks/0" do
-    test "returns 9 built-in blocks" do
-      assert length(Block.default_blocks()) == 9
+    test "returns 11 built-in blocks" do
+      assert length(Block.default_blocks()) == 11
     end
 
     test "all modules implement the block behaviour" do
@@ -47,7 +48,9 @@ defmodule Sayfa.BlockTest do
         :recent_posts,
         :tag_cloud,
         :reading_time,
-        :code_copy
+        :code_copy,
+        :recent_content,
+        :search
       ]
 
       for name <- expected_names do
@@ -247,6 +250,21 @@ defmodule Sayfa.BlockTest do
     test "returns empty string with no posts" do
       assert RecentPosts.render(%{contents: []}) == ""
     end
+
+    test "includes lang_prefix in post URLs" do
+      contents = [
+        %Content{
+          title: "Merhaba",
+          body: "",
+          date: ~D[2024-06-01],
+          slug: "merhaba",
+          meta: %{"content_type" => "posts", "url_prefix" => "posts", "lang_prefix" => "tr"}
+        }
+      ]
+
+      html = RecentPosts.render(%{contents: contents, limit: 5})
+      assert html =~ "/tr/posts/merhaba"
+    end
   end
 
   describe "TagCloud" do
@@ -303,6 +321,28 @@ defmodule Sayfa.BlockTest do
     test "uses custom selector" do
       html = CodeCopy.render(%{selector: ".highlight code"})
       assert html =~ ".highlight code"
+    end
+  end
+
+  describe "Search" do
+    test "renders pagefind UI with defaults" do
+      html = Search.render(%{})
+      assert html =~ ~s(<link href="/pagefind/pagefind-ui.css" rel="stylesheet">)
+      assert html =~ ~s(<script src="/pagefind/pagefind-ui.js"></script>)
+      assert html =~ ~s(<div id="search"></div>)
+      assert html =~ ~s(showSubResults: true)
+      assert html =~ ~s(showImages: true)
+    end
+
+    test "renders with custom options" do
+      html = Search.render(%{show_sub_results: false, show_images: false})
+      assert html =~ ~s(showSubResults: false)
+      assert html =~ ~s(showImages: false)
+    end
+
+    test "renders with custom element selector" do
+      html = Search.render(%{element: "#custom-search"})
+      assert html =~ ~s(element: "#custom-search")
     end
   end
 end
