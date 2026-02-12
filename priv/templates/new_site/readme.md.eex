@@ -1,0 +1,56 @@
+# <%= @title %>
+
+A static site powered by [Sayfa](https://hex.pm/packages/sayfa).
+
+## Getting Started
+
+```bash
+# Install dependencies
+mix deps.get
+
+# Build the site
+mix sayfa.build
+
+# Start the dev server with live reload
+mix sayfa.serve
+```
+
+## Project Structure
+
+```
+<%= @project_name %>/
+├── config/
+│   └── config.exs          # Site configuration
+├── content/
+│   ├── pages/               # Static pages (about, contact, etc.)
+│   │   ├── index.md         # Home page
+│   │   └── about.md         # About page
+│   └── posts/               # Blog posts
+│       └── welcome.md       # Your first post
+├── output/                  # Generated site (after build)
+└── mix.exs
+```
+
+## Common Commands
+
+| Command | Description |
+|---------|-------------|
+| `mix sayfa.build` | Build the site to `output/` |
+| `mix sayfa.serve` | Start dev server at http://localhost:4000 |
+| `mix sayfa.gen.layout home` | Copy a layout for customization |
+
+## Customizing Layouts
+
+To override a default layout:
+
+```bash
+mix sayfa.gen.layout post
+```
+
+This copies the layout to `themes/custom/layouts/` where you can edit it freely.
+Then set `theme: "custom"` in `config/config.exs`.
+
+## Learn More
+
+- [Sayfa on Hex](https://hex.pm/packages/sayfa)
+- [Sayfa on GitHub](https://github.com/furkanural/sayfa)

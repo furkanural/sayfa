@@ -45,6 +45,20 @@ defmodule Mix.Tasks.Sayfa.NewTest do
 
       about = File.read!(Path.join(project_path, "content/pages/about.md"))
       assert about =~ "About My Blog"
+
+      # Verify index.md (home page)
+      index = File.read!(Path.join(project_path, "content/pages/index.md"))
+      assert index =~ "layout: home"
+      assert index =~ "Welcome to"
+
+      # Verify README
+      readme = File.read!(Path.join(project_path, "README.md"))
+      assert readme =~ "My Blog"
+
+      # Verify git init (if git is available)
+      if System.find_executable("git") do
+        assert File.dir?(Path.join(project_path, ".git"))
+      end
     end
 
     test "creates project with custom title", ctx do

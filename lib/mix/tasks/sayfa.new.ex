@@ -68,7 +68,9 @@ defmodule Mix.Tasks.Sayfa.New do
       exit({:shutdown, 1})
     end
 
-    Mix.shell().info("Creating new Sayfa site: #{project_name}")
+    Mix.shell().info(IO.ANSI.green() <> "Creating new Sayfa site: #{title}" <> IO.ANSI.reset())
+
+    Mix.shell().info("")
 
     # Create directory structure
     dirs = [
@@ -107,30 +109,87 @@ defmodule Mix.Tasks.Sayfa.New do
       assigns
     )
 
+    write_template(
+      templates_dir,
+      "index.md.eex",
+      Path.join(path, "content/pages/index.md"),
+      assigns
+    )
+
+    write_template(
+      templates_dir,
+      "readme.md.eex",
+      Path.join(path, "README.md"),
+      assigns
+    )
+
     # Copy static files (no EEx processing)
     copy_static(templates_dir, "formatter.exs", Path.join(path, ".formatter.exs"))
     copy_static(templates_dir, "gitignore", Path.join(path, ".gitignore"))
 
-    Mix.shell().info("")
-    Mix.shell().info("Your Sayfa site has been created!")
-    Mix.shell().info("")
-    Mix.shell().info("Next steps:")
-    Mix.shell().info("")
-    Mix.shell().info("    cd #{path}")
-    Mix.shell().info("    mix deps.get")
-    Mix.shell().info("    mix sayfa.build")
-    Mix.shell().info("")
+    # Initialize git repository
+    git_init(path)
+
+    # Print project structure and next steps
+    print_success(path, project_name)
   end
 
   defp write_template(templates_dir, template_name, dest_path, assigns) do
     template_path = Path.join(templates_dir, template_name)
     content = EEx.eval_file(template_path, assigns: Map.new(assigns))
     File.write!(dest_path, content)
+    print_created(dest_path)
   end
 
   defp copy_static(templates_dir, source_name, dest_path) do
     source_path = Path.join(templates_dir, source_name)
     File.cp!(source_path, dest_path)
+    print_created(dest_path)
+  end
+
+  defp print_created(path) do
+    Mix.shell().info("  #{IO.ANSI.green()}create#{IO.ANSI.reset()} #{path}")
+  end
+
+  defp git_init(path) do
+    case System.find_executable("git") do
+      nil ->
+        Mix.shell().info(
+          "  #{IO.ANSI.yellow()}skip#{IO.ANSI.reset()} git init (git not found on PATH)"
+        )
+
+      _git ->
+        case System.cmd("git", ["init"], cd: path, stderr_to_stdout: true) do
+          {_, 0} ->
+            Mix.shell().info("  #{IO.ANSI.green()}init#{IO.ANSI.reset()} git repository")
+
+          {output, _} ->
+            Mix.shell().info(
+              "  #{IO.ANSI.yellow()}skip#{IO.ANSI.reset()} git init (#{String.trim(output)})"
+            )
+        end
+    end
+  end
+
+  defp print_success(path, _project_name) do
+    Mix.shell().info("")
+
+    Mix.shell().info(IO.ANSI.green() <> "Your Sayfa site has been created!" <> IO.ANSI.reset())
+
+    Mix.shell().info("")
+    Mix.shell().info("Next steps:")
+    Mix.shell().info("")
+    Mix.shell().info("    cd #{path}")
+    Mix.shell().info("    mix deps.get")
+    Mix.shell().info("    mix sayfa.serve        # Start dev server")
+    Mix.shell().info("    mix sayfa.build        # Build the site")
+    Mix.shell().info("")
+    Mix.shell().info("Customize your site:")
+    Mix.shell().info("")
+    Mix.shell().info("    Edit content/pages/index.md to update your home page")
+    Mix.shell().info("    Edit config/config.exs to configure your site")
+    Mix.shell().info("    Run mix sayfa.gen.layout home to customize a layout")
+    Mix.shell().info("")
   end
 
   defp templates_path do
