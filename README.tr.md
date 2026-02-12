@@ -394,7 +394,21 @@ Tum yayinlanmis sayfalari iceren bir `sitemap.xml` cikis dizininin kokunde ureti
 
 ### Arama
 
-Sayfa, statik arama icin [Pagefind](https://pagefind.app/) ile entegredir. Pagefind, derleme sonrasi adimi olarak calisir ve istemci tarafli bir arama dizini uretir — sunucu gerektirmez.
+Sayfa, statik arama icin [Pagefind](https://pagefind.app/) ile entegredir. Pagefind **istege baglidir** — siteniz onsuz da sorunsuz derlenir ve calisir.
+
+Kuruldugunda, Pagefind `mix sayfa.build` sonunda otomatik olarak calisir. HTML ciktinizi tarar ve istemci tarafli bir arama dizini uretir — sunucu gerektirmez.
+
+**Kurulum:**
+
+```bash
+npm install -g pagefind   # Global kurulum
+# veya
+npx pagefind              # Kurmadan tek seferlik kullanim
+```
+
+`pagefind` ikili dosyasi PATH'inizde bulunamazsa, Sayfa dizinleme adimini atlar ve normal sekilde devam eder.
+
+Daha fazla bilgi icin [Pagefind dokumantasyonuna](https://pagefind.app/docs/) bakiniz.
 
 ### SEO Meta Etiketleri
 

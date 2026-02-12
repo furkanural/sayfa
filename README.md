@@ -422,7 +422,21 @@ A `sitemap.xml` is generated at the root of the output directory containing all 
 
 ### Search
 
-Sayfa integrates with [Pagefind](https://pagefind.app/) for static search. Pagefind runs as a post-build step and generates a client-side search index — no server required.
+Sayfa integrates with [Pagefind](https://pagefind.app/) for static search. Pagefind is **optional** — your site builds and works perfectly without it.
+
+When installed, Pagefind runs automatically at the end of `mix sayfa.build`. It scans your HTML output and generates a client-side search index — no server required.
+
+**Installation:**
+
+```bash
+npm install -g pagefind   # Global install
+# or
+npx pagefind              # One-off usage without installing
+```
+
+If the `pagefind` binary is not found on your PATH, Sayfa skips the indexing step and continues normally.
+
+For more details, see the [Pagefind documentation](https://pagefind.app/docs/).
 
 ### SEO Meta Tags
 
