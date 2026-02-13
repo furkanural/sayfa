@@ -1,17 +1,16 @@
 <main>
   <%= @block.(:hero, title: @site.title, subtitle: Map.get(@site, :description, "")) %>
 
-  <%= @block.(:search, []) %>
-
-  <section class="intro">
-    <%= @inner_content %>
+  <section class="max-w-2xl mx-auto px-5 sm:px-6 pb-8">
+    <div class="prose prose-slate dark:prose-invert max-w-none">
+      <%= @inner_content %>
+    </div>
   </section>
 
   <%= @block.(:recent_content, limit: 5) %>
 
-  <%= @block.(:social_links, links: Map.get(@site, :social_links, [])) %>
-
-  <footer>
-    <p>&copy; <%= Date.utc_today().year %> <%= Map.get(@site, :author, @site.title) %></p>
-  </footer>
+  <section class="max-w-2xl mx-auto px-5 sm:px-6 pb-16">
+    <h2 class="text-lg sm:text-xl font-semibold text-slate-900 dark:text-slate-50 mb-5">Connect</h2>
+    <%= @block.(:social_links, links: Map.get(@site, :social_links, [])) %>
+  </section>
 </main>

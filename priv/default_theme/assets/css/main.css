@@ -1,0 +1,87 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #4f46e5;
+  --color-primary-dark: #4338ca;
+  --color-primary-light: #6366f1;
+  --color-primary-50: #eef2ff;
+  --color-primary-100: #e0e7ff;
+  --color-primary-200: #c7d2fe;
+  --color-primary-300: #a5b4fc;
+  --color-primary-400: #818cf8;
+  --color-primary-500: #6366f1;
+  --color-primary-600: #4f46e5;
+  --color-primary-700: #4338ca;
+  --color-primary-800: #3730a3;
+  --color-primary-900: #312e81;
+
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #64748b; }
+@media (prefers-color-scheme: dark) {
+  ::-webkit-scrollbar-thumb { background: #475569; }
+  ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+}
+
+/* Smooth transitions for interactive elements */
+a, button { transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease; }
+
+/* Featured post accent animation */
+.featured-accent {
+  position: relative;
+}
+.featured-accent::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: #4f46e5;
+  border-radius: 2px;
+  transition: width 0.2s ease;
+}
+@media (prefers-color-scheme: dark) {
+  .featured-accent::before { background: #818cf8; }
+}
+.featured-accent:hover::before {
+  width: 4px;
+}
+
+/* List item hover accent */
+.list-accent {
+  position: relative;
+  padding-left: 0;
+  transition: padding-left 0.2s ease;
+}
+.list-accent::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  background: #4f46e5;
+  border-radius: 2px;
+  transition: width 0.2s ease;
+}
+@media (prefers-color-scheme: dark) {
+  .list-accent::before { background: #818cf8; }
+}
+.list-accent:hover {
+  padding-left: 1rem;
+}
+.list-accent:hover::before {
+  width: 3px;
+}
+
+/* Copy button states */
+.copy-btn .icon-check { display: none; }
+.copy-btn.copied .icon-copy { display: none; }
+.copy-btn.copied .icon-check { display: block; }

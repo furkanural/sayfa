@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="<%= Map.get(assigns, :lang, "en") %>">
+<html lang="<%= Map.get(assigns, :lang, "en") %>" class="scroll-smooth">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,9 +8,16 @@
   <%= Sayfa.SEO.json_ld(assigns[:content], @site) %>
   <%= Sayfa.SEO.hreflang_tags(assigns[:content], @site) %>
   <link rel="alternate" type="application/atom+xml" title="<%= @site.title %>" href="<%= String.trim_trailing(@site.base_url, "/") %>/feed.xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/css/main.css">
 </head>
-<body>
+<body class="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 font-sans antialiased">
+  <%= @block.(:header, nav: Map.get(@site, :nav, [])) %>
   <%= @inner_content %>
+  <%= @block.(:footer, author: Map.get(@site, :author, @site.title)) %>
+  <%= @block.(:code_copy, []) %>
 </body>
 <!-- Built with Sayfa https://hex.pm/packages/sayfa -->
 </html>
