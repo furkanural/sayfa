@@ -41,7 +41,8 @@ defmodule Sayfa.Config do
     posts_per_page: 10,
     author: nil,
     description: "",
-    social_links: []
+    social_links: [],
+    tailwind_version: "4.1.12"
   }
 
   @doc """

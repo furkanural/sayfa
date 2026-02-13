@@ -31,6 +31,7 @@ defmodule Sayfa.MixProject do
       {:yaml_elixir, "~> 2.9"},
       {:slugify, "~> 1.3"},
       {:xml_builder, "~> 2.2"},
+      {:tailwind, "~> 0.4", runtime: false},
       {:plug_cowboy, "~> 2.7"},
       {:file_system, "~> 1.0"},
       {:ex_doc, "~> 0.34", only: :dev, runtime: false},

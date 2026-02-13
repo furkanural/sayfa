@@ -38,6 +38,7 @@ defmodule Sayfa.Builder do
   alias Sayfa.Pagination
   alias Sayfa.ReadingTime
   alias Sayfa.Sitemap
+  alias Sayfa.Tailwind
   alias Sayfa.Template
   alias Sayfa.TOC
 
@@ -113,6 +114,10 @@ defmodule Sayfa.Builder do
 
       timed_sync("Copy theme assets", verbose, fn ->
         Sayfa.Theme.copy_assets(config, config.output_dir)
+      end)
+
+      timed_sync("TailwindCSS compilation", verbose, fn ->
+        Tailwind.compile(config, config.output_dir)
       end)
 
       timed_sync("Pagefind indexing", verbose, fn -> run_pagefind(config) end)
