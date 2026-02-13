@@ -18,7 +18,7 @@ defmodule Sayfa.ContentTypes.Note do
   def url_prefix, do: "notes"
 
   @impl true
-  def default_layout, do: "post"
+  def default_layout, do: "note"
 
   @impl true
   def required_fields, do: [:title, :date]

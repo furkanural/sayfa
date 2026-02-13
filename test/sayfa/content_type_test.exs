@@ -82,7 +82,7 @@ defmodule Sayfa.ContentTypeTest do
       assert mod.name() == :note
       assert mod.directory() == "notes"
       assert mod.url_prefix() == "notes"
-      assert mod.default_layout() == "post"
+      assert mod.default_layout() == "note"
       assert mod.required_fields() == [:title, :date]
     end
 

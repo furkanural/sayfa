@@ -28,7 +28,7 @@ defmodule Sayfa.Template do
   @layout_from_content_type %{
     "posts" => "post",
     "pages" => "page",
-    "notes" => "post",
+    "notes" => "note",
     "projects" => "page",
     "talks" => "page"
   }
