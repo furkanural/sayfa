@@ -15,6 +15,10 @@ mix sayfa.build
 mix sayfa.serve
 ```
 
+## TailwindCSS
+
+Sayfa uses [TailwindCSS](https://tailwindcss.com/) for styling. The TailwindCSS binary is automatically downloaded and cached on the first build — no manual installation or Node.js required.
+
 ## Project Structure
 
 ```

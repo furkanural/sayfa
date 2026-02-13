@@ -59,7 +59,7 @@ Sayfa follows a **two-layer architecture**:
 - **Simple** — Convention over configuration. Sensible defaults, minimal boilerplate.
 - **Extensible** — Blocks, hooks, content types, and themes are all pluggable via behaviours.
 - **Fast** — Markdown parsing powered by MDEx (Rust NIF). Incremental builds with caching.
-- **No Node.js** — Uses standalone TailwindCSS CLI and Pagefind. Pure Elixir + Rust.
+- **No Node.js** — TailwindCSS is auto-downloaded via the `tailwind` hex package. Pure Elixir + Rust.
 
 ---
 
@@ -656,7 +656,6 @@ Define how content is organized. See [Custom Content Types](#custom-content-type
 Future plans for Sayfa:
 
 - Image optimization (automatic resizing, WebP conversion)
-- TailwindCSS integration (build step)
 - Dark mode toggle in default theme
 - Plugin system for third-party extensions
 - Asset fingerprinting

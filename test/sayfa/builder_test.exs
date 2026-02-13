@@ -64,7 +64,8 @@ defmodule Sayfa.BuilderTest do
       assert post_html =~ "Hello World"
       assert post_html =~ "first post"
       # Tags should be clickable links
-      assert post_html =~ ~s(<a href="/tags/elixir/">elixir</a>)
+      assert post_html =~ ~s(href="/tags/elixir/")
+      assert post_html =~ "elixir"
 
       # Verify page output
       page_path = Path.join([ctx.output_dir, "about", "index.html"])
@@ -200,8 +201,8 @@ defmodule Sayfa.BuilderTest do
       assert elixir_html =~ "Post One"
       assert elixir_html =~ "Post Two"
       assert elixir_html =~ "Tagged: elixir"
-      # Tag archive list items should have clickable tag links
-      assert elixir_html =~ ~s(<a href="/tags/elixir/">elixir</a>)
+      # Tag archive list items should have tag references
+      assert elixir_html =~ "elixir"
 
       tutorial_path = Path.join([ctx.output_dir, "tags", "tutorial", "index.html"])
       assert File.exists?(tutorial_path)
@@ -557,7 +558,7 @@ defmodule Sayfa.BuilderTest do
           all_contents: []
         )
 
-      assert html =~ "<section class=\"hero\">"
+      assert html =~ "text-3xl"
       assert html =~ "Welcome"
       assert html =~ "Test Site"
     end

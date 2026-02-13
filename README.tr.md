@@ -58,7 +58,7 @@ Sayfa **iki katmanli bir mimari** kullanir:
 - **Basit** — Yapilandirma yerine gelenekler. Mantikli varsayilanlar, minimum sablonlama.
 - **Genisletilebilir** — Bloklar, hook'lar, icerik turleri ve temalar behaviour'lar ile takilan modeller.
 - **Hizli** — MDEx (Rust NIF) ile Markdown ayristirma. Onbellekleme ile artirimli derlemeler.
-- **Node.js Gerektirmez** — Bagimsiz TailwindCSS CLI ve Pagefind kullanir. Saf Elixir + Rust.
+- **Node.js Gerektirmez** — TailwindCSS `tailwind` hex paketi ile otomatik indirilir. Saf Elixir + Rust.
 
 ---
 
@@ -600,9 +600,8 @@ Icerigin nasil organize edildigini tanimlayin. [Ozel Icerik Turleri](#ozel-iceri
 Sayfa icin gelecek planlari:
 
 - Gorsel optimizasyonu (otomatik boyutlandirma, WebP donusumu)
-- TailwindCSS entegrasyonu (derleme adimi)
 - Varsayilan temada karanlik mod gecisi
-- Dagitim yardimcilari (GitHub Pages, Netlify, Vercel)
+- Dagitim yardimcilari (GitHub Pages, Netlify)
 - Ucuncu parti uzantilar icin eklenti sistemi
 - Varlik parmak izi
 
