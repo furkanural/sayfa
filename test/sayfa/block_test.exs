@@ -3,6 +3,7 @@ defmodule Sayfa.BlockTest do
 
   alias Sayfa.Block
   alias Sayfa.Blocks.CodeCopy
+  alias Sayfa.Blocks.CopyLink
   alias Sayfa.Blocks.Footer
   alias Sayfa.Blocks.Header
   alias Sayfa.Blocks.Hero
@@ -15,8 +16,8 @@ defmodule Sayfa.BlockTest do
   alias Sayfa.Content
 
   describe "default_blocks/0" do
-    test "returns 11 built-in blocks" do
-      assert length(Block.default_blocks()) == 11
+    test "returns 12 built-in blocks" do
+      assert length(Block.default_blocks()) == 12
     end
 
     test "all modules implement the block behaviour" do
@@ -50,7 +51,8 @@ defmodule Sayfa.BlockTest do
         :reading_time,
         :code_copy,
         :recent_content,
-        :search
+        :search,
+        :copy_link
       ]
 
       for name <- expected_names do
@@ -73,7 +75,7 @@ defmodule Sayfa.BlockTest do
       helper = Block.build_helper(site: %{title: "Test"}, content: nil, contents: [], lang: :en)
       result = helper.(:hero, title: "Welcome")
       assert result =~ "Welcome"
-      assert result =~ "<section class=\"hero\">"
+      assert result =~ "text-3xl"
     end
 
     test "returns empty string for unknown block" do
@@ -109,15 +111,15 @@ defmodule Sayfa.BlockTest do
   describe "Hero" do
     test "renders with title and subtitle" do
       html = Hero.render(%{title: "Hello", subtitle: "World"})
-      assert html =~ "<section class=\"hero\">"
-      assert html =~ "<h1>Hello</h1>"
-      assert html =~ "<p>World</p>"
+      assert html =~ "text-3xl"
+      assert html =~ "Hello"
+      assert html =~ "World"
     end
 
     test "renders without subtitle" do
       html = Hero.render(%{title: "Hello"})
-      assert html =~ "<h1>Hello</h1>"
-      refute html =~ "<p>"
+      assert html =~ "Hello"
+      refute html =~ "World"
     end
 
     test "escapes HTML in title" do
@@ -130,7 +132,7 @@ defmodule Sayfa.BlockTest do
   describe "Header" do
     test "renders with site title" do
       html = Header.render(%{site: %{title: "My Blog"}})
-      assert html =~ "<header>"
+      assert html =~ "<header class=\"sticky"
       assert html =~ "My Blog"
     end
 
@@ -141,21 +143,21 @@ defmodule Sayfa.BlockTest do
           nav: [{"Home", "/"}, {"About", "/about/"}]
         })
 
-      assert html =~ "<nav>"
+      assert html =~ "<nav class=\"hidden md:flex"
       assert html =~ "Home"
       assert html =~ "/about/"
     end
 
     test "renders without navigation" do
-      html = Header.render(%{site: %{title: "Blog"}})
-      refute html =~ "<nav>"
+      html = Header.render(%{site: %{title: "Blog"}, nav: []})
+      refute html =~ "<nav"
     end
   end
 
   describe "Footer" do
     test "renders with year and author" do
       html = Footer.render(%{year: 2024, author: "Jane"})
-      assert html =~ "<footer>"
+      assert html =~ "<footer class=\"border-t"
       assert html =~ "2024"
       assert html =~ "Jane"
     end
@@ -169,19 +171,33 @@ defmodule Sayfa.BlockTest do
       html = Footer.render(%{site: %{title: "My Blog"}})
       assert html =~ "My Blog"
     end
+
+    test "renders icon-only social links from site config" do
+      html =
+        Footer.render(%{
+          site: %{
+            title: "Blog",
+            social_links: [{"GitHub", "https://github.com/test"}]
+          }
+        })
+
+      assert html =~ "aria-label=\"GitHub\""
+      assert html =~ "https://github.com/test"
+    end
   end
 
   describe "SocialLinks" do
-    test "renders links" do
+    test "renders links with icons" do
       html =
         SocialLinks.render(%{
           links: [{"GitHub", "https://github.com"}, {"Twitter", "https://twitter.com"}]
         })
 
-      assert html =~ "<ul class=\"social-links\">"
+      assert html =~ "<div class=\"flex flex-wrap"
       assert html =~ "GitHub"
       assert html =~ "https://github.com"
       assert html =~ "rel=\"noopener\""
+      assert html =~ "<svg"
     end
 
     test "returns empty string for no links" do
@@ -191,7 +207,7 @@ defmodule Sayfa.BlockTest do
   end
 
   describe "TOCBlock" do
-    test "renders table of contents" do
+    test "renders sidebar table of contents" do
       content = %Content{
         title: "Test",
         body: "",
@@ -204,10 +220,29 @@ defmodule Sayfa.BlockTest do
       }
 
       html = TOCBlock.render(%{content: content})
-      assert html =~ "<nav class=\"toc\">"
+      assert html =~ "<nav class=\"sticky top-20\""
       assert html =~ "#intro"
       assert html =~ "Introduction"
       assert html =~ "Details"
+      assert html =~ "border-l"
+    end
+
+    test "renders mobile table of contents" do
+      content = %Content{
+        title: "Test",
+        body: "",
+        meta: %{
+          "toc" => [
+            %{id: "intro", text: "Introduction", level: 2}
+          ]
+        }
+      }
+
+      html = TOCBlock.render(%{content: content, variant: :mobile})
+      assert html =~ "<details"
+      assert html =~ "<summary"
+      assert html =~ "On this page"
+      assert html =~ "#intro"
     end
 
     test "returns empty string when no toc" do
@@ -241,7 +276,7 @@ defmodule Sayfa.BlockTest do
       ]
 
       html = RecentPosts.render(%{contents: contents, limit: 2})
-      assert html =~ "<section class=\"recent-posts\">"
+      assert html =~ "Recent Posts"
       assert html =~ "Post A"
       assert html =~ "Post B"
       refute html =~ "Page"
@@ -268,17 +303,18 @@ defmodule Sayfa.BlockTest do
   end
 
   describe "TagCloud" do
-    test "renders tag cloud" do
+    test "renders tag cloud with hash icons" do
       contents = [
         %Content{title: "A", body: "", tags: ["elixir", "otp"]},
         %Content{title: "B", body: "", tags: ["elixir"]}
       ]
 
       html = TagCloud.render(%{contents: contents})
-      assert html =~ "<section class=\"tag-cloud\">"
+      assert html =~ "<section class=\"flex flex-wrap"
       assert html =~ "elixir"
       assert html =~ "otp"
       assert html =~ "/tags/"
+      assert html =~ "<svg"
     end
 
     test "returns empty string with no tags" do
@@ -287,11 +323,12 @@ defmodule Sayfa.BlockTest do
   end
 
   describe "ReadingTimeBlock" do
-    test "renders reading time from meta" do
+    test "renders reading time with clock icon" do
       content = %Content{title: "Test", body: "", meta: %{"reading_time" => 5}}
       html = ReadingTimeBlock.render(%{content: content})
-      assert html =~ "<span class=\"reading-time\">"
+      assert html =~ "inline-flex items-center"
       assert html =~ "5 min read"
+      assert html =~ "<svg"
     end
 
     test "renders singular for 1 minute" do
@@ -321,6 +358,16 @@ defmodule Sayfa.BlockTest do
     test "uses custom selector" do
       html = CodeCopy.render(%{selector: ".highlight code"})
       assert html =~ ".highlight code"
+    end
+  end
+
+  describe "CopyLink" do
+    test "renders copy link button" do
+      html = CopyLink.render(%{})
+      assert html =~ "Copy link"
+      assert html =~ "clipboard"
+      assert html =~ "<button"
+      assert html =~ "border-t"
     end
   end
 

@@ -29,9 +29,8 @@ defmodule Sayfa.Blocks.RecentContentTest do
 
       result = RecentContent.render(%{contents: contents, limit: 5})
 
-      assert result =~ "recent-content"
-      assert result =~ "recent-posts"
-      assert result =~ "recent-notes"
+      assert result =~ "Posts"
+      assert result =~ "Notes"
       assert result =~ "Post One"
       assert result =~ "Note One"
       assert result =~ "Post Two"
@@ -89,7 +88,18 @@ defmodule Sayfa.Blocks.RecentContentTest do
       result = RecentContent.render(%{contents: contents, limit: 5})
 
       assert result =~ "Post One"
-      refute result =~ "recent-pages"
+      refute result =~ "Pages"
+    end
+
+    test "renders view all links" do
+      contents = [
+        make_content("Post One", "posts", ~D[2024-06-01])
+      ]
+
+      result = RecentContent.render(%{contents: contents, limit: 5})
+
+      assert result =~ "View all"
+      assert result =~ "/posts/"
     end
   end
 end

@@ -2,7 +2,8 @@ defmodule Sayfa.Blocks.Hero do
   @moduledoc """
   Hero section block.
 
-  Renders a prominent hero section with a title and optional subtitle.
+  Renders a minimal, left-aligned hero section with a large title
+  and optional subtitle.
 
   ## Assigns
 
@@ -28,12 +29,17 @@ defmodule Sayfa.Blocks.Hero do
     subtitle = Map.get(assigns, :subtitle)
 
     subtitle_html =
-      if subtitle do
-        "\n  <p>#{Block.escape_html(subtitle)}</p>"
+      if subtitle && subtitle != "" do
+        "<p class=\"mt-4 text-base sm:text-lg text-slate-500 dark:text-slate-400 leading-relaxed max-w-xl\">#{Block.escape_html(subtitle)}</p>"
       else
         ""
       end
 
-    "<section class=\"hero\">\n  <h1>#{title}</h1>#{subtitle_html}\n</section>"
+    """
+    <section class="max-w-2xl mx-auto px-5 sm:px-6 pt-14 sm:pt-20 pb-10">\
+      <h1 class="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-slate-50">#{title}</h1>\
+      #{subtitle_html}\
+    </section>\
+    """
   end
 end

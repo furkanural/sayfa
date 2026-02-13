@@ -2,16 +2,18 @@ defmodule Sayfa.Blocks.RecentPosts do
   @moduledoc """
   Recent posts block.
 
-  Renders a list of the most recent posts from the site contents.
+  Renders a chronological list of the most recent posts with date and title.
 
   ## Assigns
 
   - `:contents` — list of all site contents (injected by block helper)
   - `:limit` — number of posts to show (default: 5)
+  - `:show_view_all` — whether to show "View all" link (default: false)
 
   ## Examples
 
       <%= @block.(:recent_posts, limit: 3) %>
+      <%= @block.(:recent_posts, limit: 5, show_view_all: true) %>
 
   """
 
@@ -27,6 +29,7 @@ defmodule Sayfa.Blocks.RecentPosts do
   def render(assigns) do
     contents = Map.get(assigns, :contents, [])
     limit = Map.get(assigns, :limit, 5)
+    show_view_all = Map.get(assigns, :show_view_all, false)
 
     posts =
       contents
@@ -36,9 +39,26 @@ defmodule Sayfa.Blocks.RecentPosts do
     if posts == [] do
       ""
     else
-      items = Enum.map_join(posts, "\n  ", &render_post_item/1)
+      items = Enum.map_join(posts, "\n", &render_post_item/1)
 
-      "<section class=\"recent-posts\">\n  <h2>Recent Posts</h2>\n  <ul>\n  #{items}\n  </ul>\n</section>"
+      view_all_html =
+        if show_view_all do
+          "<a href=\"/posts/\" class=\"inline-flex items-center gap-1 text-sm text-primary dark:text-primary-400 hover:text-primary-dark dark:hover:text-primary-300\">View all <svg class=\"w-3.5 h-3.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" viewBox=\"0 0 24 24\"><path d=\"m9 18 6-6-6-6\"/></svg></a>"
+        else
+          ""
+        end
+
+      """
+      <section class="max-w-2xl mx-auto px-5 sm:px-6 pb-16">\
+        <div class="flex items-center justify-between mb-6">\
+          <h2 class="text-lg sm:text-xl font-semibold text-slate-900 dark:text-slate-50">Recent Posts</h2>\
+          #{view_all_html}\
+        </div>\
+        <div class="space-y-0 divide-y divide-slate-200/70 dark:divide-slate-800">\
+      #{items}\
+        </div>\
+      </section>\
+      """
     end
   end
 
@@ -47,8 +67,23 @@ defmodule Sayfa.Blocks.RecentPosts do
     title = Block.escape_html(post.title)
 
     date_html =
-      if post.date, do: " <time datetime=\"#{post.date}\">#{post.date}</time>", else: ""
+      if post.date do
+        "<time class=\"shrink-0 text-sm tabular-nums text-slate-400 dark:text-slate-500 w-[5.5rem]\">#{format_date(post.date)}</time>"
+      else
+        ""
+      end
 
-    "<li><a href=\"#{url}\">#{title}</a>#{date_html}</li>"
+    """
+        <a href="#{url}" class="group flex items-baseline gap-4 py-4">\
+          #{date_html}\
+          <span class="text-slate-800 dark:text-slate-200 group-hover:text-primary dark:group-hover:text-primary-400">#{title}</span>\
+        </a>\
+    """
   end
+
+  defp format_date(%Date{} = date) do
+    Calendar.strftime(date, "%b %-d, %Y")
+  end
+
+  defp format_date(date), do: to_string(date)
 end
