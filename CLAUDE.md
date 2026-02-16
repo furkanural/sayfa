@@ -26,6 +26,7 @@ Goals: Learn Elixir, create a simple/extensible SSG, ship something usable, allo
 | Templates | EEx | Built-in Elixir templating |
 | Slugs | Slugify | URL slug generation |
 | XML | XmlBuilder | RSS/Atom feeds, sitemap |
+| CSS | tailwind (hex) | Automatic TailwindCSS v4 compilation |
 | Dev server | Plug + Cowboy | Optional dependency |
 | File watching | FileSystem | Optional dependency |
 
@@ -46,6 +47,7 @@ sayfa/
 │   │   ├── template.ex             # EEx rendering
 │   │   ├── theme.ex                # Theme loading & inheritance
 │   │   ├── block.ex                # Block registry (name → module lookup)
+│   │   ├── tailwind.ex              # TailwindCSS compilation
 │   │   ├── feed.ex                 # RSS/Atom generation
 │   │   ├── sitemap.ex              # Sitemap generation
 │   │   ├── seo.ex                  # SEO meta tags
@@ -68,7 +70,11 @@ sayfa/
 │   │   │   ├── recent_posts.ex
 │   │   │   ├── tag_cloud.ex
 │   │   │   ├── reading_time.ex
-│   │   │   └── code_copy.ex
+│   │   │   ├── code_copy.ex
+│   │   │   ├── recent_content.ex
+│   │   │   ├── search.ex
+│   │   │   ├── copy_link.ex
+│   │   │   └── breadcrumb.ex
 │   │   │
 │   │   ├── content_types/          # Built-in content types
 │   │   │   ├── post.ex
@@ -86,12 +92,13 @@ sayfa/
 │   └── mix/tasks/                  # CLI commands
 │       ├── sayfa.new.ex            # Project generator
 │       ├── sayfa.build.ex          # Build site
+│       ├── sayfa.gen.layout.ex      # Layout generator
 │       └── sayfa.serve.ex          # Dev server
 │
 ├── priv/
 │   ├── templates/new_site/         # mix sayfa.new scaffolding
 │   └── default_theme/
-│       └── layouts/                # base, home, list, page, post
+│       └── layouts/                # base, home, list, note, page, post
 │
 └── test/
 ```
@@ -163,7 +170,7 @@ Blocks implement `Sayfa.Behaviours.Block` with `name/0` and `render/1` callbacks
 2. **Layout template** — wraps content, places blocks (selected via `layout:` front matter)
 3. **Base template** — HTML shell (`<html>`, `<head>`), inserts `@inner_content`
 
-Available layouts: `home`, `post`, `page`, `list` (plus custom user layouts).
+Available layouts: `home`, `post`, `page`, `list`, `note` (plus custom user layouts).
 
 ### Behaviours for Extensibility
 
