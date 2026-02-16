@@ -78,6 +78,9 @@ defmodule Mix.Tasks.Sayfa.New do
       Path.join(path, "config"),
       Path.join(path, "content/posts"),
       Path.join(path, "content/pages"),
+      Path.join(path, "content/notes"),
+      Path.join(path, "content/projects"),
+      Path.join(path, "content/talks"),
       Path.join(path, ".github/workflows")
     ]
 
@@ -114,6 +117,34 @@ defmodule Mix.Tasks.Sayfa.New do
       templates_dir,
       "index.md.eex",
       Path.join(path, "content/pages/index.md"),
+      assigns
+    )
+
+    write_template(
+      templates_dir,
+      "building-with-sayfa.md.eex",
+      Path.join(path, "content/posts/building-with-sayfa.md"),
+      assigns
+    )
+
+    write_template(
+      templates_dir,
+      "quick-tip-elixir-pipes.md.eex",
+      Path.join(path, "content/notes/quick-tip-elixir-pipes.md"),
+      assigns
+    )
+
+    write_template(
+      templates_dir,
+      "sayfa-project.md.eex",
+      Path.join(path, "content/projects/sayfa.md"),
+      assigns
+    )
+
+    write_template(
+      templates_dir,
+      "intro-to-elixir.md.eex",
+      Path.join(path, "content/talks/intro-to-elixir.md"),
       assigns
     )
 
@@ -194,8 +225,9 @@ defmodule Mix.Tasks.Sayfa.New do
     Mix.shell().info("")
     Mix.shell().info("Customize your site:")
     Mix.shell().info("")
-    Mix.shell().info("    Edit content/pages/index.md to update your home page")
     Mix.shell().info("    Edit config/config.exs to configure your site")
+    Mix.shell().info("    Edit content/pages/index.md to update your home page")
+    Mix.shell().info("    Browse content/posts/, notes/, projects/, talks/ for examples")
     Mix.shell().info("    Run mix sayfa.gen.layout home to customize a layout")
     Mix.shell().info("")
   end

@@ -1,0 +1,19 @@
+---
+title: "Quick Tip: Elixir Pipes"
+date: <%= Date.utc_today() |> Date.to_iso8601() %>
+tags: [elixir, tips]
+---
+
+The pipe operator `|>` is one of Elixir's best features. It lets you chain function calls in a readable, top-to-bottom flow:
+
+```elixir
+"  Hello, World!  "
+|> String.trim()
+|> String.downcase()
+|> String.replace(",", "")
+# => "hello world!"
+```
+
+Instead of nesting calls like `String.replace(String.downcase(String.trim("  Hello, World!  ")), ",", "")`, pipes make the data flow obvious.
+
+A good rule of thumb: if you're nesting more than two function calls, reach for the pipe.

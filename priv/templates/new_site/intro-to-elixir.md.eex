@@ -1,0 +1,27 @@
+---
+title: "Introduction to Elixir"
+date: <%= Date.utc_today() |> Date.to_iso8601() %>
+description: "A beginner-friendly introduction to Elixir and functional programming."
+tags: [elixir, functional-programming, talks]
+event: "Local Meetup"
+slides_url: "https://example.com/slides"
+---
+
+## Abstract
+
+Elixir is a dynamic, functional language built on the Erlang VM. This talk covers the basics of Elixir and why it's a great choice for building reliable, concurrent applications.
+
+## Outline
+
+1. **What is Elixir?** — History, design goals, and the BEAM VM
+2. **Pattern Matching** — The foundation of Elixir code
+3. **Immutability & Pipes** — Data transformation patterns
+4. **Concurrency** — Processes, message passing, and OTP
+5. **Real-World Use Cases** — Web apps, embedded systems, and more
+
+## Key Takeaways
+
+- Elixir combines the productivity of Ruby with the reliability of Erlang
+- Pattern matching replaces most conditional logic
+- The pipe operator makes data transformations readable
+- OTP provides battle-tested patterns for building fault-tolerant systems

@@ -1,15 +1,51 @@
 <section class="max-w-2xl mx-auto px-5 sm:px-6 py-12 sm:py-16">
   <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-50 mb-10"><%= @page_title %></h1>
+<%= cond do %>
+<% @content_type == "notes" -> %>
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+<%= for item <- @contents do %>
+    <a href="<%= Sayfa.Content.url(item) %>" class="group block rounded-lg border border-slate-200/70 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 p-4 hover:border-primary/30 dark:hover:border-primary/30 transition-colors">
+      <h2 class="text-sm font-medium text-slate-800 dark:text-slate-200 group-hover:text-primary dark:group-hover:text-primary-400"><%= item.title %></h2>
+<%= if item.date do %>
+      <div class="mt-2"><time datetime="<%= item.date %>" class="text-xs text-slate-400 dark:text-slate-500"><%= Calendar.strftime(item.date, "%b %-d, %Y") %></time></div>
+<% end %>
+    </a>
+<% end %>
+  </div>
+<% @content_type == "projects" -> %>
+  <div class="space-y-3">
+<%= for item <- @contents do %>
+    <a href="<%= Sayfa.Content.url(item) %>" class="group block rounded-lg border border-slate-200/70 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 p-4 hover:border-primary/30 dark:hover:border-primary/30 transition-colors">
+      <div class="flex items-center gap-2">
+        <h2 class="text-sm font-medium text-slate-800 dark:text-slate-200 group-hover:text-primary dark:group-hover:text-primary-400"><%= item.title %></h2>
+<%= if Map.get(item.meta, "status") do %>
+        <span class="inline-flex items-center h-5 px-1.5 rounded text-xs font-medium bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400"><%= item.meta["status"] %></span>
+<% end %>
+      </div>
+<%= if Map.get(item.meta, "description") do %>
+      <p class="mt-1.5 text-sm text-slate-500 dark:text-slate-400 leading-relaxed line-clamp-2"><%= item.meta["description"] %></p>
+<% end %>
+<%= if item.tags != [] do %>
+      <div class="mt-2.5 flex flex-wrap items-center gap-2">
+<%= for tag <- item.tags do %>
+        <span class="inline-flex items-center gap-0.5 h-5 px-1.5 rounded text-xs font-medium bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400"><svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="4" x2="20" y1="9" y2="9"/><line x1="4" x2="20" y1="15" y2="15"/><line x1="10" x2="8" y1="3" y2="21"/><line x1="16" x2="14" y1="3" y2="21"/></svg><%= tag %></span>
+<% end %>
+      </div>
+<% end %>
+    </a>
+<% end %>
+  </div>
+<% true -> %>
   <div class="space-y-0">
 <%= for item <- @contents do %>
-    <a href="<%= Sayfa.Content.url(item) %>" class="list-accent group block py-5 border-b border-slate-200/70 dark:border-slate-800">
+    <a href="<%= Sayfa.Content.url(item) %>" class="list-accent group block py-5 border-b first:border-t border-slate-200/70 dark:border-slate-800">
       <h2 class="text-base font-medium text-slate-800 dark:text-slate-200 group-hover:text-primary dark:group-hover:text-primary-400"><%= item.title %></h2>
 <%= if Map.get(item.meta, "description") do %>
       <p class="mt-1.5 text-sm text-slate-500 dark:text-slate-400 leading-relaxed line-clamp-2"><%= item.meta["description"] %></p>
 <% end %>
       <div class="mt-2.5 flex flex-wrap items-center gap-3">
 <%= if item.date do %>
-        <time datetime="<%= item.date %>" class="text-xs text-slate-400 dark:text-slate-500"><%= item.date %></time>
+        <time datetime="<%= item.date %>" class="text-xs text-slate-400 dark:text-slate-500"><%= Calendar.strftime(item.date, "%b %-d, %Y") %></time>
 <% end %>
 <%= if item.tags != [] do %>
         <div class="flex flex-wrap gap-1.5">
@@ -22,6 +58,7 @@
     </a>
 <% end %>
   </div>
+<% end %>
 <%= if assigns[:pagination] && @pagination do %>
   <nav class="mt-10 flex items-center justify-between" aria-label="Pagination">
 <%= if @pagination.has_prev do %>

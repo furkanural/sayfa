@@ -16,8 +16,8 @@ defmodule Sayfa.BlockTest do
   alias Sayfa.Content
 
   describe "default_blocks/0" do
-    test "returns 12 built-in blocks" do
-      assert length(Block.default_blocks()) == 12
+    test "returns 13 built-in blocks" do
+      assert length(Block.default_blocks()) == 13
     end
 
     test "all modules implement the block behaviour" do

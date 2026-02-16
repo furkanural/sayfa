@@ -5,6 +5,14 @@ config :sayfa, :site,
   base_url: "http://localhost:4000",
   description: "A personal site powered by Sayfa",
   author: "<%= @title %>",
+  nav: [
+    {"Home", "/"},
+    {"Posts", "/posts/"},
+    {"Notes", "/notes/"},
+    {"Projects", "/projects/"},
+    {"Talks", "/talks/"},
+    {"About", "/about/"}
+  ],
   # social_links: [
   #   {"GitHub", "https://github.com/yourname"},
   #   {"X", "https://x.com/yourname"}

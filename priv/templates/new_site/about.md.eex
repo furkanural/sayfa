@@ -1,8 +1,27 @@
 ---
 title: "About"
+description: "Learn more about <%= @title %>."
 layout: page
 ---
 
 # About <%= @title %>
 
-This is the about page. Edit it in `content/pages/about.md`.
+Welcome! This is a site powered by **[Sayfa](https://github.com/furkanural/sayfa)**, a static site generator built with [Elixir](https://elixir-lang.org).
+
+## About Me
+
+> *Replace this with your own motto, mission statement, or favorite quote.*
+
+I'm a **software developer** passionate about building things for the web. I started this site to share what I'm learning and working on.
+
+Feel free to replace this section with your own story — *what you do, what excites you, and what you're working on*.
+
+## Interests
+
+- **Functional programming** — Elixir, Erlang, and the BEAM ecosystem
+- **Open source** — contributing to and learning from the community
+- **Writing** — documenting ideas and sharing knowledge
+
+## Get in Touch
+
+The best way to reach me is through [GitHub](https://github.com/yourname) or by sending an email to **your@email.com**. I'm always happy to connect with fellow developers.

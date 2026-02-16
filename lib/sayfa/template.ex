@@ -180,6 +180,7 @@ defmodule Sayfa.Template do
       contents: contents,
       pagination: pagination,
       page_title: page_title,
+      content_type: Keyword.get(opts, :content_type),
       site: config,
       content: nil,
       lang: config.default_lang,

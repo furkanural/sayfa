@@ -1,0 +1,28 @@
+---
+title: "Sayfa"
+description: "An open-source static site generator built in Elixir."
+tags: [elixir, open-source, static-site-generator]
+repo: "https://github.com/furkanural/sayfa"
+status: active
+---
+
+## Overview
+
+Sayfa is a static site generator built in Elixir. It's designed to be simple, extensible, and fun to use.
+
+## Features
+
+- **Multiple content types** — Posts, notes, projects, talks, and pages
+- **Markdown with syntax highlighting** — Powered by MDEx (Rust NIF)
+- **Block system** — Reusable template components
+- **RSS/Atom feeds** — Built-in feed generation
+- **SEO** — Meta tags, sitemaps, and Open Graph support
+- **i18n** — Multilingual site support
+- **Dev server** — Live reload during development
+
+## Tech Stack
+
+- Elixir
+- MDEx for Markdown rendering
+- EEx for templating
+- Plug + Cowboy for the dev server

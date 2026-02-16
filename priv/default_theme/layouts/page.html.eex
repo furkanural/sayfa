@@ -1,4 +1,5 @@
 <article class="max-w-2xl mx-auto px-5 sm:px-6 py-12 sm:py-16">
+  <%= @block.(:breadcrumb, []) %>
   <header class="mb-8">
     <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-50"><%= @content.title %></h1>
   </header>

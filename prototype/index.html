@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sayfa Theme Prototype</title>
+  <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'media',
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              DEFAULT: '#4f46e5',
+              dark: '#4338ca',
+              light: '#6366f1',
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              200: '#c7d2fe',
+              300: '#a5b4fc',
+              400: '#818cf8',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+              800: '#3730a3',
+              900: '#312e81',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+          },
+          typography: {
+            DEFAULT: {
+              css: {
+                maxWidth: 'none',
+                '--tw-prose-links': '#4f46e5',
+                '--tw-prose-quote-borders': '#4f46e5',
+                'blockquote': {
+                  borderLeftColor: '#4f46e5',
+                  fontStyle: 'italic',
+                },
+              }
+            },
+            invert: {
+              css: {
+                '--tw-prose-links': '#818cf8',
+                '--tw-prose-quote-borders': '#818cf8',
+                'blockquote': {
+                  borderLeftColor: '#818cf8',
+                },
+              }
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+    @media (prefers-color-scheme: dark) {
+      ::-webkit-scrollbar-thumb { background: #475569; }
+      ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+    }
+
+    /* Smooth transitions for interactive elements */
+    a, button { transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease; }
+
+    /* Featured post accent animation */
+    .featured-accent {
+      position: relative;
+    }
+    .featured-accent::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: #4f46e5;
+      border-radius: 2px;
+      transition: width 0.2s ease;
+    }
+    @media (prefers-color-scheme: dark) {
+      .featured-accent::before { background: #818cf8; }
+    }
+    .featured-accent:hover::before {
+      width: 4px;
+    }
+
+    /* List item hover accent */
+    .list-accent {
+      position: relative;
+      padding-left: 0;
+      transition: padding-left 0.2s ease;
+    }
+    .list-accent::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 0;
+      background: #4f46e5;
+      border-radius: 2px;
+      transition: width 0.2s ease;
+    }
+    @media (prefers-color-scheme: dark) {
+      .list-accent::before { background: #818cf8; }
+    }
+    .list-accent:hover {
+      padding-left: 1rem;
+    }
+    .list-accent:hover::before {
+      width: 3px;
+    }
+
+    /* Copy button states */
+    .copy-btn .icon-check { display: none; }
+    .copy-btn.copied .icon-copy { display: none; }
+    .copy-btn.copied .icon-check { display: block; }
+  </style>
+</head>
+<body class="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 font-sans antialiased">
+
+  <!-- ===================== HEADER ===================== -->
+  <header class="sticky top-0 z-50 border-b border-slate-200/80 dark:border-slate-800 bg-white/85 dark:bg-slate-900/85 backdrop-blur-lg">
+    <div class="max-w-3xl mx-auto px-5 sm:px-6">
+      <div class="flex items-center justify-between h-14">
+        <a href="/" class="text-lg font-bold text-slate-900 dark:text-slate-100 hover:text-primary dark:hover:text-primary-400">
+          Jane Doe
+        </a>
+        <!-- Desktop nav -->
+        <nav class="hidden md:flex items-center gap-7">
+          <a href="/posts/" class="text-sm text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100">Posts</a>
+          <a href="/notes/" class="text-sm text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100">Notes</a>
+          <a href="/projects/" class="text-sm text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100">Projects</a>
+          <a href="/about/" class="text-sm text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100">About</a>
+        </nav>
+        <!-- Mobile menu button -->
+        <button id="menu-toggle" onclick="toggleMenu()" class="md:hidden p-2 -mr-2 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100" aria-label="Toggle menu">
+          <svg class="w-5 h-5 menu-open" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/>
+          </svg>
+          <svg class="w-5 h-5 menu-close hidden" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+          </svg>
+        </button>
+      </div>
+      <!-- Mobile nav -->
+      <nav id="mobile-menu" class="hidden pb-4 md:hidden">
+        <div class="flex flex-col gap-1 pt-2 border-t border-slate-200/80 dark:border-slate-800">
+          <a href="/posts/" class="flex items-center gap-3 py-2.5 text-sm text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary-400">
+            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838.838-2.872a2 2 0 0 1 .506-.854z"/></svg>
+            Posts
+          </a>
+          <a href="/notes/" class="flex items-center gap-3 py-2.5 text-sm text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary-400">
+            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M16 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8Z"/><path d="M15 3v4a2 2 0 0 0 2 2h4"/></svg>
+            Notes
+          </a>
+          <a href="/projects/" class="flex items-center gap-3 py-2.5 text-sm text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary-400">
+            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2Z"/></svg>
+            Projects
+          </a>
+          <a href="/about/" class="flex items-center gap-3 py-2.5 text-sm text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary-400">
+            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>
+            About
+          </a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ===================== SECTION DIVIDER: HOME PAGE ===================== -->
+  <div class="bg-primary-50 dark:bg-primary-900/20 border-b-2 border-primary py-2.5 text-center">
+    <span class="text-xs font-semibold text-primary dark:text-primary-400 tracking-widest uppercase">Home Page</span>
+  </div>
+
+  <!-- Home intro (DHH-inspired minimal) -->
+  <section class="max-w-2xl mx-auto px-5 sm:px-6 pt-14 sm:pt-20 pb-10">
+    <h1 class="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-slate-50">
+      Hi, I'm Jane.
+    </h1>
+    <p class="mt-4 text-base sm:text-lg text-slate-500 dark:text-slate-400 leading-relaxed max-w-xl">
+      I write about software engineering, functional programming with Elixir, and the open source tools I build. Welcome to my corner of the web.
+    </p>
+  </section>
+
+  <!-- Featured Post -->
+  <section class="max-w-2xl mx-auto px-5 sm:px-6 pb-14">
+    <a href="/posts/building-sayfa/" class="featured-accent group block pl-5 py-4">
+      <span class="inline-flex items-center gap-1.5 text-xs font-medium text-primary dark:text-primary-400 uppercase tracking-wide mb-2">
+        <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        Featured
+      </span>
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-50 group-hover:text-primary dark:group-hover:text-primary-400">
+        Building Sayfa: A Static Site Generator in Elixir
+      </h2>
+      <p class="mt-2 text-slate-500 dark:text-slate-400 leading-relaxed line-clamp-2">
+        Why I built a static site generator from scratch using Elixir, the architectural decisions behind it, and what I learned about content pipelines along the way.
+      </p>
+      <div class="mt-3 flex flex-wrap items-center gap-3 text-sm text-slate-400 dark:text-slate-500">
+        <span class="inline-flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>
+          June 15, 2024
+        </span>
+        <span class="inline-flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          8 min read
+        </span>
+        <a href="/tags/elixir/" class="inline-flex items-center gap-1 h-5 px-1.5 rounded text-xs font-medium bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400 hover:bg-primary-50 hover:text-primary dark:hover:bg-primary-900/30 dark:hover:text-primary-400">
+          <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="4" x2="20" y1="9" y2="9"/><line x1="4" x2="20" y1="15" y2="15"/><line x1="10" x2="8" y1="3" y2="21"/><line x1="16" x2="14" y1="3" y2="21"/></svg>
+          elixir
+        </a>
+      </div>
+    </a>
+  </section>
+
+  <!-- Recent Posts (DHH-style chronological list) -->
+  <section class="max-w-2xl mx-auto px-5 sm:px-6 pb-16">
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-lg sm:text-xl font-semibold text-slate-900 dark:text-slate-50">Recent Posts</h2>
+      <a href="/posts/" class="inline-flex items-center gap-1 text-sm text-primary dark:text-primary-400 hover:text-primary-dark dark:hover:text-primary-300">
+        View all
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+      </a>
+    </div>
+    <div class="space-y-0 divide-y divide-slate-200/70 dark:divide-slate-800">
+      <a href="/posts/elixir-patterns/" class="group flex items-baseline gap-4 py-4 first:pt-0">
+        <time class="shrink-0 text-sm tabular-nums text-slate-400 dark:text-slate-500 w-[5.5rem]">May 20, 2024</time>
+        <span class="text-slate-800 dark:text-slate-200 group-hover:text-primary dark:group-hover:text-primary-400">Functional Patterns in Elixir</span>
+      </a>
+      <a href="/posts/tailwind-tips/" class="group flex items-baseline gap-4 py-4">
+        <time class="shrink-0 text-sm tabular-nums text-slate-400 dark:text-slate-500 w-[5.5rem]">Apr 10, 2024</time>
+        <span class="text-slate-800 dark:text-slate-200 group-hover:text-primary dark:group-hover:text-primary-400">TailwindCSS Tips for Static Sites</span>
+      </a>
+      <a href="/posts/getting-started/" class="group flex items-baseline gap-4 py-4">
+        <time class="shrink-0 text-sm tabular-nums text-slate-400 dark:text-slate-500 w-[5.5rem]">Mar 1, 2024</time>
+        <span class="text-slate-800 dark:text-slate-200 group-hover:text-primary dark:group-hover:text-primary-400">Getting Started with Phoenix LiveView</span>
+      </a>
+      <a href="/posts/otp-concurrency/" class="group flex items-baseline gap-4 py-4 last:pb-0">
+        <time class="shrink-0 text-sm tabular-nums text-slate-400 dark:text-slate-500 w-[5.5rem]">Feb 14, 2024</time>
+        <span class="text-slate-800 dark:text-slate-200 group-hover:text-primary dark:group-hover:text-primary-400">Concurrency in OTP: A Practical Guide</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- Notes (compact card grid) -->
+  <section class="max-w-2xl mx-auto px-5 sm:px-6 pb-16">
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-lg sm:text-xl font-semibold text-slate-900 dark:text-slate-50">Notes</h2>
+      <a href="/notes/" class="inline-flex items-center gap-1 text-sm text-primary dark:text-primary-400 hover:text-primary-dark dark:hover:text-primary-300">
+        View all
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+      </a>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <a href="/notes/otp-basics/" class="group block p-4 rounded-lg border border-slate-200/70 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 hover:border-primary/30 dark:hover:border-primary-700/40">
+        <h3 class="text-sm font-medium text-slate-800 dark:text-slate-200 group-hover:text-primary dark:group-hover:text-primary-400">OTP Basics Cheat Sheet</h3>
+        <time class="mt-1.5 block text-xs text-slate-400 dark:text-slate-500">Jun 1, 2024</time>
+      </a>
+      <a href="/notes/elixir-install/" class="group block p-4 rounded-lg border border-slate-200/70 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 hover:border-primary/30 dark:hover:border-primary-700/40">
+        <h3 class="text-sm font-medium text-slate-800 dark:text-slate-200 group-hover:text-primary dark:group-hover:text-primary-400">Setting Up Elixir on macOS</h3>
+        <time class="mt-1.5 block text-xs text-slate-400 dark:text-slate-500">May 15, 2024</time>
+      </a>
+      <a href="/notes/pattern-matching/" class="group block p-4 rounded-lg border border-slate-200/70 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 hover:border-primary/30 dark:hover:border-primary-700/40">
+        <h3 class="text-sm font-medium text-slate-800 dark:text-slate-200 group-hover:text-primary dark:group-hover:text-primary-400">Pattern Matching Quick Reference</h3>
+        <time class="mt-1.5 block text-xs text-slate-400 dark:text-slate-500">Apr 28, 2024</time>
+      </a>
+      <a href="/notes/ecto-tips/" class="group block p-4 rounded-lg border border-slate-200/70 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 hover:border-primary/30 dark:hover:border-primary-700/40">
+        <h3 class="text-sm font-medium text-slate-800 dark:text-slate-200 group-hover:text-primary dark:group-hover:text-primary-400">Ecto Tips &amp; Tricks</h3>
+        <time class="mt-1.5 block text-xs text-slate-400 dark:text-slate-500">Mar 20, 2024</time>
+      </a>
+    </div>
+  </section>
+
+  <!-- Connect (icon + label social cards) -->
+  <section class="max-w-2xl mx-auto px-5 sm:px-6 pb-16">
+    <h2 class="text-lg sm:text-xl font-semibold text-slate-900 dark:text-slate-50 mb-5">Connect</h2>
+    <div class="flex flex-wrap gap-3">
+      <a href="https://github.com/janedoe" rel="noopener" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-slate-200/70 dark:border-slate-800 text-sm text-slate-600 dark:text-slate-300 hover:border-primary/30 hover:text-primary dark:hover:border-primary-700/40 dark:hover:text-primary-400 bg-slate-50 dark:bg-slate-800/50">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
+        GitHub
+      </a>
+      <a href="https://twitter.com/janedoe" rel="noopener" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-slate-200/70 dark:border-slate-800 text-sm text-slate-600 dark:text-slate-300 hover:border-primary/30 hover:text-primary dark:hover:border-primary-700/40 dark:hover:text-primary-400 bg-slate-50 dark:bg-slate-800/50">
+        <svg class="w-4 h-4" fill="currentColor" stroke="none" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        X / Twitter
+      </a>
+      <a href="https://mastodon.social/@janedoe" rel="me noopener" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-slate-200/70 dark:border-slate-800 text-sm text-slate-600 dark:text-slate-300 hover:border-primary/30 hover:text-primary dark:hover:border-primary-700/40 dark:hover:text-primary-400 bg-slate-50 dark:bg-slate-800/50">
+        <svg class="w-4 h-4" fill="currentColor" stroke="none" viewBox="0 0 24 24"><path d="M21.327 8.566c0-4.339-2.843-5.61-2.843-5.61-1.433-.658-3.894-.935-6.451-.956h-.063c-2.557.021-5.016.298-6.45.956 0 0-2.843 1.272-2.843 5.61 0 .993-.019 2.181.012 3.441.103 4.243.778 8.425 4.701 9.463 1.809.479 3.362.579 4.612.51 2.268-.126 3.541-.809 3.541-.809l-.075-1.646s-1.621.511-3.441.449c-1.804-.062-3.707-.194-3.999-2.409a4.5 4.5 0 0 1-.04-.621s1.77.432 4.014.535c1.372.063 2.658-.08 3.965-.236 2.506-.299 4.688-1.843 4.962-3.254.434-2.223.398-5.424.398-5.424zm-3.353 5.59h-2.081V9.057c0-1.075-.452-1.62-1.357-1.62-1 0-1.501.647-1.501 1.927v2.791h-2.069V9.364c0-1.28-.501-1.927-1.502-1.927-.905 0-1.357.546-1.357 1.62v5.099H6.026V8.903c0-1.074.273-1.927.823-2.558.566-.631 1.307-.955 2.228-.955 1.065 0 1.872.41 2.405 1.228l.518.869.519-.869c.533-.818 1.34-1.228 2.405-1.228.92 0 1.662.324 2.228.955.549.631.822 1.484.822 2.558z"/></svg>
+        Mastodon
+      </a>
+      <a href="mailto:jane@example.com" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-slate-200/70 dark:border-slate-800 text-sm text-slate-600 dark:text-slate-300 hover:border-primary/30 hover:text-primary dark:hover:border-primary-700/40 dark:hover:text-primary-400 bg-slate-50 dark:bg-slate-800/50">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+        Email
+      </a>
+      <a href="/feed.xml" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-slate-200/70 dark:border-slate-800 text-sm text-slate-600 dark:text-slate-300 hover:border-primary/30 hover:text-primary dark:hover:border-primary-700/40 dark:hover:text-primary-400 bg-slate-50 dark:bg-slate-800/50">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
+        RSS
+      </a>
+    </div>
+  </section>
+
+  <!-- ===================== SECTION DIVIDER: POST PAGE ===================== -->
+  <div class="bg-primary-50 dark:bg-primary-900/20 border-b-2 border-primary py-2.5 text-center">
+    <span class="text-xs font-semibold text-primary dark:text-primary-400 tracking-widest uppercase">Post Page (with TOC sidebar)</span>
+  </div>
+
+  <!-- Post article with sticky TOC sidebar -->
+  <article class="max-w-5xl mx-auto px-5 sm:px-6 py-12 sm:py-16">
+    <div class="lg:grid lg:grid-cols-[minmax(0,_42rem)_200px] lg:gap-16 lg:justify-center">
+      <!-- Main content -->
+      <div class="min-w-0">
+        <header class="mb-10">
+          <h1 class="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-slate-50">
+            Building Sayfa: A Static Site Generator in Elixir
+          </h1>
+          <div class="mt-5 flex flex-wrap items-center gap-4 text-sm text-slate-400 dark:text-slate-500">
+            <span class="inline-flex items-center gap-1.5">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>
+              <time datetime="2024-06-15">June 15, 2024</time>
+            </span>
+            <span class="inline-flex items-center gap-1.5">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              8 min read
+            </span>
+          </div>
+          <div class="mt-4 flex flex-wrap gap-1.5">
+            <a href="/tags/elixir/" class="inline-flex items-center gap-1 h-6 px-2 rounded-md text-xs font-medium bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 hover:bg-primary-50 hover:text-primary dark:hover:bg-primary-900/30 dark:hover:text-primary-400">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="4" x2="20" y1="9" y2="9"/><line x1="4" x2="20" y1="15" y2="15"/><line x1="10" x2="8" y1="3" y2="21"/><line x1="16" x2="14" y1="3" y2="21"/></svg>
+              elixir
+            </a>
+            <a href="/tags/static-sites/" class="inline-flex items-center gap-1 h-6 px-2 rounded-md text-xs font-medium bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 hover:bg-primary-50 hover:text-primary dark:hover:bg-primary-900/30 dark:hover:text-primary-400">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="4" x2="20" y1="9" y2="9"/><line x1="4" x2="20" y1="15" y2="15"/><line x1="10" x2="8" y1="3" y2="21"/><line x1="16" x2="14" y1="3" y2="21"/></svg>
+              static-sites
+            </a>
+            <a href="/tags/open-source/" class="inline-flex items-center gap-1 h-6 px-2 rounded-md text-xs font-medium bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 hover:bg-primary-50 hover:text-primary dark:hover:bg-primary-900/30 dark:hover:text-primary-400">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="4" x2="20" y1="9" y2="9"/><line x1="4" x2="20" y1="15" y2="15"/><line x1="10" x2="8" y1="3" y2="21"/><line x1="16" x2="14" y1="3" y2="21"/></svg>
+              open-source
+            </a>
+          </div>
+        </header>
+
+        <!-- TOC inline on mobile -->
+        <details class="lg:hidden mb-8 rounded-lg border border-slate-200/70 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50">
+          <summary class="flex items-center gap-2 cursor-pointer p-4 text-sm font-medium text-slate-700 dark:text-slate-300 select-none">
+            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><line x1="8" x2="21" y1="6" y2="6"/><line x1="8" x2="21" y1="12" y2="12"/><line x1="8" x2="21" y1="18" y2="18"/><line x1="3" x2="3.01" y1="6" y2="6"/><line x1="3" x2="3.01" y1="12" y2="12"/><line x1="3" x2="3.01" y1="18" y2="18"/></svg>
+            On this page
+          </summary>
+          <ul class="px-4 pb-4 space-y-2 text-sm">
+            <li><a href="#introduction" class="text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-primary-400">Introduction</a></li>
+            <li><a href="#architecture" class="text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-primary-400">Architecture</a></li>
+            <li>
+              <a href="#content-pipeline" class="text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-primary-400">Content Pipeline</a>
+              <ul class="mt-1 ml-4 space-y-1">
+                <li><a href="#parsing" class="text-slate-400 dark:text-slate-500 hover:text-primary dark:hover:text-primary-400">Parsing</a></li>
+                <li><a href="#rendering" class="text-slate-400 dark:text-slate-500 hover:text-primary dark:hover:text-primary-400">Rendering</a></li>
+              </ul>
+            </li>
+            <li><a href="#conclusion" class="text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-primary-400">Conclusion</a></li>
+          </ul>
+        </details>
+
+        <!-- Prose content -->
+        <div class="prose prose-slate dark:prose-invert prose-headings:font-bold prose-headings:scroll-mt-20 prose-a:text-primary dark:prose-a:text-primary-400 prose-a:decoration-primary/30 hover:prose-a:decoration-primary prose-code:before:content-none prose-code:after:content-none prose-code:font-mono prose-code:text-sm prose-code:bg-slate-100 prose-code:dark:bg-slate-800 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded max-w-none">
+          <h2 id="introduction">Introduction</h2>
+          <p>I've been wanting to build a static site generator in Elixir for a while. The goal was simple: create something extensible, fast, and easy to use. <strong>Sayfa</strong> (Turkish for "page") is the result.</p>
+          <p>Here's some inline <code>code</code> and a block of code below. Notice the language label and copy button:</p>
+
+          <!-- Code block with not-prose wrapper -->
+          <div class="not-prose my-6 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700">
+            <div class="flex items-center justify-between px-4 py-2 bg-slate-800 text-slate-400">
+              <span class="text-xs font-mono">elixir</span>
+              <button onclick="copyCode(this)" class="copy-btn inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-slate-200">
+                <svg class="w-3.5 h-3.5 icon-copy" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                <svg class="w-3.5 h-3.5 icon-check text-green-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>
+                <span class="copy-label">Copy</span>
+              </button>
+            </div>
+            <pre class="p-4 bg-slate-900 text-slate-100 overflow-x-auto m-0"><code class="text-sm font-mono leading-relaxed">defmodule Sayfa.Builder do
+  @moduledoc "Core build pipeline orchestration."
+
+  def build(opts \\ []) do
+    config = Config.resolve(opts)
+
+    with {:ok, files} &lt;- discover_files(config.content_dir),
+         {:ok, contents} &lt;- parse_files(files, config) do
+      render_and_write(contents, config)
+    end
+  end
+end</code></pre>
+          </div>
+
+          <h2 id="architecture">Architecture</h2>
+          <p>Sayfa follows a two-layer architecture. The core package provides reusable SSG functionality, while user sites depend on it via Hex. This keeps the core focused and user sites lightweight.</p>
+
+          <blockquote>
+            <p>The best tool is one that gets out of your way and lets you focus on creating content.</p>
+          </blockquote>
+
+          <h2 id="content-pipeline">Content Pipeline</h2>
+          <p>Content flows through distinct stages, each responsible for a single transformation:</p>
+          <ol>
+            <li><strong>Load</strong> &mdash; Read files from disk</li>
+            <li><strong>Parse</strong> &mdash; Extract front matter + markdown</li>
+            <li><strong>Transform</strong> &mdash; Apply hooks, generate slugs</li>
+            <li><strong>Render</strong> &mdash; Apply EEx templates</li>
+            <li><strong>Write</strong> &mdash; Output to disk</li>
+          </ol>
+
+          <h3 id="parsing">Parsing</h3>
+          <p>The parser uses <code>YamlElixir</code> for front matter and <code>MDEx</code> (a Rust NIF) for markdown rendering. This gives us excellent performance while supporting all CommonMark features.</p>
+
+          <!-- Another code block -->
+          <div class="not-prose my-6 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700">
+            <div class="flex items-center justify-between px-4 py-2 bg-slate-800 text-slate-400">
+              <span class="text-xs font-mono">yaml</span>
+              <button onclick="copyCode(this)" class="copy-btn inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-slate-200">
+                <svg class="w-3.5 h-3.5 icon-copy" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                <svg class="w-3.5 h-3.5 icon-check text-green-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>
+                <span class="copy-label">Copy</span>
+              </button>
+            </div>
+            <pre class="p-4 bg-slate-900 text-slate-100 overflow-x-auto m-0"><code class="text-sm font-mono leading-relaxed">---
+title: "My First Post"
+date: 2024-06-15
+tags: [elixir, open-source]
+draft: false
+---</code></pre>
+          </div>
+
+          <h3 id="rendering">Rendering</h3>
+          <p>Templates use Elixir's built-in EEx engine. Layouts compose in three layers: content body, layout template, and base template.</p>
+
+          <h2 id="conclusion">Conclusion</h2>
+          <p>Building Sayfa has been a great learning experience. Elixir's pattern matching and pipeline operator make content processing elegant and readable.</p>
+        </div>
+
+        <!-- Copy link button -->
+        <div class="mt-10 pt-6 border-t border-slate-200 dark:border-slate-700/50 flex items-center gap-3">
+          <button onclick="copyLink(this)" class="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 text-sm text-slate-500 dark:text-slate-400 hover:text-primary hover:border-primary/30 dark:hover:text-primary-400 dark:hover:border-primary-700/40">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            <span>Copy link</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Sticky TOC sidebar (desktop only) -->
+      <aside class="hidden lg:block">
+        <nav class="sticky top-20">
+          <h2 class="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-4">On this page</h2>
+          <ul class="space-y-2.5 text-sm border-l border-slate-200 dark:border-slate-800">
+            <li><a href="#introduction" class="block pl-4 -ml-px border-l border-transparent hover:border-primary text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-primary-400">Introduction</a></li>
+            <li><a href="#architecture" class="block pl-4 -ml-px border-l border-transparent hover:border-primary text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-primary-400">Architecture</a></li>
+            <li>
+              <a href="#content-pipeline" class="block pl-4 -ml-px border-l border-transparent hover:border-primary text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-primary-400">Content Pipeline</a>
+              <ul class="mt-2 space-y-2">
+                <li><a href="#parsing" class="block pl-8 -ml-px border-l border-transparent hover:border-primary text-slate-400 dark:text-slate-500 hover:text-primary dark:hover:text-primary-400">Parsing</a></li>
+                <li><a href="#rendering" class="block pl-8 -ml-px border-l border-transparent hover:border-primary text-slate-400 dark:text-slate-500 hover:text-primary dark:hover:text-primary-400">Rendering</a></li>
+              </ul>
+            </li>
+            <li><a href="#conclusion" class="block pl-4 -ml-px border-l border-transparent hover:border-primary text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-primary-400">Conclusion</a></li>
+          </ul>
+        </nav>
+      </aside>
+    </div>
+  </article>
+
+  <!-- ===================== SECTION DIVIDER: NOTE SHOW PAGE ===================== -->
+  <div class="bg-primary-50 dark:bg-primary-900/20 border-b-2 border-primary py-2.5 text-center">
+    <span class="text-xs font-semibold text-primary dark:text-primary-400 tracking-widest uppercase">Note Show Page</span>
+  </div>
+
+  <!-- Note article — narrower, no TOC, "Note" badge -->
+  <article class="max-w-2xl mx-auto px-5 sm:px-6 py-12 sm:py-16">
+    <div class="border-t-2 border-primary dark:border-primary-400 pt-8">
+      <header class="mb-8">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-primary-50 text-primary dark:bg-primary-900/30 dark:text-primary-400">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M16 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8Z"/><path d="M15 3v4a2 2 0 0 0 2 2h4"/></svg>
+            Note
+          </span>
+        </div>
+        <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-50">
+          OTP Basics Cheat Sheet
+        </h1>
+        <div class="mt-3 flex flex-wrap items-center gap-4 text-sm text-slate-400 dark:text-slate-500">
+          <span class="inline-flex items-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>
+            <time datetime="2024-06-01">June 1, 2024</time>
+          </span>
+        </div>
+        <div class="mt-3 flex flex-wrap gap-1.5">
+          <a href="/tags/elixir/" class="inline-flex items-center gap-1 h-6 px-2 rounded-md text-xs font-medium bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 hover:bg-primary-50 hover:text-primary dark:hover:bg-primary-900/30 dark:hover:text-primary-400">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="4" x2="20" y1="9" y2="9"/><line x1="4" x2="20" y1="15" y2="15"/><line x1="10" x2="8" y1="3" y2="21"/><line x1="16" x2="14" y1="3" y2="21"/></svg>
+            elixir
+          </a>
+          <a href="/tags/otp/" class="inline-flex items-center gap-1 h-6 px-2 rounded-md text-xs font-medium bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 hover:bg-primary-50 hover:text-primary dark:hover:bg-primary-900/30 dark:hover:text-primary-400">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="4" x2="20" y1="9" y2="9"/><line x1="4" x2="20" y1="15" y2="15"/><line x1="10" x2="8" y1="3" y2="21"/><line x1="16" x2="14" y1="3" y2="21"/></svg>
+            otp
+          </a>
+        </div>
+      </header>
+
+      <!-- Note prose content -->
+      <div class="prose prose-slate dark:prose-invert prose-headings:font-bold prose-headings:scroll-mt-20 prose-a:text-primary dark:prose-a:text-primary-400 prose-a:decoration-primary/30 hover:prose-a:decoration-primary prose-code:before:content-none prose-code:after:content-none prose-code:font-mono prose-code:text-sm prose-code:bg-slate-100 prose-code:dark:bg-slate-800 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded max-w-none">
+        <p>A quick reference for the most common OTP behaviours and when to use them.</p>
+
+        <h2>GenServer</h2>
+        <p>Use <code>GenServer</code> when you need a process that maintains state and handles synchronous or asynchronous requests. It's the workhorse of OTP.</p>
+
+        <div class="not-prose my-6 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700">
+          <div class="flex items-center justify-between px-4 py-2 bg-slate-800 text-slate-400">
+            <span class="text-xs font-mono">elixir</span>
+            <button onclick="copyCode(this)" class="copy-btn inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-slate-200">
+              <svg class="w-3.5 h-3.5 icon-copy" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+              <svg class="w-3.5 h-3.5 icon-check text-green-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>
+              <span class="copy-label">Copy</span>
+            </button>
+          </div>
+          <pre class="p-4 bg-slate-900 text-slate-100 overflow-x-auto m-0"><code class="text-sm font-mono leading-relaxed">defmodule MyApp.Counter do
+  use GenServer
+
+  def start_link(init), do: GenServer.start_link(__MODULE__, init)
+  def increment(pid), do: GenServer.call(pid, :increment)
+
+  @impl true
+  def init(count), do: {:ok, count}
+
+  @impl true
+  def handle_call(:increment, _from, count), do: {:reply, count + 1, count + 1}
+end</code></pre>
+        </div>
+
+        <h2>Supervisor</h2>
+        <p>Supervisors monitor child processes and restart them according to a strategy. The three main strategies are <code>:one_for_one</code>, <code>:one_for_all</code>, and <code>:rest_for_one</code>.</p>
+
+        <h2>When to use what</h2>
+        <ul>
+          <li><strong>GenServer</strong> &mdash; stateful process, request/response</li>
+          <li><strong>Agent</strong> &mdash; simple state wrapper (thin GenServer)</li>
+          <li><strong>Task</strong> &mdash; one-off async work</li>
+          <li><strong>Supervisor</strong> &mdash; fault tolerance, process monitoring</li>
+        </ul>
+      </div>
+
+      <!-- Copy link button -->
+      <div class="mt-10 pt-6 border-t border-slate-200 dark:border-slate-700/50 flex items-center gap-3">
+        <button onclick="copyLink(this)" class="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 text-sm text-slate-500 dark:text-slate-400 hover:text-primary hover:border-primary/30 dark:hover:text-primary-400 dark:hover:border-primary-700/40">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          <span>Copy link</span>
+        </button>
+      </div>
+    </div>
+  </article>
+
+  <!-- ===================== SECTION DIVIDER: LIST PAGE ===================== -->
+  <div class="bg-primary-50 dark:bg-primary-900/20 border-b-2 border-primary py-2.5 text-center">
+    <span class="text-xs font-semibold text-primary dark:text-primary-400 tracking-widest uppercase">List Page</span>
+  </div>
+
+  <section class="max-w-2xl mx-auto px-5 sm:px-6 py-12 sm:py-16">
+    <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-50 mb-10">Posts</h1>
+    <div class="space-y-0">
+      <!-- List item 1 -->
+      <a href="/posts/building-sayfa/" class="list-accent group block py-5 border-b border-slate-200/70 dark:border-slate-800 first:border-t">
+        <h2 class="text-base font-medium text-slate-800 dark:text-slate-200 group-hover:text-primary dark:group-hover:text-primary-400">Building Sayfa: A Static Site Generator in Elixir</h2>
+        <p class="mt-1.5 text-sm text-slate-500 dark:text-slate-400 leading-relaxed line-clamp-2">Why I built a static site generator from scratch using Elixir, the architectural decisions behind it, and what I learned about content pipelines.</p>
+        <div class="mt-2.5 flex flex-wrap items-center gap-3">
+          <time class="text-xs text-slate-400 dark:text-slate-500">Jun 15, 2024</time>
+          <div class="flex flex-wrap gap-1.5">
+            <span class="inline-flex items-center gap-0.5 h-5 px-1.5 rounded text-xs font-medium bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+              <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="4" x2="20" y1="9" y2="9"/><line x1="4" x2="20" y1="15" y2="15"/><line x1="10" x2="8" y1="3" y2="21"/><line x1="16" x2="14" y1="3" y2="21"/></svg>
+              elixir
+            </span>
+            <span class="inline-flex items-center gap-0.5 h-5 px-1.5 rounded text-xs font-medium bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+              <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="4" x2="20" y1="9" y2="9"/><line x1="4" x2="20" y1="15" y2="15"/><line x1="10" x2="8" y1="3" y2="21"/><line x1="16" x2="14" y1="3" y2="21"/></svg>
+              static-sites
+            </span>
+          </div>
+        </div>
+      </a>
+
+      <!-- List item 2 -->
+      <a href="/posts/elixir-patterns/" class="list-accent group block py-5 border-b border-slate-200/70 dark:border-slate-800">
+        <h2 class="text-base font-medium text-slate-800 dark:text-slate-200 group-hover:text-primary dark:group-hover:text-primary-400">Functional Patterns in Elixir</h2>
+        <p class="mt-1.5 text-sm text-slate-500 dark:text-slate-400 leading-relaxed line-clamp-2">Exploring common functional programming patterns and how they translate beautifully into idiomatic Elixir code.</p>
+        <div class="mt-2.5 flex flex-wrap items-center gap-3">
+          <time class="text-xs text-slate-400 dark:text-slate-500">May 20, 2024</time>
+          <div class="flex flex-wrap gap-1.5">
+            <span class="inline-flex items-center gap-0.5 h-5 px-1.5 rounded text-xs font-medium bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+              <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="4" x2="20" y1="9" y2="9"/><line x1="4" x2="20" y1="15" y2="15"/><line x1="10" x2="8" y1="3" y2="21"/><line x1="16" x2="14" y1="3" y2="21"/></svg>
+              elixir
+            </span>
+            <span class="inline-flex items-center gap-0.5 h-5 px-1.5 rounded text-xs font-medium bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+              <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="4" x2="20" y1="9" y2="9"/><line x1="4" x2="20" y1="15" y2="15"/><line x1="10" x2="8" y1="3" y2="21"/><line x1="16" x2="14" y1="3" y2="21"/></svg>
+              patterns
+            </span>
+          </div>
+        </div>
+      </a>
+
+      <!-- List item 3 -->
+      <a href="/posts/tailwind-tips/" class="list-accent group block py-5 border-b border-slate-200/70 dark:border-slate-800">
+        <h2 class="text-base font-medium text-slate-800 dark:text-slate-200 group-hover:text-primary dark:group-hover:text-primary-400">TailwindCSS Tips for Static Sites</h2>
+        <p class="mt-1.5 text-sm text-slate-500 dark:text-slate-400 leading-relaxed line-clamp-2">Practical tips for using TailwindCSS effectively in static site generators without Node.js build steps.</p>
+        <div class="mt-2.5 flex flex-wrap items-center gap-3">
+          <time class="text-xs text-slate-400 dark:text-slate-500">Apr 10, 2024</time>
+          <div class="flex flex-wrap gap-1.5">
+            <span class="inline-flex items-center gap-0.5 h-5 px-1.5 rounded text-xs font-medium bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+              <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="4" x2="20" y1="9" y2="9"/><line x1="4" x2="20" y1="15" y2="15"/><line x1="10" x2="8" y1="3" y2="21"/><line x1="16" x2="14" y1="3" y2="21"/></svg>
+              css
+            </span>
+            <span class="inline-flex items-center gap-0.5 h-5 px-1.5 rounded text-xs font-medium bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+              <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="4" x2="20" y1="9" y2="9"/><line x1="4" x2="20" y1="15" y2="15"/><line x1="10" x2="8" y1="3" y2="21"/><line x1="16" x2="14" y1="3" y2="21"/></svg>
+              tailwind
+            </span>
+          </div>
+        </div>
+      </a>
+
+      <!-- List item 4 -->
+      <a href="/posts/getting-started/" class="list-accent group block py-5 border-b border-slate-200/70 dark:border-slate-800">
+        <h2 class="text-base font-medium text-slate-800 dark:text-slate-200 group-hover:text-primary dark:group-hover:text-primary-400">Getting Started with Phoenix LiveView</h2>
+        <p class="mt-1.5 text-sm text-slate-500 dark:text-slate-400 leading-relaxed line-clamp-2">A beginner-friendly introduction to building real-time web applications with Phoenix LiveView and Elixir.</p>
+        <div class="mt-2.5 flex flex-wrap items-center gap-3">
+          <time class="text-xs text-slate-400 dark:text-slate-500">Mar 1, 2024</time>
+          <div class="flex flex-wrap gap-1.5">
+            <span class="inline-flex items-center gap-0.5 h-5 px-1.5 rounded text-xs font-medium bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+              <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="4" x2="20" y1="9" y2="9"/><line x1="4" x2="20" y1="15" y2="15"/><line x1="10" x2="8" y1="3" y2="21"/><line x1="16" x2="14" y1="3" y2="21"/></svg>
+              elixir
+            </span>
+            <span class="inline-flex items-center gap-0.5 h-5 px-1.5 rounded text-xs font-medium bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+              <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="4" x2="20" y1="9" y2="9"/><line x1="4" x2="20" y1="15" y2="15"/><line x1="10" x2="8" y1="3" y2="21"/><line x1="16" x2="14" y1="3" y2="21"/></svg>
+              phoenix
+            </span>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <!-- Pagination -->
+    <nav class="mt-10 flex items-center justify-between" aria-label="Pagination">
+      <span class="inline-flex items-center gap-1.5 text-sm text-slate-300 dark:text-slate-600 cursor-not-allowed select-none">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+        Previous
+      </span>
+      <span class="text-sm text-slate-400 dark:text-slate-500">1 / 3</span>
+      <a href="/posts/page/2/" rel="next" class="inline-flex items-center gap-1.5 text-sm font-medium text-primary dark:text-primary-400 hover:text-primary-dark dark:hover:text-primary-300">
+        Next
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </a>
+    </nav>
+  </section>
+
+  <!-- ===================== SECTION DIVIDER: PAGE LAYOUT ===================== -->
+  <div class="bg-primary-50 dark:bg-primary-900/20 border-b-2 border-primary py-2.5 text-center">
+    <span class="text-xs font-semibold text-primary dark:text-primary-400 tracking-widest uppercase">Page Layout (About)</span>
+  </div>
+
+  <article class="max-w-2xl mx-auto px-5 sm:px-6 py-12 sm:py-16">
+    <header class="mb-8">
+      <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-50">About</h1>
+    </header>
+    <div class="prose prose-slate dark:prose-invert prose-headings:font-bold prose-a:text-primary dark:prose-a:text-primary-400 prose-a:decoration-primary/30 hover:prose-a:decoration-primary max-w-none">
+      <p>Hi, I'm Jane &mdash; a software engineer who loves building tools with Elixir. This site is powered by <a href="#">Sayfa</a>, an open-source static site generator I built from scratch.</p>
+      <p>When I'm not coding, I enjoy reading about distributed systems, contributing to open source, and drinking too much coffee.</p>
+      <h2>What I work on</h2>
+      <p>I spend most of my time building developer tools and thinking about content pipelines, static analysis, and functional programming patterns. I believe in building small, composable tools that do one thing well.</p>
+    </div>
+
+    <!-- Connect section on About page -->
+    <div class="mt-12 pt-8 border-t border-slate-200/70 dark:border-slate-800">
+      <h2 class="text-lg sm:text-xl font-semibold text-slate-900 dark:text-slate-50 mb-5">Get in touch</h2>
+      <div class="flex flex-wrap gap-3">
+        <a href="https://github.com/janedoe" rel="noopener" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-slate-200/70 dark:border-slate-800 text-sm text-slate-600 dark:text-slate-300 hover:border-primary/30 hover:text-primary dark:hover:border-primary-700/40 dark:hover:text-primary-400 bg-slate-50 dark:bg-slate-800/50">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
+          GitHub
+        </a>
+        <a href="https://twitter.com/janedoe" rel="noopener" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-slate-200/70 dark:border-slate-800 text-sm text-slate-600 dark:text-slate-300 hover:border-primary/30 hover:text-primary dark:hover:border-primary-700/40 dark:hover:text-primary-400 bg-slate-50 dark:bg-slate-800/50">
+          <svg class="w-4 h-4" fill="currentColor" stroke="none" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          X / Twitter
+        </a>
+        <a href="https://mastodon.social/@janedoe" rel="me noopener" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-slate-200/70 dark:border-slate-800 text-sm text-slate-600 dark:text-slate-300 hover:border-primary/30 hover:text-primary dark:hover:border-primary-700/40 dark:hover:text-primary-400 bg-slate-50 dark:bg-slate-800/50">
+          <svg class="w-4 h-4" fill="currentColor" stroke="none" viewBox="0 0 24 24"><path d="M21.327 8.566c0-4.339-2.843-5.61-2.843-5.61-1.433-.658-3.894-.935-6.451-.956h-.063c-2.557.021-5.016.298-6.45.956 0 0-2.843 1.272-2.843 5.61 0 .993-.019 2.181.012 3.441.103 4.243.778 8.425 4.701 9.463 1.809.479 3.362.579 4.612.51 2.268-.126 3.541-.809 3.541-.809l-.075-1.646s-1.621.511-3.441.449c-1.804-.062-3.707-.194-3.999-2.409a4.5 4.5 0 0 1-.04-.621s1.77.432 4.014.535c1.372.063 2.658-.08 3.965-.236 2.506-.299 4.688-1.843 4.962-3.254.434-2.223.398-5.424.398-5.424zm-3.353 5.59h-2.081V9.057c0-1.075-.452-1.62-1.357-1.62-1 0-1.501.647-1.501 1.927v2.791h-2.069V9.364c0-1.28-.501-1.927-1.502-1.927-.905 0-1.357.546-1.357 1.62v5.099H6.026V8.903c0-1.074.273-1.927.823-2.558.566-.631 1.307-.955 2.228-.955 1.065 0 1.872.41 2.405 1.228l.518.869.519-.869c.533-.818 1.34-1.228 2.405-1.228.92 0 1.662.324 2.228.955.549.631.822 1.484.822 2.558z"/></svg>
+          Mastodon
+        </a>
+        <a href="mailto:jane@example.com" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-slate-200/70 dark:border-slate-800 text-sm text-slate-600 dark:text-slate-300 hover:border-primary/30 hover:text-primary dark:hover:border-primary-700/40 dark:hover:text-primary-400 bg-slate-50 dark:bg-slate-800/50">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+          Email
+        </a>
+      </div>
+    </div>
+  </article>
+
+  <!-- ===================== SECTION DIVIDER: TAG CLOUD ===================== -->
+  <div class="bg-primary-50 dark:bg-primary-900/20 border-b-2 border-primary py-2.5 text-center">
+    <span class="text-xs font-semibold text-primary dark:text-primary-400 tracking-widest uppercase">Tag Cloud</span>
+  </div>
+
+  <section class="max-w-2xl mx-auto px-5 sm:px-6 py-12">
+    <h2 class="text-lg sm:text-xl font-semibold text-slate-900 dark:text-slate-50 mb-6">Tags</h2>
+    <div class="flex flex-wrap gap-2">
+      <a href="/tags/elixir/" class="inline-flex items-center gap-1 h-7 px-2.5 rounded-md text-sm font-medium bg-primary-50 text-primary dark:bg-primary-900/30 dark:text-primary-400 hover:bg-primary-100 dark:hover:bg-primary-900/50" title="8 posts">
+        <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="4" x2="20" y1="9" y2="9"/><line x1="4" x2="20" y1="15" y2="15"/><line x1="10" x2="8" y1="3" y2="21"/><line x1="16" x2="14" y1="3" y2="21"/></svg>
+        elixir
+        <span class="ml-0.5 text-xs text-primary/60 dark:text-primary-400/60">8</span>
+      </a>
+      <a href="/tags/phoenix/" class="inline-flex items-center gap-1 h-7 px-2.5 rounded-md text-sm font-medium bg-primary-50 text-primary dark:bg-primary-900/30 dark:text-primary-400 hover:bg-primary-100 dark:hover:bg-primary-900/50" title="5 posts">
+        <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="4" x2="20" y1="9" y2="9"/><line x1="4" x2="20" y1="15" y2="15"/><line x1="10" x2="8" y1="3" y2="21"/><line x1="16" x2="14" y1="3" y2="21"/></svg>
+        phoenix
+        <span class="ml-0.5 text-xs text-primary/60 dark:text-primary-400/60">5</span>
+      </a>
+      <a href="/tags/open-source/" class="inline-flex items-center gap-1 h-7 px-2.5 rounded-md text-xs font-medium bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 hover:bg-primary-50 hover:text-primary dark:hover:bg-primary-900/30 dark:hover:text-primary-400" title="4 posts">
+        <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="4" x2="20" y1="9" y2="9"/><line x1="4" x2="20" y1="15" y2="15"/><line x1="10" x2="8" y1="3" y2="21"/><line x1="16" x2="14" y1="3" y2="21"/></svg>
+        open-source
+        <span class="ml-0.5 text-xs opacity-60">4</span>
+      </a>
+      <a href="/tags/tailwind/" class="inline-flex items-center gap-1 h-7 px-2.5 rounded-md text-xs font-medium bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 hover:bg-primary-50 hover:text-primary dark:hover:bg-primary-900/30 dark:hover:text-primary-400" title="3 posts">
+        <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="4" x2="20" y1="9" y2="9"/><line x1="4" x2="20" y1="15" y2="15"/><line x1="10" x2="8" y1="3" y2="21"/><line x1="16" x2="14" y1="3" y2="21"/></svg>
+        tailwind
+        <span class="ml-0.5 text-xs opacity-60">3</span>
+      </a>
+      <a href="/tags/css/" class="inline-flex items-center gap-1 h-7 px-2.5 rounded-md text-xs font-medium bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 hover:bg-primary-50 hover:text-primary dark:hover:bg-primary-900/30 dark:hover:text-primary-400" title="2 posts">
+        <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="4" x2="20" y1="9" y2="9"/><line x1="4" x2="20" y1="15" y2="15"/><line x1="10" x2="8" y1="3" y2="21"/><line x1="16" x2="14" y1="3" y2="21"/></svg>
+        css
+        <span class="ml-0.5 text-xs opacity-60">2</span>
+      </a>
+      <a href="/tags/static-sites/" class="inline-flex items-center gap-1 h-7 px-2.5 rounded-md text-xs font-medium bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 hover:bg-primary-50 hover:text-primary dark:hover:bg-primary-900/30 dark:hover:text-primary-400" title="2 posts">
+        <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="4" x2="20" y1="9" y2="9"/><line x1="4" x2="20" y1="15" y2="15"/><line x1="10" x2="8" y1="3" y2="21"/><line x1="16" x2="14" y1="3" y2="21"/></svg>
+        static-sites
+        <span class="ml-0.5 text-xs opacity-60">2</span>
+      </a>
+      <a href="/tags/patterns/" class="inline-flex items-center gap-1 h-7 px-2.5 rounded-md text-xs font-medium bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 hover:bg-primary-50 hover:text-primary dark:hover:bg-primary-900/30 dark:hover:text-primary-400" title="1 post">
+        <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="4" x2="20" y1="9" y2="9"/><line x1="4" x2="20" y1="15" y2="15"/><line x1="10" x2="8" y1="3" y2="21"/><line x1="16" x2="14" y1="3" y2="21"/></svg>
+        patterns
+        <span class="ml-0.5 text-xs opacity-60">1</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="border-t border-slate-200/70 dark:border-slate-800">
+    <div class="max-w-3xl mx-auto px-5 sm:px-6 py-8">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <p class="text-sm text-slate-400 dark:text-slate-500">&copy; 2024 Jane Doe</p>
+        <div class="flex items-center gap-4">
+          <a href="https://github.com/janedoe" rel="noopener" class="text-slate-400 dark:text-slate-500 hover:text-primary dark:hover:text-primary-400" aria-label="GitHub">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
+          </a>
+          <a href="https://twitter.com/janedoe" rel="noopener" class="text-slate-400 dark:text-slate-500 hover:text-primary dark:hover:text-primary-400" aria-label="X / Twitter">
+            <svg class="w-5 h-5" fill="currentColor" stroke="none" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+          <a href="https://mastodon.social/@janedoe" rel="me noopener" class="text-slate-400 dark:text-slate-500 hover:text-primary dark:hover:text-primary-400" aria-label="Mastodon">
+            <svg class="w-5 h-5" fill="currentColor" stroke="none" viewBox="0 0 24 24"><path d="M21.327 8.566c0-4.339-2.843-5.61-2.843-5.61-1.433-.658-3.894-.935-6.451-.956h-.063c-2.557.021-5.016.298-6.45.956 0 0-2.843 1.272-2.843 5.61 0 .993-.019 2.181.012 3.441.103 4.243.778 8.425 4.701 9.463 1.809.479 3.362.579 4.612.51 2.268-.126 3.541-.809 3.541-.809l-.075-1.646s-1.621.511-3.441.449c-1.804-.062-3.707-.194-3.999-2.409a4.5 4.5 0 0 1-.04-.621s1.77.432 4.014.535c1.372.063 2.658-.08 3.965-.236 2.506-.299 4.688-1.843 4.962-3.254.434-2.223.398-5.424.398-5.424zm-3.353 5.59h-2.081V9.057c0-1.075-.452-1.62-1.357-1.62-1 0-1.501.647-1.501 1.927v2.791h-2.069V9.364c0-1.28-.501-1.927-1.502-1.927-.905 0-1.357.546-1.357 1.62v5.099H6.026V8.903c0-1.074.273-1.927.823-2.558.566-.631 1.307-.955 2.228-.955 1.065 0 1.872.41 2.405 1.228l.518.869.519-.869c.533-.818 1.34-1.228 2.405-1.228.92 0 1.662.324 2.228.955.549.631.822 1.484.822 2.558z"/></svg>
+          </a>
+          <a href="/feed.xml" class="text-slate-400 dark:text-slate-500 hover:text-primary dark:hover:text-primary-400" aria-label="RSS Feed">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Mobile menu toggle
+    function toggleMenu() {
+      const menu = document.getElementById('mobile-menu');
+      const openIcon = document.querySelector('.menu-open');
+      const closeIcon = document.querySelector('.menu-close');
+      const isHidden = menu.classList.contains('hidden');
+      menu.classList.toggle('hidden');
+      openIcon.classList.toggle('hidden', isHidden);
+      closeIcon.classList.toggle('hidden', !isHidden);
+    }
+
+    // Copy code button
+    function copyCode(btn) {
+      const wrapper = btn.closest('.not-prose');
+      const code = wrapper.querySelector('code').textContent;
+      navigator.clipboard.writeText(code).then(() => {
+        btn.classList.add('copied');
+        btn.querySelector('.copy-label').textContent = 'Copied';
+        setTimeout(() => {
+          btn.classList.remove('copied');
+          btn.querySelector('.copy-label').textContent = 'Copy';
+        }, 2000);
+      });
+    }
+
+    // Copy link button
+    function copyLink(btn) {
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        btn.querySelector('span').textContent = 'Copied!';
+        setTimeout(() => btn.querySelector('span').textContent = 'Copy link', 2000);
+      });
+    }
+  </script>
+</body>
+</html>

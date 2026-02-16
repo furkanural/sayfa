@@ -1,6 +1,8 @@
 ---
 title: "Welcome to <%= @title %>"
 date: <%= Date.utc_today() |> Date.to_iso8601() %>
+description: "Your first post on <%= @title %> — welcome aboard!"
+categories: [general]
 tags: [welcome]
 ---
 

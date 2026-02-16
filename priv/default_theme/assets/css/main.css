@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@source "../../layouts";
+@source "../../../../lib/sayfa/blocks";
 
 @theme {
   --color-primary: #4f46e5;
@@ -31,6 +33,7 @@
 
 /* Smooth transitions for interactive elements */
 a, button { transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease; }
+button { cursor: pointer; }
 
 /* Featured post accent animation */
 .featured-accent {

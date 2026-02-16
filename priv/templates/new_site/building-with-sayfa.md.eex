@@ -1,0 +1,87 @@
+---
+title: "Building with Sayfa"
+date: <%= Date.utc_today() |> Date.to_iso8601() %>
+updated: <%= Date.utc_today() |> Date.to_iso8601() %>
+description: "A guide to building your site with Sayfa, the Elixir static site generator."
+categories: [guides]
+tags: [sayfa, elixir, tutorial]
+featured: true
+---
+
+## Why Sayfa?
+
+Sayfa is a static site generator built in Elixir. It's designed to be simple, fast, and extensible. This post walks through the key features you can use to build your site.
+
+## Content Types
+
+Sayfa supports multiple content types out of the box:
+
+- **Posts** — Blog posts with dates, tags, and categories
+- **Notes** — Short-form content for quick thoughts
+- **Projects** — Showcase your work with project pages
+- **Talks** — Share your presentations and speaking engagements
+- **Pages** — Static pages like "About" or "Contact"
+
+Each content type has its own directory under `content/` and its own URL pattern.
+
+## Front Matter
+
+Every content file starts with YAML front matter. Here's what's available:
+
+```yaml
+---
+title: "My Post"
+date: 2024-01-15
+updated: 2024-01-20
+description: "A short description for SEO"
+categories: [guides]
+tags: [elixir, web]
+featured: true
+draft: false
+layout: post
+---
+```
+
+## The Content Pipeline
+
+Sayfa processes your content through a pipeline:
+
+1. **Load** — Read Markdown files from disk
+2. **Parse** — Extract front matter and Markdown body
+3. **Transform** — Generate slugs, render Markdown to HTML
+4. **Render** — Apply EEx templates with layout composition
+5. **Write** — Output the final HTML files
+
+### Writing Elixir Code
+
+Sayfa uses MDEx for Markdown rendering, which includes syntax highlighting. Here's an example:
+
+```elixir
+defmodule MyApp.Greeter do
+  @moduledoc "A simple greeter module."
+
+  def hello(name) do
+    name
+    |> String.trim()
+    |> then(&"Hello, #{&1}!")
+  end
+end
+```
+
+### Using Blocks
+
+Blocks are reusable components you can use in your templates:
+
+```elixir
+# In your EEx templates:
+<%%= @block.(:hero, title: "Welcome") %>
+<%%= @block.(:recent_posts, limit: 5) %>
+<%%= @block.(:tag_cloud) %>
+```
+
+## What's Next?
+
+- Edit `config/config.exs` to set your site title and author
+- Browse the example content in `content/` to see each content type
+- Run `mix sayfa.serve` to preview your site locally
+- Run `mix sayfa.build` when you're ready to publish

@@ -480,6 +480,7 @@ defmodule Sayfa.Builder do
                contents: page.items,
                page_title: page_title,
                pagination: page,
+               content_type: url_prefix,
                all_contents: all_contents
              ) do
           {:ok, html} ->
@@ -715,6 +716,7 @@ defmodule Sayfa.Builder do
            contents: contents,
            page_title: page_title,
            pagination: nil,
+           content_type: nil,
            all_contents: all_contents
          ) do
       {:ok, html} ->
