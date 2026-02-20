@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="/assets/css/main.css">
 </head>
 <body class="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 font-sans antialiased">
-  <%= @block.(:header, nav: Map.get(@site, :nav, [])) %>
+  <%= @block.(:header, nav: Map.get(@site, :nav, []), page_url: assigns[:page_url]) %>
   <%= @inner_content %>
   <%= @block.(:footer, author: Map.get(@site, :author, @site.title)) %>
   <%= @block.(:code_copy, []) %>

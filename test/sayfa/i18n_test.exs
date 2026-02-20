@@ -91,7 +91,8 @@ defmodule Sayfa.I18nTest do
 
       assert "Next" == I18n.t("next", :en, config)
       assert "Previous" == I18n.t("previous", :en, config)
-      assert "min read" == I18n.t("min_read", :en, config)
+      # min_read is now a plural map; without count it returns the "other" form
+      assert "%{count} min read" == I18n.t("min_read", :en, config)
     end
 
     test "falls back to YAML translations for non-default language" do
@@ -128,6 +129,48 @@ defmodule Sayfa.I18nTest do
       }
 
       assert "Go Forward" == I18n.t("next", :en, config)
+    end
+  end
+
+  describe "t/4 with bindings" do
+    test "interpolates count into plural form" do
+      config = %{default_lang: :en, languages: [en: [name: "English"]]}
+
+      assert "5 min read" == I18n.t("min_read", :en, config, count: 5)
+    end
+
+    test "selects singular form when count is 1" do
+      config = %{default_lang: :en, languages: [en: [name: "English"]]}
+
+      assert "1 post" == I18n.t("posts_count", :en, config, count: 1)
+    end
+
+    test "selects plural form when count is not 1" do
+      config = %{default_lang: :en, languages: [en: [name: "English"]]}
+
+      assert "5 posts" == I18n.t("posts_count", :en, config, count: 5)
+    end
+
+    test "interpolates count into Turkish translations" do
+      config = %{default_lang: :en, languages: [en: [name: "English"], tr: [name: "Türkçe"]]}
+
+      assert "3 dk okuma" == I18n.t("min_read", :tr, config, count: 3)
+    end
+
+    test "interpolates arbitrary bindings" do
+      config = %{
+        default_lang: :en,
+        languages: [en: [name: "English", translations: %{"greeting" => "Hello %{name}!"}]]
+      }
+
+      assert "Hello World!" == I18n.t("greeting", :en, config, name: "World")
+    end
+
+    test "returns other form without interpolation when no bindings" do
+      config = %{default_lang: :en, languages: [en: [name: "English"]]}
+
+      # Without count binding, returns raw "other" form
+      assert "%{count} min read" == I18n.t("min_read", :en, config)
     end
   end
 
@@ -172,14 +215,15 @@ defmodule Sayfa.I18nTest do
 
       assert "Next" == Map.get(translations, "next")
       assert "Previous" == Map.get(translations, "previous")
-      assert "min read" == Map.get(translations, "min_read")
+      # min_read uses %{count} interpolation (plain string since one/other are identical)
+      assert "%{count} min read" == Map.get(translations, "min_read")
     end
 
     test "loads Turkish translations from YAML" do
       translations = I18n.load_translations(:tr)
 
       assert "Sonraki" == Map.get(translations, "next")
-      assert "dk okuma" == Map.get(translations, "min_read")
+      assert "%{count} dk okuma" == Map.get(translations, "min_read")
     end
 
     test "returns empty map for unknown language" do

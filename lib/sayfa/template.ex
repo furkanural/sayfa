@@ -125,14 +125,18 @@ defmodule Sayfa.Template do
 
     dir = Sayfa.I18n.text_direction(lang)
 
+    format_date_fn = fn date -> Sayfa.DateFormat.format(date, lang, site) end
+
     base_assigns = [
       site: site,
       content: content,
       page_title: content.title,
+      page_url: Sayfa.Content.url(content),
       lang: lang,
       dir: dir,
       block: block_fn,
-      t: t_fn
+      t: t_fn,
+      format_date: format_date_fn
     ]
 
     with {:ok, layout_html} <-
@@ -193,6 +197,8 @@ defmodule Sayfa.Template do
 
     dir = Sayfa.I18n.text_direction(lang)
 
+    format_date_fn = fn date -> Sayfa.DateFormat.format(date, lang, site) end
+
     list_assigns = [
       contents: contents,
       pagination: pagination,
@@ -204,7 +210,8 @@ defmodule Sayfa.Template do
       dir: dir,
       block: block_fn,
       t: t_fn,
-      page_url: page_url
+      page_url: page_url,
+      format_date: format_date_fn
     ]
 
     with {:ok, list_html} <- render_file(list_path, list_assigns) do

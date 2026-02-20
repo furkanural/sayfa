@@ -29,6 +29,7 @@ defmodule Sayfa.Blocks.Header do
     site = Map.get(assigns, :site, %{})
     site_title = Block.escape_html(Map.get(site, :title, ""))
     nav = Map.get(assigns, :nav, [])
+    page_url = Map.get(assigns, :page_url)
     lang_switcher = LanguageSwitcher.render(assigns)
 
     lang = Map.get(assigns, :lang)
@@ -37,7 +38,7 @@ defmodule Sayfa.Blocks.Header do
     home_url = if lang_prefix == "", do: "/", else: "#{lang_prefix}/"
 
     nav = prefix_nav_urls(nav, lang_prefix)
-    nav_html = render_nav(nav, lang_switcher)
+    nav_html = render_nav(nav, lang_switcher, page_url)
 
     """
     <header class="sticky top-0 z-50 border-b border-slate-200/80 dark:border-slate-800 bg-white/85 dark:bg-slate-900/85 backdrop-blur-lg">\
@@ -63,23 +64,37 @@ defmodule Sayfa.Blocks.Header do
     end)
   end
 
-  defp render_nav([], ""), do: ""
+  defp render_nav([], "", _page_url), do: ""
 
-  defp render_nav([], lang_switcher) do
+  defp render_nav([], lang_switcher, _page_url) do
     """
           <div class="flex items-center">#{lang_switcher}</div>\
     """
   end
 
-  defp render_nav(nav, lang_switcher) do
+  defp render_nav(nav, lang_switcher, page_url) do
     desktop_items =
       Enum.map_join(nav, "", fn {label, url} ->
-        "<a href=\"#{Block.escape_html(url)}\" class=\"text-sm text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100\">#{Block.escape_html(label)}</a>"
+        classes =
+          if active?(url, page_url) do
+            "text-sm font-medium text-slate-900 dark:text-slate-100"
+          else
+            "text-sm text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100"
+          end
+
+        "<a href=\"#{Block.escape_html(url)}\" class=\"#{classes}\">#{Block.escape_html(label)}</a>"
       end)
 
     mobile_items =
       Enum.map_join(nav, "", fn {label, url} ->
-        "<a href=\"#{Block.escape_html(url)}\" class=\"flex items-center gap-3 py-2.5 text-sm text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary-400\">#{Block.escape_html(label)}</a>"
+        classes =
+          if active?(url, page_url) do
+            "flex items-center gap-3 py-2.5 text-sm font-medium text-primary dark:text-primary-400"
+          else
+            "flex items-center gap-3 py-2.5 text-sm text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary-400"
+          end
+
+        "<a href=\"#{Block.escape_html(url)}\" class=\"#{classes}\">#{Block.escape_html(label)}</a>"
       end)
 
     """
@@ -97,4 +112,10 @@ defmodule Sayfa.Blocks.Header do
         </nav>\
     """
   end
+
+  defp active?(_nav_url, nil), do: false
+
+  defp active?("/", page_url), do: page_url == "/"
+
+  defp active?(nav_url, page_url), do: String.starts_with?(page_url, nav_url)
 end

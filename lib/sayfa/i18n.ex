@@ -129,6 +129,11 @@ defmodule Sayfa.I18n do
   @doc """
   Translates a UI string key for a given language.
 
+  Supports optional bindings for interpolation and pluralization.
+  When the translation value is a map with `"one"` and `"other"` keys,
+  the `:count` binding selects the plural form. All bindings are interpolated
+  as `%{key}` in the resulting string.
+
   Lookup chain:
   1. Language-specific translations from config
   2. YAML translation file for the requested language
@@ -150,8 +155,32 @@ defmodule Sayfa.I18n do
       "unknown_key"
 
   """
-  @spec t(String.t(), atom(), map()) :: String.t()
-  def t(key, lang, config) do
+  @spec t(String.t(), atom(), map(), keyword()) :: String.t()
+  def t(key, lang, config, bindings \\ []) do
+    value = resolve_translation(key, lang, config)
+
+    string =
+      case value do
+        %{"other" => other} = map ->
+          count = Keyword.get(bindings, :count)
+
+          if count do
+            select_plural_form(map, count)
+          else
+            other
+          end
+
+        s when is_binary(s) ->
+          s
+
+        _ ->
+          to_string(value)
+      end
+
+    interpolate(string, bindings)
+  end
+
+  defp resolve_translation(key, lang, config) do
     languages = Map.get(config, :languages, [])
 
     lang_translations =
@@ -174,6 +203,15 @@ defmodule Sayfa.I18n do
       Map.get(yaml_translations, key) ||
       Map.get(default_yaml, key) ||
       key
+  end
+
+  defp select_plural_form(forms, 1), do: Map.get(forms, "one", Map.get(forms, "other", ""))
+  defp select_plural_form(forms, _count), do: Map.get(forms, "other", "")
+
+  defp interpolate(string, bindings) do
+    Enum.reduce(bindings, string, fn {key, val}, acc ->
+      String.replace(acc, "%{#{key}}", to_string(val))
+    end)
   end
 
   @doc """
@@ -333,11 +371,16 @@ defmodule Sayfa.I18n do
 
     with true <- File.exists?(path),
          {:ok, translations} when is_map(translations) <- YamlElixir.read_from_file(path) do
-      Map.new(translations, fn {k, v} -> {to_string(k), to_string(v)} end)
+      Map.new(translations, fn {k, v} -> {to_string(k), normalize_value(v)} end)
     else
       _ -> %{}
     end
   end
+
+  defp normalize_value(v) when is_map(v),
+    do: Map.new(v, fn {k, val} -> {to_string(k), normalize_value(val)} end)
+
+  defp normalize_value(v), do: to_string(v)
 
   defp translations_path(lang) do
     :sayfa

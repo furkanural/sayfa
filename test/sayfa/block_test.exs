@@ -207,6 +207,63 @@ defmodule Sayfa.BlockTest do
       refute html =~ ~s(href="/tr/tr/posts/")
     end
 
+    test "applies active class to current nav item" do
+      html =
+        Header.render(%{
+          site: %{title: "Blog", default_lang: :en},
+          lang: :en,
+          nav: [{"Home", "/"}, {"Posts", "/posts/"}, {"About", "/about/"}],
+          page_url: "/posts/hello-world/"
+        })
+
+      # "Posts" link should have active styling (font-medium text-slate-900)
+      assert html =~ ~r/href="\/posts\/"[^>]*font-medium text-slate-900/
+      # "Home" and "About" should not have active styling
+      assert html =~ ~r/href="\/"[^>]*text-slate-500/
+      assert html =~ ~r/href="\/about\/"[^>]*text-slate-500/
+    end
+
+    test "applies active class to home only for exact /" do
+      html =
+        Header.render(%{
+          site: %{title: "Blog", default_lang: :en},
+          lang: :en,
+          nav: [{"Home", "/"}, {"Posts", "/posts/"}],
+          page_url: "/"
+        })
+
+      # Home should be active
+      assert html =~ ~r/href="\/"[^>]*font-medium text-slate-900/
+      # Posts should not be active
+      assert html =~ ~r/href="\/posts\/"[^>]*text-slate-500/
+    end
+
+    test "no active class when page_url is nil" do
+      html =
+        Header.render(%{
+          site: %{title: "Blog", default_lang: :en},
+          lang: :en,
+          nav: [{"Home", "/"}, {"Posts", "/posts/"}],
+          page_url: nil
+        })
+
+      # All items should have default styling
+      refute html =~ "font-medium text-slate-900"
+    end
+
+    test "active state works with language-prefixed URLs" do
+      html =
+        Header.render(%{
+          site: %{title: "Blog", default_lang: :en},
+          lang: :tr,
+          nav: [{"Ana Sayfa", "/"}, {"Yazılar", "/posts/"}],
+          page_url: "/tr/posts/merhaba/"
+        })
+
+      # Yazılar should be active (its URL becomes /tr/posts/ which matches /tr/posts/merhaba/)
+      assert html =~ ~r/href="\/tr\/posts\/"[^>]*font-medium text-slate-900/
+    end
+
     test "nav URLs are unchanged for default language" do
       html =
         Header.render(%{
@@ -495,7 +552,7 @@ defmodule Sayfa.BlockTest do
   describe "ReadingTimeBlock" do
     test "renders reading time with clock icon" do
       content = %Content{title: "Test", body: "", meta: %{"reading_time" => 5}}
-      html = ReadingTimeBlock.render(%{content: content})
+      html = ReadingTimeBlock.render(%{content: content, lang: :en, site: %{default_lang: :en}})
       assert html =~ "inline-flex items-center"
       assert html =~ "5 min read"
       assert html =~ "<svg"
@@ -503,7 +560,7 @@ defmodule Sayfa.BlockTest do
 
     test "renders singular for 1 minute" do
       content = %Content{title: "Test", body: "", meta: %{"reading_time" => 1}}
-      html = ReadingTimeBlock.render(%{content: content})
+      html = ReadingTimeBlock.render(%{content: content, lang: :en, site: %{default_lang: :en}})
       assert html =~ "1 min read"
     end
 

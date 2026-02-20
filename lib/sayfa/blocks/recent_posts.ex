@@ -46,7 +46,7 @@ defmodule Sayfa.Blocks.RecentPosts do
     if posts == [] do
       ""
     else
-      items = Enum.map_join(posts, "\n", &render_post_item/1)
+      items = Enum.map_join(posts, "\n", &render_post_item(&1, lang, site))
 
       view_all_html =
         if show_view_all do
@@ -69,13 +69,13 @@ defmodule Sayfa.Blocks.RecentPosts do
     end
   end
 
-  defp render_post_item(post) do
+  defp render_post_item(post, lang, site) do
     url = Content.url(post)
     title = Block.escape_html(post.title)
 
     date_html =
       if post.date do
-        "<time class=\"shrink-0 text-sm tabular-nums text-slate-400 dark:text-slate-500 w-[5.5rem]\">#{format_date(post.date)}</time>"
+        "<time class=\"shrink-0 text-sm tabular-nums text-slate-400 dark:text-slate-500 w-[5.5rem]\">#{Sayfa.DateFormat.format(post.date, lang || :en, site)}</time>"
       else
         ""
       end
@@ -102,10 +102,4 @@ defmodule Sayfa.Blocks.RecentPosts do
       prefix -> "/#{prefix}"
     end
   end
-
-  defp format_date(%Date{} = date) do
-    Calendar.strftime(date, "%b %-d, %Y")
-  end
-
-  defp format_date(date), do: to_string(date)
 end

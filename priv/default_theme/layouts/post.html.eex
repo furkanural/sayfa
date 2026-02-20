@@ -9,7 +9,7 @@
 <%= if @content.date do %>
           <span class="inline-flex items-center gap-1.5">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>
-            <time datetime="<%= @content.date %>"><%= @content.date %></time>
+            <time datetime="<%= @content.date %>"><%= @format_date.(@content.date) %></time>
           </span>
 <% end %>
 <%= if @content.meta["reading_time"] do %>

@@ -38,7 +38,7 @@ defmodule Sayfa.Blocks.RecentContent do
     lang_prefix = lang_prefix_path(lang, site)
 
     {featured, rest} = extract_featured(contents)
-    featured_html = render_featured(featured, t)
+    featured_html = render_featured(featured, t, lang, site)
 
     sections =
       rest
@@ -47,7 +47,7 @@ defmodule Sayfa.Blocks.RecentContent do
       |> Enum.sort_by(fn {type, _} -> type end)
       |> Enum.map(fn {type, items} ->
         recent_items = Content.recent(items, limit)
-        render_section(type, recent_items, t, lang_prefix)
+        render_section(type, recent_items, t, lang_prefix, lang, site)
       end)
 
     if sections == [] and featured_html == "" do
@@ -64,9 +64,9 @@ defmodule Sayfa.Blocks.RecentContent do
     end
   end
 
-  defp render_featured("", _t), do: ""
+  defp render_featured("", _t, _lang, _site), do: ""
 
-  defp render_featured(content, t) do
+  defp render_featured(content, t, lang, site) do
     url = Content.url(content)
     title = Block.escape_html(content.title)
     description = Block.escape_html(content.meta["description"] || "")
@@ -75,7 +75,7 @@ defmodule Sayfa.Blocks.RecentContent do
 
     date_html =
       if content.date do
-        ~s(<span class="inline-flex items-center gap-1"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4M8 2v4m-5 4h18"/></svg> #{format_date(content.date)}</span>)
+        ~s(<span class="inline-flex items-center gap-1"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4M8 2v4m-5 4h18"/></svg> #{Sayfa.DateFormat.format(content.date, lang || :en, site)}</span>)
       else
         ""
       end
@@ -119,9 +119,9 @@ defmodule Sayfa.Blocks.RecentContent do
     """
   end
 
-  defp render_section(type, items, t, lang_prefix) do
+  defp render_section(type, items, t, lang_prefix, lang, site) do
     heading = t.("#{type}_title")
-    items_html = Enum.map_join(items, "\n", &render_item(type, &1))
+    items_html = Enum.map_join(items, "\n", &render_item(type, &1, lang, site))
     view_all_text = Block.escape_html(t.("view_all"))
 
     container_class =
@@ -144,13 +144,13 @@ defmodule Sayfa.Blocks.RecentContent do
     """
   end
 
-  defp render_item("notes", content) do
+  defp render_item("notes", content, lang, site) do
     url = Content.url(content)
     title = Block.escape_html(content.title)
 
     date_html =
       if content.date do
-        ~s(<time datetime="#{content.date}" class="text-xs text-slate-400 dark:text-slate-500">#{format_date(content.date)}</time>)
+        ~s(<time datetime="#{content.date}" class="text-xs text-slate-400 dark:text-slate-500">#{Sayfa.DateFormat.format(content.date, lang || :en, site)}</time>)
       else
         ""
       end
@@ -163,7 +163,7 @@ defmodule Sayfa.Blocks.RecentContent do
     """
   end
 
-  defp render_item("projects", content) do
+  defp render_item("projects", content, _lang, _site) do
     url = Content.url(content)
     title = Block.escape_html(content.title)
     description = content.meta["description"]
@@ -203,13 +203,13 @@ defmodule Sayfa.Blocks.RecentContent do
     """
   end
 
-  defp render_item(_type, content) do
+  defp render_item(_type, content, lang, site) do
     url = Content.url(content)
     title = Block.escape_html(content.title)
 
     date_html =
       if content.date do
-        ~s(<span class="text-sm text-slate-400 dark:text-slate-500 tabular-nums">#{format_date(content.date)}</span>)
+        ~s(<span class="text-sm text-slate-400 dark:text-slate-500 tabular-nums">#{Sayfa.DateFormat.format(content.date, lang || :en, site)}</span>)
       else
         ""
       end
@@ -236,10 +236,4 @@ defmodule Sayfa.Blocks.RecentContent do
       prefix -> "/#{prefix}"
     end
   end
-
-  defp format_date(%Date{} = date) do
-    Calendar.strftime(date, "%b %-d, %Y")
-  end
-
-  defp format_date(date), do: to_string(date)
 end

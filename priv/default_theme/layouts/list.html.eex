@@ -10,7 +10,7 @@
     <a href="<%= Sayfa.Content.url(item) %>" class="group block rounded-lg border border-slate-200/70 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 p-4 hover:border-primary/30 dark:hover:border-primary/30 transition-colors">
       <h2 class="text-sm font-medium text-slate-800 dark:text-slate-200 group-hover:text-primary dark:group-hover:text-primary-400"><%= item.title %></h2>
 <%= if item.date do %>
-      <div class="mt-2"><time datetime="<%= item.date %>" class="text-xs text-slate-400 dark:text-slate-500"><%= Calendar.strftime(item.date, "%b %-d, %Y") %></time></div>
+      <div class="mt-2"><time datetime="<%= item.date %>" class="text-xs text-slate-400 dark:text-slate-500"><%= @format_date.(item.date) %></time></div>
 <% end %>
     </a>
 <% end %>
@@ -48,7 +48,7 @@
 <% end %>
       <div class="mt-2.5 flex flex-wrap items-center gap-3">
 <%= if item.date do %>
-        <time datetime="<%= item.date %>" class="text-xs text-slate-400 dark:text-slate-500"><%= Calendar.strftime(item.date, "%b %-d, %Y") %></time>
+        <time datetime="<%= item.date %>" class="text-xs text-slate-400 dark:text-slate-500"><%= @format_date.(item.date) %></time>
 <% end %>
 <%= if item.tags != [] do %>
         <div class="flex flex-wrap gap-1.5">

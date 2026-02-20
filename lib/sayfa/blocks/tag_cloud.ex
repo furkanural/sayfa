@@ -28,14 +28,14 @@ defmodule Sayfa.Blocks.TagCloud do
   @impl true
   def render(assigns) do
     contents = Map.get(assigns, :contents, [])
-    t = Map.get(assigns, :t, Sayfa.I18n.default_translate_function())
+    lang = Map.get(assigns, :lang, :en)
+    site = Map.get(assigns, :site, %{})
     tag_groups = Content.group_by_tag(contents)
 
     if tag_groups == %{} do
       ""
     else
       max_count = tag_groups |> Map.values() |> Enum.map(&length/1) |> Enum.max(fn -> 1 end)
-      posts_label = t.("posts_count")
 
       items =
         tag_groups
@@ -44,8 +44,9 @@ defmodule Sayfa.Blocks.TagCloud do
           count = length(items)
           slug = Slug.slugify(tag)
           classes = size_classes(count, max_count)
+          posts_label = Sayfa.I18n.t("posts_count", lang, site, count: count)
 
-          "<a href=\"/tags/#{Block.escape_html(slug)}/\" class=\"inline-flex items-center gap-1 h-7 px-2.5 rounded-md #{classes}\" title=\"#{count} #{Block.escape_html(posts_label)}\">#{@hash_icon} #{Block.escape_html(tag)} <span class=\"ml-0.5 text-xs opacity-60\">#{count}</span></a>"
+          "<a href=\"/tags/#{Block.escape_html(slug)}/\" class=\"inline-flex items-center gap-1 h-7 px-2.5 rounded-md #{classes}\" title=\"#{Block.escape_html(posts_label)}\">#{@hash_icon} #{Block.escape_html(tag)} <span class=\"ml-0.5 text-xs opacity-60\">#{count}</span></a>"
         end)
 
       "<section class=\"flex flex-wrap gap-2\">\n  #{items}\n</section>"
