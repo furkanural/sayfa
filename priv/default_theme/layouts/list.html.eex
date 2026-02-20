@@ -28,6 +28,13 @@
 <%= if Map.get(item.meta, "description") do %>
       <p class="mt-1.5 text-sm text-slate-500 dark:text-slate-400 leading-relaxed line-clamp-2"><%= item.meta["description"] %></p>
 <% end %>
+<%= if item.categories != [] do %>
+      <div class="mt-2.5 flex flex-wrap items-center gap-2">
+<%= for cat <- item.categories do %>
+        <span class="inline-flex items-center gap-0.5 h-5 px-1.5 rounded text-xs font-medium bg-amber-50 text-amber-600 dark:bg-amber-900/20 dark:text-amber-400"><svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg><%= cat %></span>
+<% end %>
+      </div>
+<% end %>
 <%= if item.tags != [] do %>
       <div class="mt-2.5 flex flex-wrap items-center gap-2">
 <%= for tag <- item.tags do %>
@@ -49,6 +56,13 @@
       <div class="mt-2.5 flex flex-wrap items-center gap-3">
 <%= if item.date do %>
         <time datetime="<%= item.date %>" class="text-xs text-slate-400 dark:text-slate-500"><%= @format_date.(item.date) %></time>
+<% end %>
+<%= if item.categories != [] do %>
+        <div class="flex flex-wrap gap-1.5">
+<%= for cat <- item.categories do %>
+          <span class="inline-flex items-center gap-0.5 h-5 px-1.5 rounded text-xs font-medium bg-amber-50 text-amber-600 dark:bg-amber-900/20 dark:text-amber-400"><svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg><%= cat %></span>
+<% end %>
+        </div>
 <% end %>
 <%= if item.tags != [] do %>
         <div class="flex flex-wrap gap-1.5">

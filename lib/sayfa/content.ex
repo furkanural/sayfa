@@ -212,6 +212,68 @@ defmodule Sayfa.Content do
   end
 
   @doc """
+  Groups contents by `{tag, lang_prefix}` tuple.
+
+  Returns a map where each key is a `{tag, lang_prefix}` tuple and the value
+  is a list of contents that have that tag in that language.
+
+  ## Examples
+
+      iex> contents = [
+      ...>   %Sayfa.Content{title: "A", body: "", tags: ["elixir"], meta: %{"lang_prefix" => ""}},
+      ...>   %Sayfa.Content{title: "B", body: "", tags: ["elixir"], meta: %{"lang_prefix" => "tr"}}
+      ...> ]
+      iex> groups = Sayfa.Content.group_by_tag_and_lang(contents)
+      iex> length(groups[{"elixir", ""}])
+      1
+      iex> length(groups[{"elixir", "tr"}])
+      1
+
+  """
+  @spec group_by_tag_and_lang([t()]) :: %{{String.t(), String.t()} => [t()]}
+  def group_by_tag_and_lang(contents) do
+    Enum.reduce(contents, %{}, fn content, acc ->
+      lang_prefix = content.meta["lang_prefix"] || ""
+
+      Enum.reduce(content.tags, acc, fn tag, inner_acc ->
+        Map.update(inner_acc, {tag, lang_prefix}, [content], &[content | &1])
+      end)
+    end)
+    |> Map.new(fn {k, v} -> {k, Enum.reverse(v)} end)
+  end
+
+  @doc """
+  Groups contents by `{category, lang_prefix}` tuple.
+
+  Returns a map where each key is a `{category, lang_prefix}` tuple and the value
+  is a list of contents that have that category in that language.
+
+  ## Examples
+
+      iex> contents = [
+      ...>   %Sayfa.Content{title: "A", body: "", categories: ["programming"], meta: %{"lang_prefix" => ""}},
+      ...>   %Sayfa.Content{title: "B", body: "", categories: ["programming"], meta: %{"lang_prefix" => "tr"}}
+      ...> ]
+      iex> groups = Sayfa.Content.group_by_category_and_lang(contents)
+      iex> length(groups[{"programming", ""}])
+      1
+      iex> length(groups[{"programming", "tr"}])
+      1
+
+  """
+  @spec group_by_category_and_lang([t()]) :: %{{String.t(), String.t()} => [t()]}
+  def group_by_category_and_lang(contents) do
+    Enum.reduce(contents, %{}, fn content, acc ->
+      lang_prefix = content.meta["lang_prefix"] || ""
+
+      Enum.reduce(content.categories, acc, fn cat, inner_acc ->
+        Map.update(inner_acc, {cat, lang_prefix}, [content], &[content | &1])
+      end)
+    end)
+    |> Map.new(fn {k, v} -> {k, Enum.reverse(v)} end)
+  end
+
+  @doc """
   Parses a raw string containing YAML front matter and Markdown body.
 
   The string must have front matter delimited by `---` lines at the top.

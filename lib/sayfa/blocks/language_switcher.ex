@@ -56,12 +56,18 @@ defmodule Sayfa.Blocks.LanguageSwitcher do
   end
 
   defp build_alternates(nil, assigns, languages, current_lang, site) do
-    page_url = Map.get(assigns, :page_url)
+    case Map.get(assigns, :archive_alternates) do
+      alternates when is_map(alternates) and map_size(alternates) > 0 ->
+        alternates
 
-    if page_url do
-      construct_url_alternates(page_url, languages, current_lang, site)
-    else
-      %{}
+      _ ->
+        page_url = Map.get(assigns, :page_url)
+
+        if page_url do
+          construct_url_alternates(page_url, languages, current_lang, site)
+        else
+          %{}
+        end
     end
   end
 

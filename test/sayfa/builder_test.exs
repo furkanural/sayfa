@@ -468,6 +468,46 @@ defmodule Sayfa.BuilderTest do
       assert tr_html =~ ~s(hreflang="tr")
       assert tr_html =~ ~s(hreflang="en")
     end
+
+    test "adds hreflang tags to type index pages", ctx do
+      tr_posts_dir = Path.join([ctx.content_dir, "tr", "posts"])
+      File.mkdir_p!(tr_posts_dir)
+
+      File.write!(Path.join(ctx.posts_dir, "2024-01-15-hello.md"), """
+      ---
+      title: "Hello"
+      date: 2024-01-15
+      ---
+
+      Hello content.
+      """)
+
+      File.write!(Path.join(tr_posts_dir, "2024-01-15-merhaba.md"), """
+      ---
+      title: "Merhaba"
+      date: 2024-01-15
+      ---
+
+      Merhaba content.
+      """)
+
+      assert {:ok, _result} =
+               Builder.build(
+                 build_opts(ctx, languages: [en: [name: "English"], tr: [name: "Türkçe"]])
+               )
+
+      # English posts index should have hreflang pointing to Turkish posts index
+      en_index = File.read!(Path.join([ctx.output_dir, "posts", "index.html"]))
+      assert en_index =~ ~s(hreflang="en")
+      assert en_index =~ ~s(hreflang="tr")
+      assert en_index =~ ~s(href="http://localhost:4000/posts/")
+      assert en_index =~ ~s(href="http://localhost:4000/tr/posts/")
+
+      # Turkish posts index should also have hreflang tags
+      tr_index = File.read!(Path.join([ctx.output_dir, "tr", "posts", "index.html"]))
+      assert tr_index =~ ~s(hreflang="en")
+      assert tr_index =~ ~s(hreflang="tr")
+    end
   end
 
   describe "content enrichment" do
@@ -743,6 +783,200 @@ defmodule Sayfa.BuilderTest do
       # Turkish posts index should also exist (empty state)
       tr_index = Path.join([ctx.output_dir, "tr", "posts", "index.html"])
       assert File.exists?(tr_index)
+    end
+  end
+
+  describe "multilingual tag archives" do
+    test "generates language-prefixed tag archives", ctx do
+      tr_posts_dir = Path.join([ctx.content_dir, "tr", "posts"])
+      File.mkdir_p!(tr_posts_dir)
+
+      File.write!(Path.join(ctx.posts_dir, "2024-01-15-hello.md"), """
+      ---
+      title: "Hello World"
+      date: 2024-01-15
+      tags: [elixir]
+      ---
+      English content.
+      """)
+
+      File.write!(Path.join(tr_posts_dir, "2024-01-15-merhaba.md"), """
+      ---
+      title: "Merhaba Dünya"
+      date: 2024-01-15
+      tags: [elixir]
+      ---
+      Turkish content.
+      """)
+
+      assert {:ok, _result} =
+               Builder.build(
+                 build_opts(ctx, languages: [en: [name: "English"], tr: [name: "Türkçe"]])
+               )
+
+      # English tag archive at /tags/elixir/
+      en_tag = Path.join([ctx.output_dir, "tags", "elixir", "index.html"])
+      assert File.exists?(en_tag)
+      en_html = File.read!(en_tag)
+      assert en_html =~ "Hello World"
+      refute en_html =~ "Merhaba"
+
+      # Turkish tag archive at /tr/tags/elixir/
+      tr_tag = Path.join([ctx.output_dir, "tr", "tags", "elixir", "index.html"])
+      assert File.exists?(tr_tag)
+      tr_html = File.read!(tr_tag)
+      assert tr_html =~ "Merhaba"
+      refute tr_html =~ "Hello World"
+    end
+
+    test "generates language-prefixed category archives", ctx do
+      tr_posts_dir = Path.join([ctx.content_dir, "tr", "posts"])
+      File.mkdir_p!(tr_posts_dir)
+
+      File.write!(Path.join(ctx.posts_dir, "2024-01-15-hello.md"), """
+      ---
+      title: "Hello World"
+      date: 2024-01-15
+      categories: [programming]
+      ---
+      English content.
+      """)
+
+      File.write!(Path.join(tr_posts_dir, "2024-01-15-merhaba.md"), """
+      ---
+      title: "Merhaba Dünya"
+      date: 2024-01-15
+      categories: [programming]
+      ---
+      Turkish content.
+      """)
+
+      assert {:ok, _result} =
+               Builder.build(
+                 build_opts(ctx, languages: [en: [name: "English"], tr: [name: "Türkçe"]])
+               )
+
+      # English category archive at /categories/programming/
+      en_cat = Path.join([ctx.output_dir, "categories", "programming", "index.html"])
+      assert File.exists?(en_cat)
+      en_html = File.read!(en_cat)
+      assert en_html =~ "Hello World"
+      refute en_html =~ "Merhaba"
+
+      # Turkish category archive at /tr/categories/programming/
+      tr_cat = Path.join([ctx.output_dir, "tr", "categories", "programming", "index.html"])
+      assert File.exists?(tr_cat)
+      tr_html = File.read!(tr_cat)
+      assert tr_html =~ "Merhaba"
+      refute tr_html =~ "Hello World"
+    end
+
+    test "tag archive title uses i18n translation", ctx do
+      tr_posts_dir = Path.join([ctx.content_dir, "tr", "posts"])
+      File.mkdir_p!(tr_posts_dir)
+
+      File.write!(Path.join(tr_posts_dir, "2024-01-15-merhaba.md"), """
+      ---
+      title: "Merhaba Dünya"
+      date: 2024-01-15
+      tags: [elixir]
+      ---
+      Turkish content.
+      """)
+
+      Sayfa.I18n.clear_cache()
+
+      assert {:ok, _result} =
+               Builder.build(
+                 build_opts(ctx, languages: [en: [name: "English"], tr: [name: "Türkçe"]])
+               )
+
+      # Turkish tag archive should use Turkish translation
+      tr_tag = Path.join([ctx.output_dir, "tr", "tags", "elixir", "index.html"])
+      assert File.exists?(tr_tag)
+      tr_html = File.read!(tr_tag)
+      assert tr_html =~ "Etiket: elixir"
+    end
+
+    test "tag links on TR posts point to /tr/tags/", ctx do
+      tr_posts_dir = Path.join([ctx.content_dir, "tr", "posts"])
+      File.mkdir_p!(tr_posts_dir)
+
+      File.write!(Path.join(tr_posts_dir, "2024-01-15-merhaba.md"), """
+      ---
+      title: "Merhaba Dünya"
+      date: 2024-01-15
+      tags: [elixir]
+      ---
+      Turkish content.
+      """)
+
+      assert {:ok, _result} =
+               Builder.build(
+                 build_opts(ctx, languages: [en: [name: "English"], tr: [name: "Türkçe"]])
+               )
+
+      tr_post = Path.join([ctx.output_dir, "tr", "posts", "merhaba", "index.html"])
+      assert File.exists?(tr_post)
+      tr_html = File.read!(tr_post)
+      assert tr_html =~ ~s(href="/tr/tags/elixir/")
+      refute tr_html =~ ~r{href="/tags/elixir/"}
+    end
+
+    test "language switcher hides for tags only in one language", ctx do
+      # Only create English posts with a tag, no Turkish posts with same tag
+      File.write!(Path.join(ctx.posts_dir, "2024-01-15-hello.md"), """
+      ---
+      title: "Hello World"
+      date: 2024-01-15
+      tags: [unique-tag]
+      ---
+      English content.
+      """)
+
+      assert {:ok, _result} =
+               Builder.build(
+                 build_opts(ctx, languages: [en: [name: "English"], tr: [name: "Türkçe"]])
+               )
+
+      # English tag archive exists
+      en_tag = Path.join([ctx.output_dir, "tags", "unique-tag", "index.html"])
+      assert File.exists?(en_tag)
+      en_html = File.read!(en_tag)
+      # Language switcher should NOT show (only one language has this tag)
+      refute en_html =~ "lang-switcher"
+    end
+
+    test "sitemap includes language-prefixed tag URLs", ctx do
+      tr_posts_dir = Path.join([ctx.content_dir, "tr", "posts"])
+      File.mkdir_p!(tr_posts_dir)
+
+      File.write!(Path.join(ctx.posts_dir, "2024-01-15-hello.md"), """
+      ---
+      title: "Hello"
+      date: 2024-01-15
+      tags: [elixir]
+      ---
+      English.
+      """)
+
+      File.write!(Path.join(tr_posts_dir, "2024-01-15-merhaba.md"), """
+      ---
+      title: "Merhaba"
+      date: 2024-01-15
+      tags: [elixir]
+      ---
+      Turkish.
+      """)
+
+      assert {:ok, _result} =
+               Builder.build(
+                 build_opts(ctx, languages: [en: [name: "English"], tr: [name: "Türkçe"]])
+               )
+
+      sitemap = File.read!(Path.join(ctx.output_dir, "sitemap.xml"))
+      assert sitemap =~ "/tags/elixir"
+      assert sitemap =~ "/tr/tags/elixir"
     end
   end
 

@@ -446,4 +446,74 @@ defmodule Sayfa.ContentTest do
       assert Content.group_by_category(contents) == %{}
     end
   end
+
+  describe "group_by_tag_and_lang/1" do
+    test "groups contents by tag and lang_prefix" do
+      contents = [
+        make_content(%{title: "EN A", tags: ["elixir", "otp"], meta: %{"lang_prefix" => ""}}),
+        make_content(%{title: "TR A", tags: ["elixir"], meta: %{"lang_prefix" => "tr"}}),
+        make_content(%{title: "EN B", tags: ["elixir"], meta: %{"lang_prefix" => ""}})
+      ]
+
+      groups = Content.group_by_tag_and_lang(contents)
+      assert length(groups[{"elixir", ""}]) == 2
+      assert length(groups[{"elixir", "tr"}]) == 1
+      assert length(groups[{"otp", ""}]) == 1
+      assert groups[{"otp", "tr"}] == nil
+    end
+
+    test "returns empty map for no tags" do
+      contents = [make_content(%{title: "A", tags: [], meta: %{"lang_prefix" => ""}})]
+      assert Content.group_by_tag_and_lang(contents) == %{}
+    end
+
+    test "treats nil lang_prefix as empty string" do
+      contents = [make_content(%{title: "A", tags: ["elixir"], meta: %{}})]
+      groups = Content.group_by_tag_and_lang(contents)
+      assert length(groups[{"elixir", ""}]) == 1
+    end
+
+    test "preserves order within groups" do
+      contents = [
+        make_content(%{title: "First", tags: ["elixir"], meta: %{"lang_prefix" => ""}}),
+        make_content(%{title: "Second", tags: ["elixir"], meta: %{"lang_prefix" => ""}})
+      ]
+
+      groups = Content.group_by_tag_and_lang(contents)
+      assert Enum.map(groups[{"elixir", ""}], & &1.title) == ["First", "Second"]
+    end
+  end
+
+  describe "group_by_category_and_lang/1" do
+    test "groups contents by category and lang_prefix" do
+      contents = [
+        make_content(%{
+          title: "EN A",
+          categories: ["programming"],
+          meta: %{"lang_prefix" => ""}
+        }),
+        make_content(%{
+          title: "TR A",
+          categories: ["programming"],
+          meta: %{"lang_prefix" => "tr"}
+        }),
+        make_content(%{
+          title: "EN B",
+          categories: ["programming", "elixir"],
+          meta: %{"lang_prefix" => ""}
+        })
+      ]
+
+      groups = Content.group_by_category_and_lang(contents)
+      assert length(groups[{"programming", ""}]) == 2
+      assert length(groups[{"programming", "tr"}]) == 1
+      assert length(groups[{"elixir", ""}]) == 1
+      assert groups[{"elixir", "tr"}] == nil
+    end
+
+    test "returns empty map for no categories" do
+      contents = [make_content(%{title: "A", categories: [], meta: %{"lang_prefix" => ""}})]
+      assert Content.group_by_category_and_lang(contents) == %{}
+    end
+  end
 end

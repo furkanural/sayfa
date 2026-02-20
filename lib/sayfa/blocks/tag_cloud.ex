@@ -30,7 +30,21 @@ defmodule Sayfa.Blocks.TagCloud do
     contents = Map.get(assigns, :contents, [])
     lang = Map.get(assigns, :lang, :en)
     site = Map.get(assigns, :site, %{})
-    tag_groups = Content.group_by_tag(contents)
+
+    lang_prefix =
+      if Map.has_key?(site, :default_lang) do
+        Sayfa.I18n.language_prefix(lang, site)
+      else
+        ""
+      end
+
+    # Filter contents to current language only
+    filtered =
+      Enum.filter(contents, fn c ->
+        (c.meta["lang_prefix"] || "") == lang_prefix
+      end)
+
+    tag_groups = Content.group_by_tag(filtered)
 
     if tag_groups == %{} do
       ""
@@ -40,18 +54,24 @@ defmodule Sayfa.Blocks.TagCloud do
       items =
         tag_groups
         |> Enum.sort_by(fn {tag, _} -> tag end)
-        |> Enum.map_join("\n  ", fn {tag, items} ->
-          count = length(items)
-          slug = Slug.slugify(tag)
-          classes = size_classes(count, max_count)
-          posts_label = Sayfa.I18n.t("posts_count", lang, site, count: count)
-
-          "<a href=\"/tags/#{Block.escape_html(slug)}/\" class=\"inline-flex items-center gap-1 h-7 px-2.5 rounded-md #{classes}\" title=\"#{Block.escape_html(posts_label)}\">#{@hash_icon} #{Block.escape_html(tag)} <span class=\"ml-0.5 text-xs opacity-60\">#{count}</span></a>"
-        end)
+        |> Enum.map_join("\n  ", &render_tag_item(&1, max_count, lang, lang_prefix, site))
 
       "<section class=\"flex flex-wrap gap-2\">\n  #{items}\n</section>"
     end
   end
+
+  defp render_tag_item({tag, items}, max_count, lang, lang_prefix, site) do
+    count = length(items)
+    slug = Slug.slugify(tag)
+    classes = size_classes(count, max_count)
+    posts_label = Sayfa.I18n.t("posts_count", lang, site, count: count)
+    tag_url = tag_url(slug, lang_prefix)
+
+    "<a href=\"#{tag_url}\" class=\"inline-flex items-center gap-1 h-7 px-2.5 rounded-md #{classes}\" title=\"#{Block.escape_html(posts_label)}\">#{@hash_icon} #{Block.escape_html(tag)} <span class=\"ml-0.5 text-xs opacity-60\">#{count}</span></a>"
+  end
+
+  defp tag_url(slug, ""), do: "/tags/#{Block.escape_html(slug)}/"
+  defp tag_url(slug, lp), do: "/#{lp}/tags/#{Block.escape_html(slug)}/"
 
   defp size_classes(count, max_count) when max_count > 0 do
     ratio = count / max_count

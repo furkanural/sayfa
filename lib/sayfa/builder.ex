@@ -365,19 +365,34 @@ defmodule Sayfa.Builder do
   end
 
   defp build_tag_archives(all_contents, config) do
-    tag_groups = Content.group_by_tag(all_contents)
+    tag_lang_groups = Content.group_by_tag_and_lang(all_contents)
 
     results =
-      Enum.reduce_while(tag_groups, 0, fn {tag, items}, count ->
+      Enum.reduce_while(tag_lang_groups, 0, fn {{tag, lang_prefix}, items}, count ->
         sorted = Content.sort_by_date(items)
         slug = Slug.slugify(tag)
+        lang = lang_from_prefix(lang_prefix, config)
+
+        url_path =
+          case lang_prefix do
+            "" -> "/tags/#{slug}"
+            lp -> "/#{lp}/tags/#{slug}"
+          end
+
+        page_title = I18n.t("tagged_title", lang, config, tag: tag)
+
+        archive_alternates =
+          build_archive_alternates(tag, "tags", tag_lang_groups, config)
 
         case render_and_write_list(
                sorted,
-               "Tagged: #{tag}",
-               "/tags/#{slug}",
+               page_title,
+               url_path,
                all_contents,
-               config
+               config,
+               lang: lang,
+               page_url: "#{url_path}/",
+               archive_alternates: archive_alternates
              ) do
           :ok -> {:cont, count + 1}
           {:error, _} = error -> {:halt, error}
@@ -391,19 +406,34 @@ defmodule Sayfa.Builder do
   end
 
   defp build_category_archives(all_contents, config) do
-    cat_groups = Content.group_by_category(all_contents)
+    cat_lang_groups = Content.group_by_category_and_lang(all_contents)
 
     results =
-      Enum.reduce_while(cat_groups, 0, fn {category, items}, count ->
+      Enum.reduce_while(cat_lang_groups, 0, fn {{category, lang_prefix}, items}, count ->
         sorted = Content.sort_by_date(items)
         slug = Slug.slugify(category)
+        lang = lang_from_prefix(lang_prefix, config)
+
+        url_path =
+          case lang_prefix do
+            "" -> "/categories/#{slug}"
+            lp -> "/#{lp}/categories/#{slug}"
+          end
+
+        page_title = I18n.t("category_title", lang, config, category: category)
+
+        archive_alternates =
+          build_archive_alternates(category, "categories", cat_lang_groups, config)
 
         case render_and_write_list(
                sorted,
-               "Category: #{category}",
-               "/categories/#{slug}",
+               page_title,
+               url_path,
                all_contents,
-               config
+               config,
+               lang: lang,
+               page_url: "#{url_path}/",
+               archive_alternates: archive_alternates
              ) do
           :ok -> {:cont, count + 1}
           {:error, _} = error -> {:halt, error}
@@ -414,6 +444,24 @@ defmodule Sayfa.Builder do
       {:error, _} = error -> error
       count -> {:ok, count}
     end
+  end
+
+  defp build_archive_alternates(name, section, lang_groups, config) do
+    slug = Slug.slugify(name)
+
+    lang_groups
+    |> Enum.filter(fn {{n, _lp}, _items} -> n == name end)
+    |> Map.new(fn {{_n, lp}, _items} ->
+      lang = lang_from_prefix(lp, config)
+
+      url =
+        case lp do
+          "" -> "/#{section}/#{slug}/"
+          _ -> "/#{lp}/#{section}/#{slug}/"
+        end
+
+      {lang, url}
+    end)
   end
 
   # --- Content Type Indexes ---
@@ -536,6 +584,7 @@ defmodule Sayfa.Builder do
     page_url = index_page_url(url_prefix, lang_prefix)
     t_fn = I18n.translate_function(lang, config)
     page_title = t_fn.("#{url_prefix}_title")
+    archive_alternates = build_type_index_alternates(url_prefix, config)
 
     results =
       Enum.reduce_while(pages, 0, fn page, count ->
@@ -549,7 +598,8 @@ defmodule Sayfa.Builder do
                content_type: url_prefix,
                all_contents: all_contents,
                lang: lang,
-               page_url: page_url
+               page_url: page_url,
+               archive_alternates: archive_alternates
              ) do
           {:ok, html} ->
             dir = Path.dirname(output_path)
@@ -568,6 +618,9 @@ defmodule Sayfa.Builder do
     end
   end
 
+  defp prefixed_path(section, slug, ""), do: "/#{section}/#{slug}"
+  defp prefixed_path(section, slug, lp), do: "/#{lp}/#{section}/#{slug}"
+
   defp index_output_base(output_dir, url_prefix, ""), do: [output_dir, url_prefix]
   defp index_output_base(output_dir, url_prefix, lp), do: [output_dir, lp, url_prefix]
 
@@ -579,6 +632,16 @@ defmodule Sayfa.Builder do
 
   defp index_page_url(url_prefix, ""), do: "/#{url_prefix}/"
   defp index_page_url(url_prefix, lp), do: "/#{lp}/#{url_prefix}/"
+
+  defp build_type_index_alternates(url_prefix, config) do
+    config
+    |> I18n.configured_language_codes()
+    |> Map.new(fn lang ->
+      lp = I18n.language_prefix(lang, config)
+      url = index_page_url(url_prefix, lp)
+      {lang, url}
+    end)
+  end
 
   # --- Content Enrichment ---
 
@@ -651,20 +714,20 @@ defmodule Sayfa.Builder do
     # Collect URLs from individual content pages
     content_urls = Enum.map(contents, &content_sitemap_url/1)
 
-    # Collect URLs from tag archives
+    # Collect URLs from tag archives (language-aware)
     tag_urls =
       contents
-      |> Content.group_by_tag()
-      |> Enum.map(fn {tag, _} ->
-        %{loc: "/tags/#{Slug.slugify(tag)}", lastmod: nil}
+      |> Content.group_by_tag_and_lang()
+      |> Enum.map(fn {{tag, lang_prefix}, _} ->
+        %{loc: prefixed_path("tags", Slug.slugify(tag), lang_prefix), lastmod: nil}
       end)
 
-    # Collect URLs from category archives
+    # Collect URLs from category archives (language-aware)
     cat_urls =
       contents
-      |> Content.group_by_category()
-      |> Enum.map(fn {cat, _} ->
-        %{loc: "/categories/#{Slug.slugify(cat)}", lastmod: nil}
+      |> Content.group_by_category_and_lang()
+      |> Enum.map(fn {{cat, lang_prefix}, _} ->
+        %{loc: prefixed_path("categories", Slug.slugify(cat), lang_prefix), lastmod: nil}
       end)
 
     # Collect URLs from content type indexes (per language)
@@ -850,7 +913,11 @@ defmodule Sayfa.Builder do
 
   # --- Shared List Rendering ---
 
-  defp render_and_write_list(contents, page_title, url_path, all_contents, config) do
+  defp render_and_write_list(contents, page_title, url_path, all_contents, config, opts) do
+    lang = Keyword.get(opts, :lang, config.default_lang)
+    page_url = Keyword.get(opts, :page_url, url_path <> "/")
+    archive_alternates = Keyword.get(opts, :archive_alternates)
+
     output_path =
       Path.join([config.output_dir, String.trim_leading(url_path, "/"), "index.html"])
 
@@ -860,7 +927,10 @@ defmodule Sayfa.Builder do
            page_title: page_title,
            pagination: nil,
            content_type: nil,
-           all_contents: all_contents
+           all_contents: all_contents,
+           lang: lang,
+           page_url: page_url,
+           archive_alternates: archive_alternates
          ) do
       {:ok, html} ->
         dir = Path.dirname(output_path)
