@@ -1,5 +1,8 @@
 <section class="max-w-2xl mx-auto px-5 sm:px-6 py-12 sm:py-16">
   <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-50 mb-10"><%= @page_title %></h1>
+<%= if @contents == [] do %>
+  <p class="text-slate-400 dark:text-slate-500 text-sm py-8"><%= @t.("no_content_yet") %></p>
+<% else %>
 <%= cond do %>
 <% @content_type == "notes" -> %>
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -59,28 +62,29 @@
 <% end %>
   </div>
 <% end %>
+<% end %>
 <%= if assigns[:pagination] && @pagination do %>
   <nav class="mt-10 flex items-center justify-between" aria-label="Pagination">
 <%= if @pagination.has_prev do %>
     <a href="<%= @pagination.prev_url %>" rel="prev" class="inline-flex items-center gap-1.5 text-sm font-medium text-primary dark:text-primary-400 hover:text-primary-dark dark:hover:text-primary-300">
       <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
-      Previous
+      <%= @t.("previous") %>
     </a>
 <% else %>
     <span class="inline-flex items-center gap-1.5 text-sm text-slate-300 dark:text-slate-600 cursor-not-allowed select-none">
       <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
-      Previous
+      <%= @t.("previous") %>
     </span>
 <% end %>
     <span class="text-sm text-slate-400 dark:text-slate-500"><%= @pagination.page_number %> / <%= @pagination.total_pages %></span>
 <%= if @pagination.has_next do %>
     <a href="<%= @pagination.next_url %>" rel="next" class="inline-flex items-center gap-1.5 text-sm font-medium text-primary dark:text-primary-400 hover:text-primary-dark dark:hover:text-primary-300">
-      Next
+      <%= @t.("next") %>
       <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
     </a>
 <% else %>
     <span class="inline-flex items-center gap-1.5 text-sm text-slate-300 dark:text-slate-600 cursor-not-allowed select-none">
-      Next
+      <%= @t.("next") %>
       <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
     </span>
 <% end %>

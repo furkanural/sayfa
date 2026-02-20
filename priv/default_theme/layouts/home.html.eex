@@ -11,7 +11,7 @@
 
   <%= if Map.get(@site, :social_links, []) != [] do %>
   <section class="max-w-2xl mx-auto px-5 sm:px-6 pb-16">
-    <h2 class="text-lg sm:text-xl font-semibold text-slate-900 dark:text-slate-50 mb-5">Connect</h2>
+    <h2 class="text-lg sm:text-xl font-semibold text-slate-900 dark:text-slate-50 mb-5"><%= @t.("connect") %></h2>
     <%= @block.(:social_links, links: @site.social_links) %>
   </section>
   <% end %>

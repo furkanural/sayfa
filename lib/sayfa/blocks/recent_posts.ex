@@ -21,6 +21,7 @@ defmodule Sayfa.Blocks.RecentPosts do
 
   alias Sayfa.Block
   alias Sayfa.Content
+  alias Sayfa.I18n
 
   @impl true
   def name, do: :recent_posts
@@ -30,6 +31,12 @@ defmodule Sayfa.Blocks.RecentPosts do
     contents = Map.get(assigns, :contents, [])
     limit = Map.get(assigns, :limit, 5)
     show_view_all = Map.get(assigns, :show_view_all, false)
+    t = Map.get(assigns, :t, I18n.default_translate_function())
+    lang = Map.get(assigns, :lang)
+    site = Map.get(assigns, :site, %{})
+
+    contents = filter_by_lang(contents, lang)
+    lang_prefix = lang_prefix_path(lang, site)
 
     posts =
       contents
@@ -43,7 +50,7 @@ defmodule Sayfa.Blocks.RecentPosts do
 
       view_all_html =
         if show_view_all do
-          "<a href=\"/posts/\" class=\"inline-flex items-center gap-1 text-sm text-primary dark:text-primary-400 hover:text-primary-dark dark:hover:text-primary-300\">View all <svg class=\"w-3.5 h-3.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" viewBox=\"0 0 24 24\"><path d=\"m9 18 6-6-6-6\"/></svg></a>"
+          "<a href=\"#{lang_prefix}/posts/\" class=\"inline-flex items-center gap-1 text-sm text-primary dark:text-primary-400 hover:text-primary-dark dark:hover:text-primary-300\">#{Block.escape_html(t.("view_all"))} <svg class=\"w-3.5 h-3.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" viewBox=\"0 0 24 24\"><path d=\"m9 18 6-6-6-6\"/></svg></a>"
         else
           ""
         end
@@ -51,7 +58,7 @@ defmodule Sayfa.Blocks.RecentPosts do
       """
       <section class="max-w-2xl mx-auto px-5 sm:px-6 pb-16">\
         <div class="flex items-center justify-between mb-6">\
-          <h2 class="text-lg sm:text-xl font-semibold text-slate-900 dark:text-slate-50">Recent Posts</h2>\
+          <h2 class="text-lg sm:text-xl font-semibold text-slate-900 dark:text-slate-50">#{Block.escape_html(t.("recent_posts"))}</h2>\
           #{view_all_html}\
         </div>\
         <div class="space-y-0 divide-y divide-slate-200/70 dark:divide-slate-800">\
@@ -79,6 +86,21 @@ defmodule Sayfa.Blocks.RecentPosts do
           <span class="text-slate-800 dark:text-slate-200 group-hover:text-primary dark:group-hover:text-primary-400">#{title}</span>\
         </a>\
     """
+  end
+
+  defp filter_by_lang(contents, nil), do: contents
+
+  defp filter_by_lang(contents, lang) do
+    Enum.filter(contents, &(&1.lang == lang))
+  end
+
+  defp lang_prefix_path(nil, _site), do: ""
+
+  defp lang_prefix_path(lang, site) do
+    case I18n.language_prefix(lang, site) do
+      "" -> ""
+      prefix -> "/#{prefix}"
+    end
   end
 
   defp format_date(%Date{} = date) do

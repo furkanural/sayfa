@@ -20,6 +20,7 @@ defmodule Sayfa.Blocks.RecentContent do
 
   alias Sayfa.Block
   alias Sayfa.Content
+  alias Sayfa.I18n
 
   @impl true
   def name, do: :recent_content
@@ -28,9 +29,16 @@ defmodule Sayfa.Blocks.RecentContent do
   def render(assigns) do
     contents = Map.get(assigns, :contents, [])
     limit = Map.get(assigns, :limit, 5)
+    t = Map.get(assigns, :t, I18n.default_translate_function())
+    lang = Map.get(assigns, :lang)
+    site = Map.get(assigns, :site, %{})
+
+    contents = filter_by_lang(contents, lang)
+
+    lang_prefix = lang_prefix_path(lang, site)
 
     {featured, rest} = extract_featured(contents)
-    featured_html = render_featured(featured)
+    featured_html = render_featured(featured, t)
 
     sections =
       rest
@@ -39,7 +47,7 @@ defmodule Sayfa.Blocks.RecentContent do
       |> Enum.sort_by(fn {type, _} -> type end)
       |> Enum.map(fn {type, items} ->
         recent_items = Content.recent(items, limit)
-        render_section(type, recent_items)
+        render_section(type, recent_items, t, lang_prefix)
       end)
 
     if sections == [] and featured_html == "" do
@@ -56,9 +64,9 @@ defmodule Sayfa.Blocks.RecentContent do
     end
   end
 
-  defp render_featured(""), do: ""
+  defp render_featured("", _t), do: ""
 
-  defp render_featured(content) do
+  defp render_featured(content, t) do
     url = Content.url(content)
     title = Block.escape_html(content.title)
     description = Block.escape_html(content.meta["description"] || "")
@@ -97,7 +105,7 @@ defmodule Sayfa.Blocks.RecentContent do
     <section class="max-w-2xl mx-auto px-5 sm:px-6 pb-14">
       <a href="#{url}" class="featured-accent group block pl-5 py-4">
         <span class="inline-flex items-center gap-1.5 text-xs font-medium text-primary dark:text-primary-400 uppercase tracking-wide mb-2">
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg> Featured
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg> #{Block.escape_html(t.("featured"))}
         </span>
         <h2 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-50 group-hover:text-primary dark:group-hover:text-primary-400">#{title}</h2>
         #{description_html}
@@ -111,9 +119,10 @@ defmodule Sayfa.Blocks.RecentContent do
     """
   end
 
-  defp render_section(type, items) do
-    heading = type |> String.capitalize()
+  defp render_section(type, items, t, lang_prefix) do
+    heading = t.("#{type}_title")
     items_html = Enum.map_join(items, "\n", &render_item(type, &1))
+    view_all_text = Block.escape_html(t.("view_all"))
 
     container_class =
       case type do
@@ -126,7 +135,7 @@ defmodule Sayfa.Blocks.RecentContent do
         <div>
           <div class="flex items-center justify-between mb-6">
             <h2 class="text-lg sm:text-xl font-semibold text-slate-900 dark:text-slate-50">#{heading}</h2>
-            <a href="/#{type}/" class="inline-flex items-center gap-1 text-sm text-primary dark:text-primary-400 hover:text-primary-dark dark:hover:text-primary-300">View all <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></a>
+            <a href="#{lang_prefix}/#{type}/" class="inline-flex items-center gap-1 text-sm text-primary dark:text-primary-400 hover:text-primary-dark dark:hover:text-primary-300">#{view_all_text} <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></a>
           </div>
           <div class="#{container_class}">
     #{items_html}
@@ -211,6 +220,21 @@ defmodule Sayfa.Blocks.RecentContent do
               <span class="text-sm font-medium text-slate-800 dark:text-slate-200 group-hover:text-primary dark:group-hover:text-primary-400">#{title}</span>
             </a>\
     """
+  end
+
+  defp filter_by_lang(contents, nil), do: contents
+
+  defp filter_by_lang(contents, lang) do
+    Enum.filter(contents, &(&1.lang == lang))
+  end
+
+  defp lang_prefix_path(nil, _site), do: ""
+
+  defp lang_prefix_path(lang, site) do
+    case I18n.language_prefix(lang, site) do
+      "" -> ""
+      prefix -> "/#{prefix}"
+    end
   end
 
   defp format_date(%Date{} = date) do

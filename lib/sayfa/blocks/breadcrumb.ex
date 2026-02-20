@@ -33,17 +33,23 @@ defmodule Sayfa.Blocks.Breadcrumb do
 
     if content do
       site = Map.get(assigns, :site, %{})
+      t = Map.get(assigns, :t, Sayfa.I18n.default_translate_function())
       base_url = Map.get(site, :base_url, "") |> String.trim_trailing("/")
-      crumbs = build_crumbs(content)
+      crumbs = build_crumbs(content, t)
+      home_label = t.("home")
+      lang_prefix = content.meta["lang_prefix"] || ""
+      home_url = if lang_prefix == "", do: "/", else: "/#{lang_prefix}/"
 
-      render_html(crumbs) <> render_json_ld(crumbs, base_url)
+      render_html(crumbs, home_label, home_url) <>
+        render_json_ld(crumbs, base_url, home_label, home_url)
     else
       ""
     end
   end
 
-  defp build_crumbs(content) do
+  defp build_crumbs(content, t) do
     url_prefix = content.meta["url_prefix"] || ""
+    lang_prefix = content.meta["lang_prefix"] || ""
     title = content.title || ""
 
     case url_prefix do
@@ -51,12 +57,19 @@ defmodule Sayfa.Blocks.Breadcrumb do
         [{title, nil}]
 
       prefix ->
-        section_name = String.capitalize(prefix)
-        [{section_name, "/#{prefix}/"}, {title, nil}]
+        section_name = t.("#{prefix}_title")
+
+        section_url =
+          case lang_prefix do
+            "" -> "/#{prefix}/"
+            lp -> "/#{lp}/#{prefix}/"
+          end
+
+        [{section_name, section_url}, {title, nil}]
     end
   end
 
-  defp render_html(crumbs) do
+  defp render_html(crumbs, home_label, home_url) do
     chevron =
       ~s(<svg class="w-3.5 h-3.5 text-slate-300 dark:text-slate-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>)
 
@@ -74,14 +87,16 @@ defmodule Sayfa.Blocks.Breadcrumb do
         ~s(#{chevron}<li class="text-slate-900 dark:text-slate-100">#{content}</li>)
       end)
 
+    escaped_home = Sayfa.Block.escape_html(home_label)
+
     home_link =
-      ~s(<li><a href="/" class="text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-primary-400">Home</a></li>)
+      ~s(<li><a href="#{home_url}" class="text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-primary-400">#{escaped_home}</a></li>)
 
     ~s(<nav aria-label="Breadcrumb" class="mb-6"><ol class="flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-400">#{home_link}#{Enum.join(items)}</ol></nav>)
   end
 
-  defp render_json_ld(crumbs, base_url) do
-    all_crumbs = [{"Home", "/"} | crumbs]
+  defp render_json_ld(crumbs, base_url, home_label, home_url) do
+    all_crumbs = [{home_label, home_url} | crumbs]
 
     items =
       all_crumbs
