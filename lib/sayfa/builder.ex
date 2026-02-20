@@ -95,6 +95,10 @@ defmodule Sayfa.Builder do
          _ <- verbose_log(verbose, "#{length(contents)} contents after filtering"),
          contents <- timed_sync("Enrich contents", verbose, fn -> enrich_contents(contents) end),
          contents <-
+           timed_sync("Auto-link translations", verbose, fn ->
+             auto_link_translations(contents, config)
+           end),
+         contents <-
            timed_sync("Enrich hreflang", verbose, fn -> enrich_hreflang(contents, config) end),
          {:ok, contents} <-
            timed("Run before_render hooks", verbose, fn ->
@@ -417,13 +421,32 @@ defmodule Sayfa.Builder do
   defp build_type_indexes(all_contents, config) do
     page_size = Map.get(config, :posts_per_page, 10)
 
+    all_groups =
+      Enum.group_by(all_contents, fn c ->
+        {c.meta["content_type"], c.meta["lang_prefix"] || ""}
+      end)
+
+    # Track which {type, lang_prefix} combos have a user-provided index.md
+    user_index_keys =
+      all_groups
+      |> Enum.filter(fn {{_type, _lang}, items} ->
+        Enum.any?(items, fn c -> c.slug == "index" end)
+      end)
+      |> Enum.map(fn {key, _} -> key end)
+      |> MapSet.new()
+
     # Build an index for each {content_type, lang_prefix} group
     type_lang_groups =
-      all_contents
-      |> Enum.group_by(fn c -> {c.meta["content_type"], c.meta["lang_prefix"] || ""} end)
+      all_groups
       |> Enum.reject(fn {{type, _lang}, items} ->
         type == "pages" or Enum.any?(items, fn c -> c.slug == "index" end)
       end)
+      |> Map.new()
+
+    # Ensure all content_type × language combos have entries (even empty ones)
+    # but skip combos where user provided their own index.md
+    type_lang_groups =
+      ensure_all_type_lang_combos(type_lang_groups, all_contents, config, user_index_keys)
 
     results =
       Enum.reduce_while(type_lang_groups, 0, fn {{type, lang_prefix}, items}, total_count ->
@@ -437,6 +460,33 @@ defmodule Sayfa.Builder do
       {:error, _} = error -> error
       count -> {:ok, count}
     end
+  end
+
+  defp ensure_all_type_lang_combos(groups, all_contents, config, excluded_keys) do
+    # Collect all non-"pages" content types that exist in any language
+    content_types =
+      all_contents
+      |> Enum.map(fn c -> c.meta["content_type"] end)
+      |> Enum.reject(&(&1 == "pages"))
+      |> Enum.uniq()
+
+    # Compute all language prefixes from configured languages
+    lang_prefixes =
+      config
+      |> I18n.configured_language_codes()
+      |> Enum.map(fn lang -> I18n.language_prefix(lang, config) end)
+
+    # Build all valid {type, lang_prefix} keys, excluding user-provided index.md combos
+    all_keys =
+      for type <- content_types,
+          lp <- lang_prefixes,
+          not MapSet.member?(excluded_keys, {type, lp}),
+          do: {type, lp}
+
+    # Add empty entries for missing combos
+    Enum.reduce(all_keys, groups, fn key, acc ->
+      Map.put_new(acc, key, [])
+    end)
   end
 
   defp build_type_lang_index(type, lang_prefix, items, page_size, all_contents, config) do
@@ -455,25 +505,41 @@ defmodule Sayfa.Builder do
       end
 
     pages = Pagination.paginate(sorted, page_size: page_size, base_path: base_path)
+
+    # For empty content types, still generate a single empty index page
+    pages =
+      if pages == [] do
+        [
+          %Pagination.Page{
+            items: [],
+            page_number: 1,
+            page_size: page_size,
+            total_items: 0,
+            total_pages: 1,
+            has_prev: false,
+            has_next: false,
+            prev_url: nil,
+            next_url: nil,
+            url: "#{base_path}/"
+          }
+        ]
+      else
+        pages
+      end
+
     write_paginated_index(pages, url_prefix, lang_prefix, all_contents, config)
   end
 
   defp write_paginated_index(pages, url_prefix, lang_prefix, all_contents, config) do
-    output_base =
-      case lang_prefix do
-        "" -> [config.output_dir, url_prefix]
-        lp -> [config.output_dir, lp, url_prefix]
-      end
+    output_base = index_output_base(config.output_dir, url_prefix, lang_prefix)
+    lang = lang_from_prefix(lang_prefix, config)
+    page_url = index_page_url(url_prefix, lang_prefix)
+    t_fn = I18n.translate_function(lang, config)
+    page_title = t_fn.("#{url_prefix}_title")
 
     results =
       Enum.reduce_while(pages, 0, fn page, count ->
-        page_title = String.capitalize(url_prefix)
-
-        output_path =
-          case page.page_number do
-            1 -> Path.join(output_base ++ ["index.html"])
-            n -> Path.join(output_base ++ ["page", "#{n}", "index.html"])
-          end
+        output_path = index_output_path(output_base, page.page_number)
 
         case Template.render_list_page(
                config: config,
@@ -481,7 +547,9 @@ defmodule Sayfa.Builder do
                page_title: page_title,
                pagination: page,
                content_type: url_prefix,
-               all_contents: all_contents
+               all_contents: all_contents,
+               lang: lang,
+               page_url: page_url
              ) do
           {:ok, html} ->
             dir = Path.dirname(output_path)
@@ -499,6 +567,18 @@ defmodule Sayfa.Builder do
       count -> {:ok, count}
     end
   end
+
+  defp index_output_base(output_dir, url_prefix, ""), do: [output_dir, url_prefix]
+  defp index_output_base(output_dir, url_prefix, lp), do: [output_dir, lp, url_prefix]
+
+  defp index_output_path(base, 1), do: Path.join(base ++ ["index.html"])
+  defp index_output_path(base, n), do: Path.join(base ++ ["page", "#{n}", "index.html"])
+
+  defp lang_from_prefix("", config), do: config.default_lang
+  defp lang_from_prefix(lp, _config), do: String.to_atom(lp)
+
+  defp index_page_url(url_prefix, ""), do: "/#{url_prefix}/"
+  defp index_page_url(url_prefix, lp), do: "/#{lp}/#{url_prefix}/"
 
   # --- Content Enrichment ---
 
@@ -588,11 +668,16 @@ defmodule Sayfa.Builder do
       end)
 
     # Collect URLs from content type indexes (per language)
-    index_urls =
+    index_groups =
       contents
       |> Enum.group_by(fn c -> {c.meta["content_type"], c.meta["lang_prefix"] || ""} end)
       |> Enum.reject(fn {{type, _}, _} -> type == "pages" end)
-      |> Enum.map(fn {{type, lang_prefix}, _} ->
+      |> Map.new()
+
+    index_groups = ensure_all_type_lang_combos(index_groups, contents, config, MapSet.new())
+
+    index_urls =
+      Enum.map(index_groups, fn {{type, lang_prefix}, _} ->
         url_prefix =
           case ContentType.find_by_directory(type) do
             nil -> type
@@ -635,10 +720,68 @@ defmodule Sayfa.Builder do
     File.write!(path, content)
   end
 
+  # --- Auto-link translations ---
+
+  defp auto_link_translations(contents, config) do
+    default_lang = Map.get(config, :default_lang, :en)
+
+    groups =
+      Enum.group_by(contents, fn c -> {c.meta["content_type"], c.slug} end)
+
+    translation_map =
+      groups
+      |> Enum.filter(&multilingual_group?(&1, default_lang))
+      |> Enum.flat_map(fn {_key, group_items} ->
+        build_translation_entries(group_items, default_lang)
+      end)
+      |> Map.new()
+
+    Enum.map(contents, fn content ->
+      apply_auto_translation(content, translation_map, default_lang)
+    end)
+  end
+
+  defp multilingual_group?({_key, items}, default_lang) do
+    items
+    |> Enum.map(fn c -> c.lang || default_lang end)
+    |> Enum.uniq()
+    |> length()
+    |> Kernel.>(1)
+  end
+
+  defp build_translation_entries(group_items, default_lang) do
+    Enum.map(group_items, fn c ->
+      own_lang = c.lang || default_lang
+
+      translations =
+        group_items
+        |> Enum.reject(fn other -> (other.lang || default_lang) == own_lang end)
+        |> Map.new(fn other -> {to_string(other.lang || default_lang), other.slug} end)
+
+      identity = {c.meta["content_type"], own_lang, c.slug}
+      {identity, translations}
+    end)
+  end
+
+  defp apply_auto_translation(content, translation_map, default_lang) do
+    case content.meta["translations"] do
+      existing when is_map(existing) and map_size(existing) > 0 ->
+        content
+
+      _ ->
+        identity = {content.meta["content_type"], content.lang || default_lang, content.slug}
+
+        case Map.get(translation_map, identity) do
+          nil -> content
+          translations -> %{content | meta: Map.put(content.meta, "translations", translations)}
+        end
+    end
+  end
+
   # --- hreflang enrichment ---
 
   defp enrich_hreflang(contents, config) do
-    default_lang = Map.get(config, :default_language, :en)
+    default_lang = Map.get(config, :default_lang, :en)
 
     # Build lookup: {content_type, lang, slug} => content
     lookup =

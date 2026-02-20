@@ -641,4 +641,135 @@ defmodule Sayfa.BuilderTest do
       assert :ok = Builder.clean(output_dir: ctx.output_dir)
     end
   end
+
+  describe "auto-link translations" do
+    test "auto-links content with matching slugs across languages", ctx do
+      tr_dir = Path.join(ctx.content_dir, "tr/posts")
+      File.mkdir_p!(tr_dir)
+
+      File.write!(Path.join(ctx.posts_dir, "hello.md"), """
+      ---
+      title: "Hello"
+      date: 2024-01-15
+      ---
+
+      Hello World
+      """)
+
+      File.write!(Path.join(tr_dir, "hello.md"), """
+      ---
+      title: "Merhaba"
+      date: 2024-01-15
+      ---
+
+      Merhaba Dünya
+      """)
+
+      opts =
+        build_opts(ctx,
+          default_lang: :en,
+          languages: [en: [name: "English"], tr: [name: "Türkçe"]]
+        )
+
+      {:ok, result} = Builder.build(opts)
+      assert result.content_count == 2
+
+      # Both should have hreflang alternates
+      en_html = File.read!(Path.join(ctx.output_dir, "posts/hello/index.html"))
+      tr_html = File.read!(Path.join(ctx.output_dir, "tr/posts/hello/index.html"))
+
+      assert en_html =~ "hreflang"
+      assert tr_html =~ "hreflang"
+    end
+
+    test "explicit translations take priority over auto-linking", ctx do
+      tr_dir = Path.join(ctx.content_dir, "tr/posts")
+      File.mkdir_p!(tr_dir)
+
+      File.write!(Path.join(ctx.posts_dir, "hello.md"), """
+      ---
+      title: "Hello"
+      date: 2024-01-15
+      translations:
+        tr: "merhaba-custom"
+      ---
+
+      Hello World
+      """)
+
+      File.write!(Path.join(tr_dir, "hello.md"), """
+      ---
+      title: "Merhaba"
+      date: 2024-01-15
+      ---
+
+      Merhaba Dünya
+      """)
+
+      opts =
+        build_opts(ctx,
+          default_lang: :en,
+          languages: [en: [name: "English"], tr: [name: "Türkçe"]]
+        )
+
+      {:ok, result} = Builder.build(opts)
+      assert result.content_count == 2
+    end
+  end
+
+  describe "empty list pages for all languages" do
+    test "generates list pages for languages with no content", ctx do
+      # Only create English posts, but configure en+tr languages
+      File.write!(Path.join(ctx.posts_dir, "2024-01-15-hello.md"), """
+      ---
+      title: "Hello"
+      date: 2024-01-15
+      ---
+      English content.
+      """)
+
+      opts =
+        build_opts(ctx,
+          default_lang: :en,
+          languages: [en: [name: "English"], tr: [name: "Türkçe"]]
+        )
+
+      {:ok, _result} = Builder.build(opts)
+
+      # English posts index should exist
+      en_index = Path.join([ctx.output_dir, "posts", "index.html"])
+      assert File.exists?(en_index)
+
+      # Turkish posts index should also exist (empty state)
+      tr_index = Path.join([ctx.output_dir, "tr", "posts", "index.html"])
+      assert File.exists?(tr_index)
+    end
+  end
+
+  describe "i18n list pages" do
+    test "non-default language list pages use correct lang", ctx do
+      tr_dir = Path.join(ctx.content_dir, "tr/posts")
+      File.mkdir_p!(tr_dir)
+
+      File.write!(Path.join(tr_dir, "merhaba.md"), """
+      ---
+      title: "Merhaba"
+      date: 2024-01-15
+      ---
+
+      Merhaba Dünya
+      """)
+
+      opts =
+        build_opts(ctx,
+          default_lang: :en,
+          languages: [en: [name: "English"], tr: [name: "Türkçe"]]
+        )
+
+      {:ok, _result} = Builder.build(opts)
+
+      tr_index = File.read!(Path.join(ctx.output_dir, "tr/posts/index.html"))
+      assert tr_index =~ ~s(lang="tr")
+    end
+  end
 end

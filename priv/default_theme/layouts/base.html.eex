@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="<%= Map.get(assigns, :lang, "en") %>" class="scroll-smooth">
+<html lang="<%= Map.get(assigns, :lang, "en") %>" dir="<%= Map.get(assigns, :dir, "ltr") %>" class="scroll-smooth">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">

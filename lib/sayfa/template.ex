@@ -91,13 +91,17 @@ defmodule Sayfa.Template do
     config = Keyword.fetch!(opts, :config)
     all_contents = Keyword.get(opts, :all_contents, [])
     lang = content.lang || config.default_lang
+    t_fn = Sayfa.I18n.translate_function(lang, config)
+    site = Sayfa.I18n.resolve_site_config(config, lang, config)
 
     block_fn =
       Sayfa.Block.build_helper(
-        site: config,
+        site: site,
         content: content,
         contents: all_contents,
-        lang: lang
+        lang: lang,
+        t: t_fn,
+        page_url: Sayfa.Content.url(content)
       )
 
     layout_name = resolve_layout(content)
@@ -119,12 +123,16 @@ defmodule Sayfa.Template do
         dir -> Path.join(dir, "base.html.eex")
       end
 
+    dir = Sayfa.I18n.text_direction(lang)
+
     base_assigns = [
-      site: config,
+      site: site,
       content: content,
       page_title: content.title,
       lang: lang,
-      block: block_fn
+      dir: dir,
+      block: block_fn,
+      t: t_fn
     ]
 
     with {:ok, layout_html} <-
@@ -155,13 +163,20 @@ defmodule Sayfa.Template do
     page_title = Keyword.fetch!(opts, :page_title)
     pagination = Keyword.get(opts, :pagination)
     all_contents = Keyword.get(opts, :all_contents, [])
+    lang = Keyword.get(opts, :lang, config.default_lang)
+    t_fn = Sayfa.I18n.translate_function(lang, config)
+    site = Sayfa.I18n.resolve_site_config(config, lang, config)
+
+    page_url = Keyword.get(opts, :page_url)
 
     block_fn =
       Sayfa.Block.build_helper(
-        site: config,
+        site: site,
         content: nil,
         contents: all_contents,
-        lang: config.default_lang
+        lang: lang,
+        t: t_fn,
+        page_url: page_url
       )
 
     list_path =
@@ -176,15 +191,20 @@ defmodule Sayfa.Template do
         dir -> Path.join(dir, "base.html.eex")
       end
 
+    dir = Sayfa.I18n.text_direction(lang)
+
     list_assigns = [
       contents: contents,
       pagination: pagination,
       page_title: page_title,
       content_type: Keyword.get(opts, :content_type),
-      site: config,
+      site: site,
       content: nil,
-      lang: config.default_lang,
-      block: block_fn
+      lang: lang,
+      dir: dir,
+      block: block_fn,
+      t: t_fn,
+      page_url: page_url
     ]
 
     with {:ok, list_html} <- render_file(list_path, list_assigns) do
