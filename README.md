@@ -78,13 +78,18 @@ Sayfa follows a **two-layer architecture**:
 
 ### Templates & Theming
 - Three-layer template composition (content -> layout -> base)
-- 9 built-in blocks (hero, header, footer, social links, TOC, recent posts, tag cloud, reading time, code copy)
+- 10 built-in blocks (hero, header, footer, social links, TOC, recent posts, tag cloud, reading time, code copy, language switcher) with platform icons for GitHub, X/Twitter, Mastodon, Goodreads, Email, and RSS
 - Theme inheritance (custom -> parent -> default)
 - EEx templates with `@block` helper
 
 ### Internationalization
 - Directory-based multilingual support
 - Per-language URL prefixes (`/tr/posts/...`)
+- 14 pre-built UI translations (en, tr, de, es, fr, it, pt, ja, ko, zh, ar, ru, nl, pl)
+- Language switcher block with auto-detection of available translations
+- RTL language support (Arabic, Hebrew, Farsi, Urdu)
+- Auto-linked translations between content files
+- Translation function `@t.("key")` in templates
 
 ### SEO & Feeds
 - Atom/RSS feed generation
@@ -268,6 +273,9 @@ All templates receive these assigns:
 | `@contents` | `[Sayfa.Content.t()]` | All site contents |
 | `@site` | `map()` | Resolved site configuration |
 | `@block` | `function` | Block rendering helper |
+| `@t` | `function` | Translation function (`@t.("key")`) |
+| `@lang` | `atom()` | Current content language |
+| `@dir` | `String.t()` | Text direction (`"ltr"` or `"rtl"`) |
 | `@inner_content` | `String.t()` | Rendered inner HTML (base layout only) |
 
 ---
@@ -295,6 +303,10 @@ Blocks are reusable EEx components invoked via the `@block` helper:
 | Tag Cloud | `:tag_cloud` | Tag cloud with counts |
 | Reading Time | `:reading_time` | Estimated reading time |
 | Code Copy | `:code_copy` | Copy button for code blocks |
+| Copy Link | `:copy_link` | Copy page URL to clipboard |
+| Breadcrumb | `:breadcrumb` | Breadcrumb navigation |
+| Recent Content | `:recent_content` | Recent items from any content type |
+| Language Switcher | `:language_switcher` | Switch between content translations |
 
 ### Custom Blocks
 
@@ -392,7 +404,7 @@ config :sayfa, :site,
   default_lang: :en,
   languages: [
     en: [name: "English"],
-    tr: [name: "Turkce", path: "/tr"]
+    tr: [name: "Türkçe"]
   ]
 ```
 
@@ -402,6 +414,62 @@ config :sayfa, :site,
 English (default):  /posts/hello-world/
 Turkish:            /tr/posts/merhaba-dunya/
 ```
+
+### Linking Translations
+
+Use the `translations` front matter key to link content across languages. The builder also auto-links translations by matching slugs across language directories.
+
+```yaml
+---
+title: "Hello World"
+lang: en
+translations:
+  tr: merhaba-dunya
+---
+```
+
+Generate pre-linked multilingual content in one command:
+
+```bash
+mix sayfa.gen.content post "Hello World" --lang=en,tr
+```
+
+### Translation Function
+
+Templates receive a `@t` function for translating UI strings:
+
+```eex
+<%= @t.("recent_posts") %>   <%# "Recent Posts" in English, "Son Yazılar" in Turkish %>
+<%= @t.("min_read") %>       <%# "min read" / "dk okuma" %>
+```
+
+Sayfa ships with 14 built-in translation files covering common UI strings:
+
+`en`, `tr`, `de`, `es`, `fr`, `it`, `pt`, `ja`, `ko`, `zh`, `ar`, `ru`, `nl`, `pl`
+
+Translation lookup chain:
+1. Per-language overrides in config (`languages: [tr: [translations: %{"key" => "value"}]]`)
+2. YAML file for the content language (`priv/translations/{lang}.yml`)
+3. YAML file for the default language (fallback)
+4. The key itself
+
+### Per-Language Config Overrides
+
+Override any site config per language:
+
+```elixir
+config :sayfa, :site,
+  title: "My Blog",
+  default_lang: :en,
+  languages: [
+    en: [name: "English"],
+    tr: [name: "Türkçe", title: "Blogum", description: "Kişisel blogum"]
+  ]
+```
+
+### RTL Support
+
+Sayfa automatically sets `dir="rtl"` on the `<html>` tag for right-to-left languages: Arabic (`ar`), Hebrew (`he`), Farsi (`fa`), and Urdu (`ur`).
 
 ---
 
@@ -521,6 +589,19 @@ mix sayfa.build --verbose             # Detailed logging
 mix sayfa.build --output _site        # Custom output directory
 mix sayfa.build --source ./my_site    # Custom source directory
 ```
+
+### `mix sayfa.gen.content`
+
+Generate a new content file:
+
+```bash
+mix sayfa.gen.content post "My First Post"
+mix sayfa.gen.content note "Quick Tip" --tags=elixir,tips
+mix sayfa.gen.content post "Hello World" --lang=en,tr    # Multilingual
+mix sayfa.gen.content --list                              # List content types
+```
+
+Options: `--date`, `--tags`, `--categories`, `--draft`, `--lang`, `--slug`.
 
 ### `mix sayfa.serve`
 

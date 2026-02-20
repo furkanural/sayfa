@@ -74,7 +74,8 @@ sayfa/
 │   │   │   ├── recent_content.ex
 │   │   │   ├── search.ex
 │   │   │   ├── copy_link.ex
-│   │   │   └── breadcrumb.ex
+│   │   │   ├── breadcrumb.ex
+│   │   │   └── language_switcher.ex
 │   │   │
 │   │   ├── content_types/          # Built-in content types
 │   │   │   ├── post.ex
@@ -93,10 +94,12 @@ sayfa/
 │       ├── sayfa.new.ex            # Project generator
 │       ├── sayfa.build.ex          # Build site
 │       ├── sayfa.gen.layout.ex      # Layout generator
+│       ├── sayfa.gen.content.ex    # Content file generator
 │       └── sayfa.serve.ex          # Dev server
 │
 ├── priv/
 │   ├── templates/new_site/         # mix sayfa.new scaffolding
+│   ├── translations/               # Built-in UI translations (14 languages)
 │   └── default_theme/
 │       └── layouts/                # base, home, list, note, page, post
 │
@@ -171,6 +174,17 @@ Blocks implement `Sayfa.Behaviours.Block` with `name/0` and `render/1` callbacks
 3. **Base template** — HTML shell (`<html>`, `<head>`), inserts `@inner_content`
 
 Available layouts: `home`, `post`, `page`, `list`, `note` (plus custom user layouts).
+
+### Internationalization
+
+`Sayfa.I18n` handles all multilingual concerns:
+
+- **Translation lookup chain**: config overrides → lang YAML → default YAML → key itself
+- **Auto-link translations**: Builder matches slugs across language directories and populates `hreflang_alternates` in content metadata
+- **`@t.("key")`** in templates: Translation closure injected into all template assigns
+- **RTL support**: `Sayfa.I18n.text_direction/1` returns `"rtl"` for Arabic, Hebrew, Farsi, Urdu; templates get `@dir` assign
+- **Per-language config**: `Sayfa.I18n.resolve_site_config/3` merges language-specific overrides (e.g., title, description) onto base config
+- **14 built-in YAML translations**: `priv/translations/{lang}.yml` for en, tr, de, es, fr, it, pt, ja, ko, zh, ar, ru, nl, pl
 
 ### Behaviours for Extensibility
 
@@ -281,6 +295,8 @@ draft: false                      # Optional (default: false)
 featured: false                   # Optional
 image: /images/cover.jpg          # Optional
 layout: custom_layout             # Optional
+translations:                     # Optional (auto-linked by builder)
+  tr: slug-in-turkish
 ---
 ```
 

@@ -77,13 +77,18 @@ Sayfa **iki katmanli bir mimari** kullanir:
 
 ### Sablonlar ve Tema
 - Uc katmanli sablon bilesimi (icerik -> duzen -> temel)
-- 9 yerlesik blok (hero, baslik, altbilgi, sosyal baglantilar, icerik tablosu, son yazilar, etiket bulutu, okuma suresi, kod kopyalama)
+- 10 yerlesik blok (hero, baslik, altbilgi, sosyal baglantilar, icerik tablosu, son yazilar, etiket bulutu, okuma suresi, kod kopyalama, dil degistirici) ve GitHub, X/Twitter, Mastodon, Goodreads, Email, RSS icin platform ikonlari
 - Tema mirasi (ozel -> ust -> varsayilan)
 - `@block` yardimcisi ile EEx sablonlari
 
 ### Uluslararasilastirma
 - Dizin tabanli cok dilli destek
 - Dil bazli URL on ekleri (`/tr/posts/...`)
+- 14 yerlesik UI cevirisi (en, tr, de, es, fr, it, pt, ja, ko, zh, ar, ru, nl, pl)
+- Mevcut cevirileri otomatik algilayan dil degistirici bloku
+- RTL dil destegi (Arapca, Ibranice, Farsca, Urduca)
+- Icerik dosyalari arasinda otomatik ceviri baglantisi
+- Sablonlarda `@t.("anahtar")` ceviri fonksiyonu
 
 ### SEO ve Beslemeler
 - Atom/RSS besleme uretimi
@@ -282,6 +287,10 @@ Bloklar, `@block` yardimcisi ile cagirilan yeniden kullanilabilir EEx bilesenler
 | Etiket Bulutu | `:tag_cloud` | Sayili etiket bulutu |
 | Okuma Suresi | `:reading_time` | Tahmini okuma suresi |
 | Kod Kopyalama | `:code_copy` | Kod bloklari icin kopyalama dugmesi |
+| Baglanti Kopyalama | `:copy_link` | Sayfa URL'sini panoya kopyala |
+| Icerik Yolu | `:breadcrumb` | Icerik yolu navigasyonu |
+| Son Icerikler | `:recent_content` | Herhangi bir icerik turunun son ogeler |
+| Dil Degistirici | `:language_switcher` | Icerik cevirileri arasinda gecis |
 
 ### Ozel Bloklar
 
@@ -363,7 +372,7 @@ config :sayfa, :site,
   default_lang: :en,
   languages: [
     en: [name: "English"],
-    tr: [name: "Turkce", path: "/tr"]
+    tr: [name: "Türkçe"]
   ]
 ```
 
@@ -373,6 +382,62 @@ config :sayfa, :site,
 Ingilizce (varsayilan):  /posts/hello-world/
 Turkce:                  /tr/posts/merhaba-dunya/
 ```
+
+### Cevirileri Baglama
+
+Diller arasi icerikleri baglamak icin `translations` on bilgi anahtarini kullanin. Derleyici ayrica slug eslestirmesiyle cevirileri otomatik baglar.
+
+```yaml
+---
+title: "Merhaba Dunya"
+lang: tr
+translations:
+  en: hello-world
+---
+```
+
+Tek komutla cok dilli icerik olusturun:
+
+```bash
+mix sayfa.gen.content post "Hello World" --lang=en,tr
+```
+
+### Ceviri Fonksiyonu
+
+Sablonlar, UI dizelerini cevirmek icin bir `@t` fonksiyonu alir:
+
+```eex
+<%= @t.("recent_posts") %>   <%# Ingilizce'de "Recent Posts", Turkce'de "Son Yazilar" %>
+<%= @t.("min_read") %>       <%# "min read" / "dk okuma" %>
+```
+
+Sayfa, yaygin UI dizeleri icin 14 yerlesik ceviri dosyasiyla gelir:
+
+`en`, `tr`, `de`, `es`, `fr`, `it`, `pt`, `ja`, `ko`, `zh`, `ar`, `ru`, `nl`, `pl`
+
+Ceviri arama zinciri:
+1. Yapilandirmadaki dil bazli gecersiz kilmalar (`languages: [tr: [translations: %{"anahtar" => "deger"}]]`)
+2. Icerik dili icin YAML dosyasi (`priv/translations/{dil}.yml`)
+3. Varsayilan dil icin YAML dosyasi (geri donus)
+4. Anahtarin kendisi
+
+### Dil Bazli Yapilandirma Gecersiz Kilma
+
+Her dil icin site yapilandirmasini gecersiz kilin:
+
+```elixir
+config :sayfa, :site,
+  title: "My Blog",
+  default_lang: :en,
+  languages: [
+    en: [name: "English"],
+    tr: [name: "Türkçe", title: "Blogum", description: "Kisisel blogum"]
+  ]
+```
+
+### RTL Destegi
+
+Sayfa, sagdan sola diller icin `<html>` etiketinde otomatik olarak `dir="rtl"` ayarlar: Arapca (`ar`), Ibranice (`he`), Farsca (`fa`) ve Urduca (`ur`).
 
 ---
 
@@ -495,6 +560,19 @@ mix sayfa.build --verbose             # Ayrintili loglama
 mix sayfa.build --output _site        # Ozel cikis dizini
 mix sayfa.build --source ./sitem      # Ozel kaynak dizini
 ```
+
+### `mix sayfa.gen.content`
+
+Yeni bir icerik dosyasi olusturun:
+
+```bash
+mix sayfa.gen.content post "Ilk Yazim"
+mix sayfa.gen.content note "Hizli Ipucu" --tags=elixir,ipuclari
+mix sayfa.gen.content post "Merhaba Dunya" --lang=en,tr    # Cok dilli
+mix sayfa.gen.content --list                                # Icerik turlerini listele
+```
+
+Secenekler: `--date`, `--tags`, `--categories`, `--draft`, `--lang`, `--slug`.
 
 ### `mix sayfa.serve`
 
