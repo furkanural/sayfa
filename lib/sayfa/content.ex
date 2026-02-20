@@ -296,7 +296,8 @@ defmodule Sayfa.Content do
         with {:ok, content} <- parse(raw_string) do
           filename = Path.basename(file_path)
           slug = content.slug || slug_from_filename(filename)
-          {:ok, %{content | source_path: file_path, slug: slug}}
+          date = content.date || date_from_filename(filename)
+          {:ok, %{content | source_path: file_path, slug: slug, date: date}}
         end
 
       {:error, reason} ->
@@ -325,10 +326,17 @@ defmodule Sayfa.Content do
   def from_raw(%Raw{} = raw) do
     with {:ok, html} <- Sayfa.Markdown.render(raw.body_markdown) do
       slug = slug_from_filename(raw.filename)
+      filename_date = date_from_filename(raw.filename)
 
       case build_content(raw.front_matter, html) do
         {:ok, content} ->
-          {:ok, %{content | source_path: raw.path, slug: content.slug || slug}}
+          {:ok,
+           %{
+             content
+             | source_path: raw.path,
+               slug: content.slug || slug,
+               date: content.date || filename_date
+           }}
 
         error ->
           error
@@ -400,6 +408,33 @@ defmodule Sayfa.Content do
     filename
     |> Path.rootname()
     |> strip_date_prefix()
+  end
+
+  @doc """
+  Extracts a `Date` from a filename's `YYYY-MM-DD-` prefix.
+
+  Returns `nil` if the filename has no date prefix or is `nil`.
+
+  ## Examples
+
+      iex> Sayfa.Content.date_from_filename("2024-01-15-hello-world.md")
+      ~D[2024-01-15]
+
+      iex> Sayfa.Content.date_from_filename("about.md")
+      nil
+
+      iex> Sayfa.Content.date_from_filename(nil)
+      nil
+
+  """
+  @spec date_from_filename(String.t() | nil) :: Date.t() | nil
+  def date_from_filename(nil), do: nil
+
+  def date_from_filename(filename) do
+    case Regex.run(~r/^(\d{4}-\d{2}-\d{2})-/, Path.rootname(filename)) do
+      [_, date_str] -> parse_date(date_str)
+      nil -> nil
+    end
   end
 
   # --- Private Functions ---

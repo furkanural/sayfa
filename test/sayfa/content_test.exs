@@ -133,6 +133,22 @@ defmodule Sayfa.ContentTest do
       assert content.slug == "custom-slug"
     end
 
+    test "extracts date from filename when front matter has no date", %{tmp_dir: tmp_dir} do
+      path = Path.join(tmp_dir, "2024-06-10-no-date.md")
+      File.write!(path, "---\ntitle: No Date\n---\nContent")
+
+      assert {:ok, content} = Content.parse_file(path)
+      assert content.date == ~D[2024-06-10]
+    end
+
+    test "front matter date takes precedence over filename date", %{tmp_dir: tmp_dir} do
+      path = Path.join(tmp_dir, "2024-06-10-with-date.md")
+      File.write!(path, "---\ntitle: With Date\ndate: 2025-01-01\n---\nContent")
+
+      assert {:ok, content} = Content.parse_file(path)
+      assert content.date == ~D[2025-01-01]
+    end
+
     test "returns error for missing file" do
       assert {:error, {:file_read_error, _, :enoent}} = Content.parse_file("/nonexistent.md")
     end
@@ -153,6 +169,30 @@ defmodule Sayfa.ContentTest do
       assert content.tags == ["elixir"]
       assert content.source_path == "content/posts/2024-01-15-hello.md"
       assert content.slug == "hello"
+    end
+
+    test "uses date from filename when front matter has no date" do
+      raw = %Raw{
+        path: "content/posts/2024-03-20-hello.md",
+        front_matter: %{"title" => "Hello"},
+        body_markdown: "# World",
+        filename: "2024-03-20-hello.md"
+      }
+
+      assert {:ok, content} = Content.from_raw(raw)
+      assert content.date == ~D[2024-03-20]
+    end
+
+    test "front matter date takes precedence over filename date" do
+      raw = %Raw{
+        path: "content/posts/2024-03-20-hello.md",
+        front_matter: %{"title" => "Hello", "date" => ~D[2025-01-01]},
+        body_markdown: "# World",
+        filename: "2024-03-20-hello.md"
+      }
+
+      assert {:ok, content} = Content.from_raw(raw)
+      assert content.date == ~D[2025-01-01]
     end
 
     test "returns error for missing title in Raw" do
@@ -181,6 +221,24 @@ defmodule Sayfa.ContentTest do
 
     test "handles multiple extensions" do
       assert Content.slug_from_filename("2024-01-15-post.html.md") == "post.html"
+    end
+  end
+
+  describe "date_from_filename/1" do
+    test "extracts date from filename with date prefix" do
+      assert Content.date_from_filename("2024-01-15-hello-world.md") == ~D[2024-01-15]
+    end
+
+    test "returns nil for filename without date prefix" do
+      assert Content.date_from_filename("about.md") == nil
+    end
+
+    test "returns nil for nil input" do
+      assert Content.date_from_filename(nil) == nil
+    end
+
+    test "returns nil for invalid date prefix" do
+      assert Content.date_from_filename("9999-99-99-hello.md") == nil
     end
   end
 
