@@ -8,7 +8,7 @@ defmodule Sayfa.SEO do
 
       <%= Sayfa.SEO.meta_tags(@content, @site) %>
       <%= Sayfa.SEO.json_ld(assigns[:content], @site) %>
-      <%= Sayfa.SEO.hreflang_tags(assigns[:content], @site) %>
+      <%= Sayfa.SEO.hreflang_tags(assigns[:content], @site, assigns[:archive_alternates]) %>
 
   """
 
@@ -132,8 +132,14 @@ defmodule Sayfa.SEO do
       true
 
   """
-  @spec hreflang_tags(Content.t() | nil, map()) :: String.t()
-  def hreflang_tags(%Content{meta: %{"hreflang_alternates" => alternates}}, config)
+  @spec hreflang_tags(Content.t() | nil, map(), map() | nil) :: String.t()
+  def hreflang_tags(content, config, archive_alternates \\ nil)
+
+  def hreflang_tags(
+        %Content{meta: %{"hreflang_alternates" => alternates}},
+        config,
+        _archive_alternates
+      )
       when is_list(alternates) and alternates != [] do
     base = String.trim_trailing(config.base_url, "/")
 
@@ -157,7 +163,38 @@ defmodule Sayfa.SEO do
     Enum.join(tags, "\n")
   end
 
-  def hreflang_tags(_content, _config), do: ""
+  def hreflang_tags(nil, config, archive_alternates)
+      when is_map(archive_alternates) and map_size(archive_alternates) > 0 do
+    base = String.trim_trailing(config.base_url, "/")
+
+    tags =
+      Enum.map(archive_alternates, fn {lang, url} ->
+        lang_str = to_string(lang)
+
+        ~s(<link rel="alternate" hreflang="#{escape_attr(lang_str)}" href="#{escape_attr(base <> url)}">)
+      end)
+
+    tags =
+      if map_size(archive_alternates) > 1 do
+        default_lang = Map.get(config, :default_lang, :en)
+        default_url = Map.get(archive_alternates, default_lang)
+
+        if default_url do
+          tags ++
+            [
+              ~s(<link rel="alternate" hreflang="x-default" href="#{escape_attr(base <> default_url)}">)
+            ]
+        else
+          tags
+        end
+      else
+        tags
+      end
+
+    Enum.join(tags, "\n")
+  end
+
+  def hreflang_tags(_content, _config, _archive_alternates), do: ""
 
   @doc """
   Builds the full URL for a content item.
@@ -225,6 +262,7 @@ defmodule Sayfa.SEO do
         |> maybe_add_date_tag("article:published_time", content.date)
         |> maybe_add_date_tag("article:modified_time", content.meta["updated"])
         |> maybe_add_author_tag(config)
+        |> add_category_tags(content.categories)
         |> add_tag_tags(content.tags)
 
       tags ++ article_tags
@@ -248,6 +286,13 @@ defmodule Sayfa.SEO do
   end
 
   defp maybe_add_author_tag(tags, _config), do: tags
+
+  defp add_category_tags(tags, []), do: tags
+
+  defp add_category_tags(tags, categories) do
+    cat_metas = Enum.map(categories, fn cat -> meta("article:section", cat) end)
+    tags ++ cat_metas
+  end
 
   defp add_tag_tags(tags, []), do: tags
 

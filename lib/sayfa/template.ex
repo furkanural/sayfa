@@ -172,16 +172,19 @@ defmodule Sayfa.Template do
     site = Sayfa.I18n.resolve_site_config(config, lang, config)
 
     page_url = Keyword.get(opts, :page_url)
+    archive_alternates = Keyword.get(opts, :archive_alternates)
 
-    block_fn =
-      Sayfa.Block.build_helper(
+    block_ctx =
+      [
         site: site,
         content: nil,
         contents: all_contents,
         lang: lang,
         t: t_fn,
         page_url: page_url
-      )
+      ] ++ if(archive_alternates, do: [archive_alternates: archive_alternates], else: [])
+
+    block_fn = Sayfa.Block.build_helper(block_ctx)
 
     list_path =
       case Keyword.get(opts, :layouts_dir) do
@@ -211,7 +214,8 @@ defmodule Sayfa.Template do
       block: block_fn,
       t: t_fn,
       page_url: page_url,
-      format_date: format_date_fn
+      format_date: format_date_fn,
+      archive_alternates: archive_alternates
     ]
 
     with {:ok, list_html} <- render_file(list_path, list_assigns) do

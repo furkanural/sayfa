@@ -365,6 +365,65 @@ defmodule Sayfa.SEOTest do
     end
   end
 
+  describe "hreflang_tags/3 with archive_alternates" do
+    test "renders hreflang links for list pages" do
+      archive_alternates = %{en: "/posts/", tr: "/tr/posts/"}
+
+      html = SEO.hreflang_tags(nil, @config, archive_alternates)
+      assert html =~ ~s(hreflang="en")
+      assert html =~ ~s(hreflang="tr")
+      assert html =~ ~s(href="https://example.com/posts/")
+      assert html =~ ~s(href="https://example.com/tr/posts/")
+    end
+
+    test "adds x-default pointing to default language for list pages" do
+      config = Map.put(@config, :default_lang, :en)
+      archive_alternates = %{en: "/posts/", tr: "/tr/posts/"}
+
+      html = SEO.hreflang_tags(nil, config, archive_alternates)
+      assert html =~ ~s(hreflang="x-default" href="https://example.com/posts/")
+    end
+
+    test "does not add x-default for single language" do
+      archive_alternates = %{en: "/posts/"}
+
+      html = SEO.hreflang_tags(nil, @config, archive_alternates)
+      assert html =~ ~s(hreflang="en")
+      refute html =~ "x-default"
+    end
+
+    test "returns empty string when archive_alternates is nil" do
+      assert SEO.hreflang_tags(nil, @config, nil) == ""
+    end
+
+    test "returns empty string when archive_alternates is empty map" do
+      assert SEO.hreflang_tags(nil, @config, %{}) == ""
+    end
+
+    test "content hreflang takes priority over archive_alternates" do
+      content = %Content{
+        title: "Hello",
+        body: "",
+        slug: "hello",
+        meta: %{
+          "url_prefix" => "posts",
+          "lang_prefix" => "",
+          "hreflang_alternates" => [
+            {"en", "/posts/hello"},
+            {"tr", "/tr/posts/merhaba"}
+          ]
+        }
+      }
+
+      archive_alternates = %{en: "/posts/", tr: "/tr/posts/"}
+
+      html = SEO.hreflang_tags(content, @config, archive_alternates)
+      # Should use content alternates, not archive alternates
+      assert html =~ ~s(href="https://example.com/posts/hello")
+      refute html =~ ~s(href="https://example.com/posts/")
+    end
+  end
+
   describe "content_url/2" do
     test "builds URL with prefix" do
       content = %Content{
