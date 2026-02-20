@@ -120,6 +120,8 @@ defmodule Sayfa.Builder do
         Sayfa.Theme.copy_assets(config, config.output_dir)
       end)
 
+      timed_sync("Copy static files", verbose, fn -> copy_static_files(config) end)
+
       timed_sync("TailwindCSS compilation", verbose, fn ->
         Tailwind.compile(config, config.output_dir)
       end)
@@ -179,6 +181,33 @@ defmodule Sayfa.Builder do
 
   defp verbose_log(false, _msg), do: :ok
   defp verbose_log(true, msg), do: Logger.info("[sayfa] #{msg}")
+
+  # --- Static File Copying ---
+
+  defp copy_static_files(config) do
+    static_dir = Map.get(config, :static_dir, "static")
+
+    if File.dir?(static_dir) do
+      copy_dir_recursive(static_dir, config.output_dir)
+    end
+  end
+
+  defp copy_dir_recursive(source, dest) do
+    source
+    |> Path.join("**/*")
+    |> Path.wildcard()
+    |> Enum.each(fn src_path ->
+      relative = Path.relative_to(src_path, source)
+      dest_path = Path.join(dest, relative)
+
+      if File.dir?(src_path) do
+        File.mkdir_p!(dest_path)
+      else
+        File.mkdir_p!(Path.dirname(dest_path))
+        File.cp!(src_path, dest_path)
+      end
+    end)
+  end
 
   # --- Private Functions ---
 

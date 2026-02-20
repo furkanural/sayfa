@@ -42,7 +42,8 @@ defmodule Sayfa.Config do
     author: nil,
     description: "",
     social_links: [],
-    tailwind_version: "4.1.12"
+    tailwind_version: "4.1.12",
+    static_dir: "static"
   }
 
   @doc """

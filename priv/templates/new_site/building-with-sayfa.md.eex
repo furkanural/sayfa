@@ -6,6 +6,7 @@ description: "A guide to building your site with Sayfa, the Elixir static site g
 categories: [guides]
 tags: [sayfa, elixir, tutorial]
 featured: true
+image: /images/placeholder.svg
 ---
 
 ## Why Sayfa?
@@ -78,6 +79,26 @@ Blocks are reusable components you can use in your templates:
 <%%= @block.(:recent_posts, limit: 5) %>
 <%%= @block.(:tag_cloud) %>
 ```
+
+## Images
+
+Sayfa supports images through the `static/` directory. Any file in `static/` is copied to your site's root during build.
+
+**Featured image** — Add `image:` to your front matter to display a cover image above the post and set the OpenGraph image for social sharing:
+
+```yaml
+---
+image: /images/cover.jpg
+---
+```
+
+**Inline images** — Use standard Markdown syntax:
+
+```markdown
+![Alt text](/images/screenshot.png)
+```
+
+Place your image files in `static/images/` and reference them with `/images/` paths.
 
 ## What's Next?
 

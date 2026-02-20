@@ -980,6 +980,41 @@ defmodule Sayfa.BuilderTest do
     end
   end
 
+  describe "static file copying" do
+    test "copies static files to output directory", ctx do
+      static_dir = Path.join(ctx.tmp_dir, "static")
+      images_dir = Path.join(static_dir, "images")
+      File.mkdir_p!(images_dir)
+      File.write!(Path.join(images_dir, "photo.txt"), "image data")
+      File.write!(Path.join(static_dir, "favicon.ico"), "icon data")
+
+      # Need at least one content file for build to succeed
+      File.write!(Path.join(ctx.pages_dir, "about.md"), """
+      ---
+      title: "About"
+      ---
+      About content.
+      """)
+
+      assert {:ok, _result} = Builder.build(build_opts(ctx, static_dir: static_dir))
+
+      assert File.read!(Path.join([ctx.output_dir, "images", "photo.txt"])) == "image data"
+      assert File.read!(Path.join([ctx.output_dir, "favicon.ico"])) == "icon data"
+    end
+
+    test "build succeeds when static directory does not exist", ctx do
+      File.write!(Path.join(ctx.pages_dir, "about.md"), """
+      ---
+      title: "About"
+      ---
+      About content.
+      """)
+
+      assert {:ok, _result} =
+               Builder.build(build_opts(ctx, static_dir: Path.join(ctx.tmp_dir, "nonexistent")))
+    end
+  end
+
   describe "i18n list pages" do
     test "non-default language list pages use correct lang", ctx do
       tr_dir = Path.join(ctx.content_dir, "tr/posts")
