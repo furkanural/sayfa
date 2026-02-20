@@ -81,7 +81,8 @@ defmodule Mix.Tasks.Sayfa.New do
       Path.join(path, "content/notes"),
       Path.join(path, "content/projects"),
       Path.join(path, "content/talks"),
-      Path.join(path, ".github/workflows")
+      Path.join(path, ".github/workflows"),
+      Path.join(path, "static/images")
     ]
 
     Enum.each(dirs, &File.mkdir_p!/1)
@@ -167,6 +168,25 @@ defmodule Mix.Tasks.Sayfa.New do
       "github/workflows/deploy.yml",
       Path.join(path, ".github/workflows/deploy.yml")
     )
+
+    copy_static(
+      templates_dir,
+      "placeholder.svg",
+      Path.join(path, "static/images/placeholder.svg")
+    )
+
+    copy_static(templates_dir, "favicon.svg", Path.join(path, "static/favicon.svg"))
+    copy_static(templates_dir, "favicon.ico", Path.join(path, "static/favicon.ico"))
+
+    copy_static(
+      templates_dir,
+      "apple-touch-icon.png",
+      Path.join(path, "static/apple-touch-icon.png")
+    )
+
+    copy_static(templates_dir, "icon-192.png", Path.join(path, "static/icon-192.png"))
+    copy_static(templates_dir, "icon-512.png", Path.join(path, "static/icon-512.png"))
+    copy_static(templates_dir, "site.webmanifest", Path.join(path, "static/site.webmanifest"))
 
     # Initialize git repository
     git_init(path)

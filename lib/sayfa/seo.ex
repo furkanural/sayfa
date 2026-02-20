@@ -197,6 +197,29 @@ defmodule Sayfa.SEO do
   def hreflang_tags(_content, _config, _archive_alternates), do: ""
 
   @doc """
+  Generates favicon link tags for the HTML head.
+
+  Returns link tags for favicon.ico, favicon.svg, apple-touch-icon,
+  and web app manifest.
+
+  ## Examples
+
+      iex> Sayfa.SEO.favicon_tags() =~ ~s(rel="icon")
+      true
+
+  """
+  @spec favicon_tags() :: String.t()
+  def favicon_tags do
+    [
+      ~s(<link rel="icon" href="/favicon.ico" sizes="32x32">),
+      ~s(<link rel="icon" href="/favicon.svg" type="image/svg+xml">),
+      ~s(<link rel="apple-touch-icon" href="/apple-touch-icon.png">),
+      ~s(<link rel="manifest" href="/site.webmanifest">)
+    ]
+    |> Enum.join("\n")
+  end
+
+  @doc """
   Builds the full URL for a content item.
 
   ## Examples

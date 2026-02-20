@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title><%= if assigns[:page_title], do: "#{assigns[:page_title]} — #{@site.title}", else: @site.title %></title>
+  <%= Sayfa.SEO.favicon_tags() %>
   <%= Sayfa.SEO.meta_tags(assigns[:content], @site) %>
   <%= Sayfa.SEO.json_ld(assigns[:content], @site) %>
   <%= Sayfa.SEO.hreflang_tags(assigns[:content], @site, assigns[:archive_alternates]) %>

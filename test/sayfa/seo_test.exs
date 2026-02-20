@@ -424,6 +424,28 @@ defmodule Sayfa.SEOTest do
     end
   end
 
+  describe "favicon_tags/0" do
+    test "includes favicon.ico link" do
+      html = SEO.favicon_tags()
+      assert html =~ ~s(rel="icon" href="/favicon.ico" sizes="32x32")
+    end
+
+    test "includes SVG favicon link" do
+      html = SEO.favicon_tags()
+      assert html =~ ~s(rel="icon" href="/favicon.svg" type="image/svg+xml")
+    end
+
+    test "includes apple-touch-icon link" do
+      html = SEO.favicon_tags()
+      assert html =~ ~s(rel="apple-touch-icon" href="/apple-touch-icon.png")
+    end
+
+    test "includes web manifest link" do
+      html = SEO.favicon_tags()
+      assert html =~ ~s(rel="manifest" href="/site.webmanifest")
+    end
+  end
+
   describe "content_url/2" do
     test "builds URL with prefix" do
       content = %Content{

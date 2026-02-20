@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="Sayfa favicon">
+  <defs>
+    <!-- Theme-based gradient using your primary shades -->
+    <linearGradient id="bg" x1="96" y1="64" x2="416" y2="448" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#6366f1"/>
+      <stop offset="1" stop-color="#4338ca"/>
+    </linearGradient>
+
+    <!-- Soft inner sheen for depth (kept subtle for small sizes) -->
+    <linearGradient id="sheet" x1="140" y1="120" x2="372" y2="392" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0.06"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Rounded app-icon background -->
+  <rect x="48" y="48" width="416" height="416" rx="96" fill="url(#bg)"/>
+
+  <!-- Page (subtle, so the S stays dominant) -->
+  <path
+    d="M168 136c0-17.7 14.3-32 32-32h108l68 68v204c0 17.7-14.3 32-32 32H200c-17.7 0-32-14.3-32-32V136z"
+    fill="url(#sheet)"
+  />
+
+  <!-- Dog-ear fold -->
+  <path
+    d="M308 104v64c0 13.3 10.7 24 24 24h64L308 104z"
+    fill="#c7d2fe"
+    fill-opacity="0.95"
+  />
+
+  <!-- Big S as a bold stroke (crisp at favicon sizes) -->
+  <path
+    d="M340 196
+       C340 170 318 152 286 152
+       H238
+       C206 152 184 170 184 196
+       C184 222 206 240 238 240
+       H274
+       C306 240 328 258 328 284
+       C328 310 306 328 274 328
+       H226
+       C194 328 172 310 172 284"
+    fill="none"
+    stroke="#ffffff"
+    stroke-width="44"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+</svg>
