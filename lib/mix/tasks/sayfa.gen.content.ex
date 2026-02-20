@@ -13,6 +13,7 @@ defmodule Mix.Tasks.Sayfa.Gen.Content do
       mix sayfa.gen.content note "Quick Tip"
       mix sayfa.gen.content project "My Project" --tags=elixir,oss --draft
       mix sayfa.gen.content talk "Intro to Elixir" --date=2026-03-15
+      mix sayfa.gen.content post "Hello World" --lang=en,tr
       mix sayfa.gen.content --list
 
   ## Options
@@ -22,8 +23,11 @@ defmodule Mix.Tasks.Sayfa.Gen.Content do
     * `--tags` - Comma-separated tags
     * `--categories` - Comma-separated categories
     * `--draft` - Mark as draft
-    * `--lang` - Language code (for multilingual sites)
+    * `--lang` - Language code or comma-separated codes (e.g., `en` or `en,tr`)
     * `--slug` - Custom slug (default: slugified from title)
+
+  When multiple languages are provided, one file is generated per language
+  with `translations` front matter pre-wired to link them together.
 
   Files are created under `content/{type_directory}/` with appropriate
   front matter based on the content type's required fields.
@@ -86,32 +90,40 @@ defmodule Mix.Tasks.Sayfa.Gen.Content do
     tags = parse_list_option(Keyword.get(opts, :tags))
     categories = parse_list_option(Keyword.get(opts, :categories))
     draft = Keyword.get(opts, :draft, false)
-    lang = Keyword.get(opts, :lang)
+    langs = opts |> Keyword.get(:lang) |> parse_lang_option()
     required = type_mod.required_fields()
     has_date = :date in required
 
-    front_matter = build_front_matter(title, date, tags, categories, draft, has_date, opts)
-    filename = build_filename(slug, date, has_date)
-    path = build_path(type_mod.directory(), filename, lang)
+    default_lang = List.first(langs)
 
-    if File.exists?(path) do
-      Mix.shell().error("File already exists: #{path}")
-      exit({:shutdown, 1})
-    end
+    Enum.each(langs, fn lang ->
+      translations = build_translations(lang, langs, slug)
 
-    content = render_content(front_matter, title)
+      front_matter =
+        build_front_matter(title, date, tags, categories, draft, has_date, lang, translations)
 
-    path |> Path.dirname() |> File.mkdir_p!()
-    File.write!(path, content)
+      filename = build_filename(slug, date, has_date)
+      path_lang = if lang == default_lang, do: nil, else: lang
+      path = build_path(type_mod.directory(), filename, path_lang)
 
-    Mix.shell().info("#{IO.ANSI.green()}Created#{IO.ANSI.reset()} #{path}")
+      if File.exists?(path) do
+        Mix.shell().info("#{IO.ANSI.yellow()}Skipping#{IO.ANSI.reset()} #{path} (already exists)")
+      else
+        content = render_content(front_matter, title)
+
+        path |> Path.dirname() |> File.mkdir_p!()
+        File.write!(path, content)
+
+        Mix.shell().info("#{IO.ANSI.green()}Created#{IO.ANSI.reset()} #{path}")
+      end
+    end)
   end
 
-  defp build_front_matter(title, date, tags, categories, draft, has_date, opts) do
+  defp build_front_matter(title, date, tags, categories, draft, has_date, lang, translations) do
     lines = [~s(title: "#{title}")]
 
     lines =
-      if has_date or Keyword.has_key?(opts, :date) do
+      if has_date do
         lines ++ ["date: #{Date.to_iso8601(date)}"]
       else
         lines
@@ -132,9 +144,21 @@ defmodule Mix.Tasks.Sayfa.Gen.Content do
     lines = if draft, do: lines ++ ["draft: true"], else: lines ++ ["draft: false"]
 
     lines =
-      case Keyword.get(opts, :lang) do
+      case lang do
         nil -> lines
-        lang -> lines ++ ["lang: #{lang}"]
+        l -> lines ++ ["lang: #{l}"]
+      end
+
+    lines =
+      if translations != %{} do
+        translation_lines =
+          translations
+          |> Enum.sort()
+          |> Enum.map(fn {k, v} -> "  #{k}: #{v}" end)
+
+        lines ++ ["translations:"] ++ translation_lines
+      else
+        lines
       end
 
     Enum.join(lines, "\n")
@@ -166,6 +190,17 @@ defmodule Mix.Tasks.Sayfa.Gen.Content do
 
     Write your content here.
     """
+  end
+
+  defp parse_lang_option(nil), do: [nil]
+  defp parse_lang_option(str), do: str |> String.split(",") |> Enum.map(&String.trim/1)
+
+  defp build_translations(_current_lang, langs, _slug) when length(langs) <= 1, do: %{}
+
+  defp build_translations(current_lang, langs, slug) do
+    langs
+    |> Enum.reject(&(&1 == current_lang))
+    |> Map.new(fn lang -> {lang, slug} end)
   end
 
   defp parse_date_option(nil), do: Date.utc_today()

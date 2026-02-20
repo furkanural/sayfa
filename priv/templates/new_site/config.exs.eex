@@ -15,8 +15,16 @@ config :sayfa, :site,
   ],
   # social_links: [
   #   {"GitHub", "https://github.com/yourname"},
-  #   {"X", "https://x.com/yourname"}
+  #   {"X", "https://x.com/yourname"},
+  #   {"Goodreads", "https://goodreads.com/yourname"}
   # ],
   # theme: "custom",  # Uncomment after running: mix sayfa.gen.layout <name>
+  # Generate content: mix sayfa.gen.content post "My Title"
+  # Multilingual:     mix sayfa.gen.content post "My Title" --lang=en,tr
   default_lang: :<%= @default_lang %>,
   languages: [<%= Enum.map_join(@languages, ", ", fn lang -> "#{lang}: [name: \"#{String.capitalize(lang)}\"]" end) %>]
+  # Per-language translations example:
+  # languages: [
+  #   en: [name: "English"],
+  #   tr: [name: "Türkçe", title: "Blogum"]
+  # ]

@@ -42,6 +42,29 @@ Sayfa uses [TailwindCSS](https://tailwindcss.com/) for styling. The TailwindCSS 
 | `mix sayfa.build` | Build the site to `output/` |
 | `mix sayfa.serve` | Start dev server at http://localhost:4000 |
 | `mix sayfa.gen.layout home` | Copy a layout for customization |
+| `mix sayfa.gen.content post "Title"` | Generate a new content file |
+| `mix sayfa.gen.content post "Title" --lang=en,tr` | Generate multilingual content |
+
+## Multilingual
+
+Sayfa supports directory-based multilingual content. Place translated content in language subdirectories:
+
+```
+content/
+  posts/
+    hello-world.md          # Default language
+  tr/
+    posts/
+      hello-world.md        # Turkish translation
+```
+
+Generate multilingual content with `--lang`:
+
+```bash
+mix sayfa.gen.content post "Hello World" --lang=en,tr
+```
+
+This creates files for each language with `translations` front matter pre-wired. Sayfa ships with 14 built-in UI translation files (en, tr, de, es, fr, it, pt, ja, ko, zh, ar, ru, nl, pl).
 
 ## Customizing Layouts
 
