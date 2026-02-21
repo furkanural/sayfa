@@ -78,7 +78,7 @@ Sayfa follows a **two-layer architecture**:
 
 ### Templates & Theming
 - Three-layer template composition (content -> layout -> base)
-- 10 built-in blocks (hero, header, footer, social links, TOC, recent posts, tag cloud, reading time, code copy, language switcher) with platform icons for GitHub, X/Twitter, Mastodon, Goodreads, Email, and RSS
+- 10 built-in blocks (hero, header, footer, social links, TOC, recent posts, tag cloud, reading time, code copy, language switcher) with platform icons for GitHub, X/Twitter, Mastodon, Goodreads, Email, and Feed
 - Theme inheritance (custom -> parent -> default)
 - EEx templates with `@block` helper
 
@@ -92,7 +92,7 @@ Sayfa follows a **two-layer architecture**:
 - Translation function `@t.("key")` in templates
 
 ### SEO & Feeds
-- Atom/RSS feed generation
+- Atom feed generation
 - Sitemap XML
 - Pagefind static search integration
 - SEO meta tags (Open Graph, description)

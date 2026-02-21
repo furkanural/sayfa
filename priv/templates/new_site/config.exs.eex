@@ -17,6 +17,7 @@ config :sayfa, :site,
   #   {"GitHub", "https://github.com/yourname"},
   #   {"X", "https://x.com/yourname"},
   #   {"Goodreads", "https://goodreads.com/yourname"}
+  #   {"Feed", "/feed.xml"}
   # ],
   # theme: "custom",  # Uncomment after running: mix sayfa.gen.layout <name>
   # Generate content: mix sayfa.gen.content post "My Title"

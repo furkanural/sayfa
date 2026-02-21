@@ -77,7 +77,7 @@ Sayfa **iki katmanli bir mimari** kullanir:
 
 ### Sablonlar ve Tema
 - Uc katmanli sablon bilesimi (icerik -> duzen -> temel)
-- 10 yerlesik blok (hero, baslik, altbilgi, sosyal baglantilar, icerik tablosu, son yazilar, etiket bulutu, okuma suresi, kod kopyalama, dil degistirici) ve GitHub, X/Twitter, Mastodon, Goodreads, Email, RSS icin platform ikonlari
+- 10 yerlesik blok (hero, baslik, altbilgi, sosyal baglantilar, icerik tablosu, son yazilar, etiket bulutu, okuma suresi, kod kopyalama, dil degistirici) ve GitHub, X/Twitter, Mastodon, Goodreads, Email, Feed için platform ikonları
 - Tema mirasi (ozel -> ust -> varsayilan)
 - `@block` yardimcisi ile EEx sablonlari
 
@@ -91,7 +91,7 @@ Sayfa **iki katmanli bir mimari** kullanir:
 - Sablonlarda `@t.("anahtar")` ceviri fonksiyonu
 
 ### SEO ve Beslemeler
-- Atom/RSS besleme uretimi
+- Atom besleme üretimi
 - Sitemap XML
 - Pagefind statik arama entegrasyonu
 - SEO meta etiketleri (Open Graph, aciklama)

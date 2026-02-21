@@ -15,7 +15,7 @@ Sayfa is a static site generator built in Elixir. It's designed to be simple, ex
 - **Multiple content types** — Posts, notes, projects, talks, and pages
 - **Markdown with syntax highlighting** — Powered by MDEx (Rust NIF)
 - **Block system** — Reusable template components
-- **RSS/Atom feeds** — Built-in feed generation
+- **Atom feeds** — Built-in feed generation
 - **SEO** — Meta tags, sitemaps, and Open Graph support
 - **i18n** — Multilingual site support
 - **Dev server** — Live reload during development

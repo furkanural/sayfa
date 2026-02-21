@@ -58,7 +58,7 @@ Verify everything passes before making changes.
 Follow [Conventional Commits](https://www.conventionalcommits.org/):
 
 ```
-feat: add RSS feed generation
+feat: add Atom feed generation
 fix: handle empty front matter
 docs: add block usage examples
 refactor: simplify build pipeline

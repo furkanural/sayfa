@@ -25,7 +25,7 @@ Goals: Learn Elixir, create a simple/extensible SSG, ship something usable, allo
 | Front matter | YamlElixir | YAML parsing |
 | Templates | EEx | Built-in Elixir templating |
 | Slugs | Slugify | URL slug generation |
-| XML | XmlBuilder | RSS/Atom feeds, sitemap |
+| XML | XmlBuilder | Atom feeds, sitemap |
 | CSS | tailwind (hex) | Automatic TailwindCSS v4 compilation |
 | Dev server | Plug + Cowboy | Optional dependency |
 | File watching | FileSystem | Optional dependency |
@@ -48,7 +48,7 @@ sayfa/
 │   │   ├── theme.ex                # Theme loading & inheritance
 │   │   ├── block.ex                # Block registry (name → module lookup)
 │   │   ├── tailwind.ex              # TailwindCSS compilation
-│   │   ├── feed.ex                 # RSS/Atom generation
+│   │   ├── feed.ex                 # Atom feed generation
 │   │   ├── sitemap.ex              # Sitemap generation
 │   │   ├── seo.ex                  # SEO meta tags
 │   │   ├── pagination.ex           # Pagination support
@@ -327,7 +327,7 @@ From `mix.exs`:
 {:mdex, "~> 0.2"},                                      # Markdown (Rust NIF)
 {:yaml_elixir, "~> 2.9"},                               # YAML front matter
 {:slugify, "~> 1.3"},                                   # URL slugs
-{:xml_builder, "~> 2.2"},                               # RSS/Sitemap XML
+{:xml_builder, "~> 2.2"},                               # Atom/Sitemap XML
 
 # Optional
 {:plug_cowboy, "~> 2.7", optional: true},               # Dev server
