@@ -698,16 +698,17 @@ defmodule Sayfa.BlockTest do
   end
 
   describe "CodeCopy" do
-    test "renders script tag" do
+    test "renders config div with data attributes" do
       html = CodeCopy.render(%{})
-      assert html =~ "<script>"
-      assert html =~ "clipboard"
-      assert html =~ "pre code"
+      assert html =~ ~s(id="sayfa-code-copy")
+      assert html =~ ~s(data-selector="pre code")
+      assert html =~ "hidden"
+      refute html =~ "<script>"
     end
 
     test "uses custom selector" do
       html = CodeCopy.render(%{selector: ".highlight code"})
-      assert html =~ ".highlight code"
+      assert html =~ ~s(data-selector=".highlight code")
     end
   end
 
@@ -911,18 +912,18 @@ defmodule Sayfa.BlockTest do
       assert html =~ ~s(role="dialog")
       assert html =~ ~s(aria-modal="true")
       assert html =~ ~s(id="search-backdrop")
-      assert html =~ ~s(id="search-close")
+      assert html =~ ~s(id="search-esc")
+      assert html =~ ~s(id="search-footer")
       assert html =~ ~s(<div id="search")
-      assert html =~ ~s(showSubResults:true)
-      assert html =~ ~s(showImages:true)
-      assert html =~ ~s(pagefind-ui.js)
-      assert html =~ ~s(pagefind-ui.css)
+      assert html =~ ~s(data-show-sub-results="true")
+      assert html =~ ~s(data-show-images="true")
+      refute html =~ "<script>"
     end
 
     test "renders with custom options" do
       html = Search.render(%{show_sub_results: false, show_images: false})
-      assert html =~ ~s(showSubResults:false)
-      assert html =~ ~s(showImages:false)
+      assert html =~ ~s(data-show-sub-results="false")
+      assert html =~ ~s(data-show-images="false")
     end
 
     test "uses translation function for labels" do
@@ -935,22 +936,8 @@ defmodule Sayfa.BlockTest do
 
       html = Search.render(%{t: t})
       assert html =~ "Ara"
-      assert html =~ "Ara..."
-      assert html =~ "Sonuç bulunamadı"
-    end
-
-    test "keyboard shortcut script included" do
-      html = Search.render(%{})
-      assert html =~ "metaKey"
-      assert html =~ "ctrlKey"
-      assert html =~ ~s(e.key==='k')
-    end
-
-    test "lazy-loads pagefind assets" do
-      html = Search.render(%{})
-      assert html =~ "createElement('link')"
-      assert html =~ "createElement('script')"
-      refute html =~ ~s(<link href="/pagefind/)
+      assert html =~ ~s(data-placeholder="Ara...")
+      assert html =~ ~s(data-no-results="Sonuç bulunamadı")
     end
 
     test "render_trigger returns search button" do

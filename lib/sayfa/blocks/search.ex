@@ -35,26 +35,20 @@ defmodule Sayfa.Blocks.Search do
     search_no_results = Block.escape_html(t.("search_no_results"))
 
     """
-    <div id="search-modal" class="fixed inset-0 z-[100] hidden" role="dialog" aria-modal="true" aria-label="#{search_label}" aria-hidden="true">\
-      <div id="search-backdrop" class="absolute inset-0 bg-black/50 backdrop-blur-md"></div>\
-      <div class="relative flex items-start justify-center pt-[15vh] px-4">\
-        <div id="search-container" class="search-modal-container w-full max-w-xl bg-white dark:bg-slate-800 rounded-xl shadow-2xl ring-1 ring-slate-200 dark:ring-slate-700 flex flex-col max-h-[70vh]">\
-          <div class="flex items-center justify-between px-4 pt-3 pb-1 flex-shrink-0">\
-            <div class="flex items-center gap-2">\
-              <span class="text-sm font-medium text-slate-500 dark:text-slate-400">#{search_label}</span>\
-              <kbd class="hidden md:inline-flex items-center gap-0.5 text-[10px] font-medium font-mono text-slate-400 dark:text-slate-500 border border-slate-200 dark:border-slate-700 rounded px-1.5 py-0.5">Esc</kbd>\
-            </div>\
-            <button id="search-close" class="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg" aria-label="Close">\
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M6 18 18 6M6 6l12 12"/></svg>\
-            </button>\
+    <div id="search-modal" class="fixed inset-0 z-100 hidden" role="dialog" aria-modal="true" aria-label="#{search_label}" aria-hidden="true" data-show-sub-results="#{show_sub_results}" data-show-images="#{show_images}" data-placeholder="#{search_placeholder}" data-no-results="#{search_no_results}">\
+      <div id="search-backdrop" class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>\
+      <div class="relative flex items-start justify-center pt-[12vh] px-4">\
+        <div id="search-container" class="search-modal-container relative w-full max-w-lg bg-white dark:bg-slate-900 rounded-xl shadow-2xl ring-1 ring-slate-900/10 dark:ring-slate-100/10 flex flex-col max-h-[70vh]">\
+          <div id="search" class="overflow-y-auto flex-1 min-h-0"></div>\
+          <kbd id="search-esc" class="hidden md:inline-flex items-center absolute top-[1.1rem] right-4 z-10 search-kbd">Esc</kbd>\
+          <div id="search-footer" class="flex items-center gap-3 border-t border-slate-200 dark:border-slate-800 px-4 py-2.5 text-xs text-slate-400 dark:text-slate-500 shrink-0">\
+            <span class="flex items-center gap-1"><kbd class="search-kbd">↵</kbd> select</span>\
+            <span class="flex items-center gap-1"><kbd class="search-kbd">↑↓</kbd> navigate</span>\
+            <span class="flex items-center gap-1"><kbd class="search-kbd">esc</kbd> close</span>\
           </div>\
-          <div id="search" class="px-4 pb-4 overflow-y-auto flex-1 min-h-0"></div>\
         </div>\
       </div>\
     </div>\
-    <script>\
-    (function(){var modal=document.getElementById('search-modal'),loaded=false;function open(){if(!loaded){loaded=true;var l=document.createElement('link');l.rel='stylesheet';l.href='/pagefind/pagefind-ui.css';document.head.appendChild(l);var s=document.createElement('script');s.src='/pagefind/pagefind-ui.js';s.onload=function(){try{new PagefindUI({element:'#search',showSubResults:#{show_sub_results},showImages:#{show_images},translations:{placeholder:'#{search_placeholder}',zero_results:'#{search_no_results}'}})}catch(e){document.getElementById('search').innerHTML='<p class=\"p-4 text-sm text-slate-500\">Search is not available.</p>'}var inp=document.querySelector('#search .pagefind-ui__search-input');if(inp){inp.id='search-input';inp.name='search'}setTimeout(function(){var i=modal.querySelector('.pagefind-ui__search-input');if(i)i.focus()},100)};s.onerror=function(){document.getElementById('search').innerHTML='<p class=\"p-4 text-sm text-slate-500\">Search is not available.</p>'};document.head.appendChild(s)}else{setTimeout(function(){var i=modal.querySelector('.pagefind-ui__search-input');if(i){i.focus();i.select()}},50)}modal.classList.remove('hidden');modal.setAttribute('aria-hidden','false');document.body.style.overflow='hidden'}function close(){modal.classList.add('hidden');modal.setAttribute('aria-hidden','true');document.body.style.overflow='';var t=document.getElementById('search-trigger');if(t)t.focus()}document.addEventListener('click',function(e){if(e.target&&e.target.id==='search-trigger'||e.target.closest&&e.target.closest('#search-trigger'))open();if(e.target&&e.target.id==='search-backdrop')close();if(e.target&&(e.target.id==='search-close'||e.target.closest&&e.target.closest('#search-close')))close()});document.addEventListener('keydown',function(e){if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();if(modal.classList.contains('hidden'))open();else close()}if(e.key==='Escape'&&!modal.classList.contains('hidden')){e.stopPropagation();close()}})})()\
-    </script>\
     """
   end
 

@@ -131,21 +131,14 @@ defmodule Sayfa.Blocks.LanguageSwitcher do
     globe_svg =
       ~s(<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>)
 
-    toggle_js =
-      "(function(e){e.stopPropagation();var m=document.getElementById('lang-menu'),b=document.getElementById('lang-toggle'),v=m.classList.contains('hidden');m.classList.toggle('hidden');b.setAttribute('aria-expanded',!v)})(event)"
-
-    close_js =
-      "document.addEventListener('click',function(e){var s=document.getElementById('lang-switcher');if(s&&!s.contains(e.target)){document.getElementById('lang-menu').classList.add('hidden');document.getElementById('lang-toggle').setAttribute('aria-expanded','false')}})"
-
     ~s(<div class="relative" id="lang-switcher">) <>
-      ~s(<button id="lang-toggle" onclick="#{toggle_js}" class="flex items-center gap-1.5 p-2 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100" aria-expanded="false" aria-haspopup="listbox" aria-label="Language">) <>
+      ~s(<button id="lang-toggle" class="flex items-center gap-1.5 p-2 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100" aria-expanded="false" aria-haspopup="listbox" aria-label="Language">) <>
       globe_svg <>
       ~s(<span class="text-xs font-medium">#{current_code}</span>) <>
       ~s(</button>) <>
       ~s(<div id="lang-menu" class="hidden absolute right-0 mt-1 min-w-[8rem] py-1 rounded-lg border border-slate-200/80 dark:border-slate-700 bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg shadow-lg" role="listbox" aria-label="Language">) <>
       dropdown_items <>
       ~s(</div>) <>
-      ~s(<script>#{close_js}</script>) <>
       ~s(</div>)
   end
 

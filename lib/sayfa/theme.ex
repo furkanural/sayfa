@@ -154,14 +154,32 @@ defmodule Sayfa.Theme do
     |> Path.wildcard()
     |> Enum.each(fn src_path ->
       relative = Path.relative_to(src_path, source)
-      dest_path = Path.join(dest, relative)
-
-      if File.dir?(src_path) do
-        File.mkdir_p!(dest_path)
-      else
-        File.mkdir_p!(Path.dirname(dest_path))
-        File.cp!(src_path, dest_path)
-      end
+      copy_asset_file(src_path, relative, dest)
     end)
+  end
+
+  defp copy_asset_file(src_path, relative, dest) when is_binary(src_path) do
+    cond do
+      File.dir?(src_path) ->
+        File.mkdir_p!(Path.join(dest, relative))
+
+      String.ends_with?(src_path, ".min.js") ->
+        # Copy .min.js as the original .js filename
+        dest_relative = String.replace_suffix(relative, ".min.js", ".js")
+        copy_file!(src_path, Path.join(dest, dest_relative))
+
+      String.ends_with?(src_path, ".js") &&
+          File.exists?(String.replace_suffix(src_path, ".js", ".min.js")) ->
+        # Skip .js when a .min.js variant exists alongside it
+        :skip
+
+      true ->
+        copy_file!(src_path, Path.join(dest, relative))
+    end
+  end
+
+  defp copy_file!(src_path, dest_path) do
+    File.mkdir_p!(Path.dirname(dest_path))
+    File.cp!(src_path, dest_path)
   end
 end
