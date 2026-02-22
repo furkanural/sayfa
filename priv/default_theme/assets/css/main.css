@@ -236,6 +236,141 @@ button { cursor: pointer; }
   transition: width 0.1s linear;
 }
 
+/* Focus indicators */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  #reading-progress { transition: none; }
+  html { scroll-behavior: auto !important; }
+}
+
+/* Search modal animation */
+@keyframes search-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes search-scale-in {
+  from { opacity: 0; transform: scale(0.96) translateY(-8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+#search-modal:not(.hidden) #search-backdrop {
+  animation: search-fade-in 0.15s ease-out;
+}
+#search-modal:not(.hidden) .search-modal-container {
+  animation: search-scale-in 0.15s ease-out;
+}
+
+/* Pagefind search UI overrides */
+#search {
+  --pagefind-ui-border-width: 1px;
+  --pagefind-ui-border: #e2e8f0;
+  --pagefind-ui-border-radius: 0.5rem;
+  --pagefind-ui-scale: 0.85;
+  --pagefind-ui-primary: #4f46e5;
+}
+#search .pagefind-ui__search-input {
+  font-family: var(--font-sans);
+  border-radius: 0.5rem;
+  border-color: #e2e8f0;
+  font-size: 0.9375rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+#search .pagefind-ui__search-input:focus {
+  border-color: var(--color-primary);
+  outline: none;
+  box-shadow: 0 0 0 3px var(--color-primary-100);
+}
+#search .pagefind-ui__search-clear {
+  background-color: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.375rem;
+  font-size: 0.8125rem;
+  font-family: var(--font-sans);
+  color: #64748b;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+#search .pagefind-ui__search-clear:hover {
+  background-color: #e2e8f0;
+  color: #334155;
+}
+#search .pagefind-ui__result {
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  transition: background-color 0.15s ease;
+}
+#search .pagefind-ui__result:hover {
+  background-color: #f8fafc;
+}
+#search .pagefind-ui__result-link {
+  color: var(--color-primary);
+  font-weight: 500;
+}
+#search .pagefind-ui__result-link:hover {
+  color: var(--color-primary-dark);
+}
+#search .pagefind-ui__result-excerpt {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: #64748b;
+}
+#search .pagefind-ui__button {
+  font-family: var(--font-sans);
+  border-radius: 0.5rem;
+  font-weight: 500;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+@media (prefers-color-scheme: dark) {
+  #search {
+    --pagefind-ui-border: #334155;
+    --pagefind-ui-background: #1e293b;
+  }
+  #search .pagefind-ui__search-input {
+    background: #1e293b;
+    border-color: #334155;
+    color: #f1f5f9;
+  }
+  #search .pagefind-ui__search-input:focus {
+    border-color: var(--color-primary-400);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+  }
+  #search .pagefind-ui__search-clear {
+    background-color: #334155;
+    border-color: #475569;
+    color: #94a3b8;
+  }
+  #search .pagefind-ui__search-clear:hover {
+    background-color: #475569;
+    color: #e2e8f0;
+  }
+  #search .pagefind-ui__result:hover {
+    background-color: #1e293b;
+  }
+  #search .pagefind-ui__result-link {
+    color: var(--color-primary-400);
+  }
+  #search .pagefind-ui__result-excerpt {
+    color: #94a3b8;
+  }
+  #search .pagefind-ui__button {
+    background: #334155;
+    color: #e2e8f0;
+  }
+  #search .pagefind-ui__button:hover {
+    background: #475569;
+  }
+}
+
 /* ToC active state */
 .toc-active {
   border-left-color: var(--color-primary) !important;
