@@ -78,7 +78,7 @@ Sayfa follows a **two-layer architecture**:
 
 ### Templates & Theming
 - Three-layer template composition (content -> layout -> base)
-- 16 built-in blocks (hero, header, footer, social links, TOC, recent posts, tag cloud, category cloud, reading time, code copy, copy link, breadcrumb, recent content, search, language switcher, related posts) with 24 platform icons including GitHub, X/Twitter, Mastodon, LinkedIn, Bluesky, YouTube, Instagram, and more
+- 15 built-in blocks (hero, header, footer, social links, TOC, recent posts, tag cloud, category cloud, reading time, code copy, copy link, breadcrumb, recent content, language switcher, related posts) with 24 platform icons including GitHub, X/Twitter, Mastodon, LinkedIn, Bluesky, YouTube, Instagram, and more
 - Theme inheritance (custom -> parent -> default)
 - EEx templates with `@block` helper
 
@@ -94,7 +94,6 @@ Sayfa follows a **two-layer architecture**:
 ### SEO & Feeds
 - Atom feed generation
 - Sitemap XML
-- Pagefind static search integration
 - SEO meta tags (Open Graph, description)
 
 ### Developer Experience
@@ -110,7 +109,7 @@ Sayfa follows a **two-layer architecture**:
 
 | Requirement | Version | Notes |
 |-------------|---------|-------|
-| Elixir | ~> 1.18 | OTP 27+ |
+| Elixir | 1.19.5+ | OTP 27+ |
 | Rust | Latest stable | Required for MDEx NIF compilation |
 
 Rust is a **hard requirement** — MDEx compiles a native extension for fast markdown parsing.
@@ -258,7 +257,8 @@ Resolution order:
 | Layout | Used For | Typical Blocks |
 |--------|----------|----------------|
 | `home.html.eex` | Homepage | hero, recent_posts, tag_cloud |
-| `post.html.eex` | Single post/note | reading_time, toc, social_links |
+| `post.html.eex` | Single post | reading_time, toc, social_links |
+| `note.html.eex` | Single note | reading_time, copy_link |
 | `page.html.eex` | Static pages | content only |
 | `list.html.eex` | Content listings | pagination |
 | `base.html.eex` | HTML wrapper | header, footer |
@@ -546,6 +546,9 @@ config :sayfa, :site,
 | `languages` | Keyword | `[en: [name: "English"]]` | Available languages |
 | `theme` | String | `"default"` | Active theme name |
 | `theme_parent` | String | `"default"` | Parent theme for inheritance |
+| `static_dir` | String | `"static"` | Directory for static assets |
+| `tailwind_version` | String | `"4.1.12"` | TailwindCSS version to use |
+| `social_links` | Map | `%{}` | Social media links (github, twitter, etc.) |
 | `port` | Integer | `4000` | Dev server port |
 | `verbose` | Boolean | `false` | Verbose build logging |
 

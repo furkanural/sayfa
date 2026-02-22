@@ -61,7 +61,7 @@ sayfa/
 │   │   │   ├── hook.ex             # Hook behaviour
 │   │   │   └── content_type.ex     # Content type behaviour
 │   │   │
-│   │   ├── blocks/                 # Built-in blocks (reusable EEx components)
+│   │   ├── blocks/                 # Built-in blocks (15 total)
 │   │   │   ├── hero.ex
 │   │   │   ├── header.ex
 │   │   │   ├── footer.ex
@@ -69,12 +69,14 @@ sayfa/
 │   │   │   ├── toc.ex
 │   │   │   ├── recent_posts.ex
 │   │   │   ├── tag_cloud.ex
+│   │   │   ├── category_cloud.ex
 │   │   │   ├── reading_time.ex
 │   │   │   ├── code_copy.ex
 │   │   │   ├── recent_content.ex
 │   │   │   ├── copy_link.ex
 │   │   │   ├── breadcrumb.ex
-│   │   │   └── language_switcher.ex
+│   │   │   ├── language_switcher.ex
+│   │   │   └── related_posts.ex
 │   │   │
 │   │   ├── content_types/          # Built-in content types
 │   │   │   ├── post.ex

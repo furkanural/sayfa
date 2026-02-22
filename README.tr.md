@@ -77,7 +77,7 @@ Sayfa **iki katmanli bir mimari** kullanir:
 
 ### Sablonlar ve Tema
 - Uc katmanli sablon bilesimi (icerik -> duzen -> temel)
-- 16 yerlesik blok (hero, baslik, altbilgi, sosyal baglantilar, icerik tablosu, son yazilar, etiket bulutu, kategori bulutu, okuma suresi, kod kopyalama, baglanti kopyalama, breadcrumb, son icerikler, arama, dil degistirici, ilgili yazilar) ve 24 platform ikonu (GitHub, X/Twitter, Mastodon, LinkedIn, Bluesky, YouTube, Instagram ve daha fazlasi)
+- 15 yerlesik blok (hero, baslik, altbilgi, sosyal baglantilar, icerik tablosu, son yazilar, etiket bulutu, kategori bulutu, okuma suresi, kod kopyalama, baglanti kopyalama, breadcrumb, son icerikler, dil degistirici, ilgili yazilar) ve 24 platform ikonu (GitHub, X/Twitter, Mastodon, LinkedIn, Bluesky, YouTube, Instagram ve daha fazlasi)
 - Tema mirasi (ozel -> ust -> varsayilan)
 - `@block` yardimcisi ile EEx sablonlari
 
@@ -93,7 +93,6 @@ Sayfa **iki katmanli bir mimari** kullanir:
 ### SEO ve Beslemeler
 - Atom besleme üretimi
 - Sitemap XML
-- Pagefind statik arama entegrasyonu
 - SEO meta etiketleri (Open Graph, aciklama)
 
 ### Gelistirici Deneyimi
@@ -109,7 +108,7 @@ Sayfa **iki katmanli bir mimari** kullanir:
 
 | Gereksinim | Surum | Notlar |
 |------------|-------|--------|
-| Elixir | ~> 1.18 | OTP 27+ |
+| Elixir | 1.19.5+ | OTP 27+ |
 | Rust | En son kararli | MDEx NIF derlemesi icin gerekli |
 
 Rust **zorunlu bir gereksinimdir** — MDEx hizli Markdown ayristirma icin yerel bir uzanti derler.
@@ -257,7 +256,8 @@ Cozumleme sirasi:
 | Duzen | Kullanim | Tipik Bloklar |
 |-------|----------|---------------|
 | `home.html.eex` | Ana sayfa | hero, recent_posts, tag_cloud |
-| `post.html.eex` | Tekil yazi/not | reading_time, toc, social_links |
+| `post.html.eex` | Tekil yazi | reading_time, toc, social_links |
+| `note.html.eex` | Tekil not | reading_time, copy_link |
 | `page.html.eex` | Statik sayfalar | yalnizca icerik |
 | `list.html.eex` | Icerik listeleri | sayfalama |
 | `base.html.eex` | HTML sarmalayici | header, footer |
@@ -532,6 +532,9 @@ config :sayfa, :site,
 | `languages` | Keyword | `[en: [name: "English"]]` | Kullanilabilir diller |
 | `theme` | String | `"default"` | Aktif tema adi |
 | `theme_parent` | String | `"default"` | Miras icin ust tema |
+| `static_dir` | String | `"static"` | Statik varliklar dizini |
+| `tailwind_version` | String | `"4.1.12"` | Kullanilacak TailwindCSS surumu |
+| `social_links` | Map | `%{}` | Sosyal medya baglantilari (github, twitter, vb.) |
 | `port` | Integer | `4000` | Gelistirme sunucusu portu |
 | `verbose` | Boolean | `false` | Ayrintili derleme loglama |
 
