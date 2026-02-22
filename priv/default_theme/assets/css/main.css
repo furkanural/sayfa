@@ -156,6 +156,73 @@
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 }
 
+/* Component classes */
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center gap-1.5 px-4 py-2.5 rounded-lg border border-primary bg-primary/5 text-primary hover:bg-primary/10 transition-colors;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center gap-1.5 px-4 py-2.5 rounded-lg border border-slate-200/70 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-primary/30 transition-colors;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center gap-1.5 text-slate-400 dark:text-slate-500 hover:text-primary dark:hover:text-primary-400 transition-colors;
+  }
+
+  /* Content width containers */
+  .container-content {
+    @apply max-w-2xl xl:max-w-3xl mx-auto px-5 sm:px-6 xl:px-8;
+  }
+
+  .container-content-narrow {
+    @apply max-w-2xl mx-auto px-5 sm:px-6;
+  }
+
+  .container-content-wide {
+    @apply max-w-5xl xl:max-w-6xl mx-auto px-5 sm:px-6 xl:px-8;
+  }
+
+  /* Vertical spacing utilities */
+  .section-spacing {
+    @apply pb-16;
+  }
+
+  .section-spacing-sm {
+    @apply pb-12;
+  }
+
+  .section-spacing-lg {
+    @apply pb-20;
+  }
+
+  /* Page wrapper with vertical padding */
+  .page-wrapper {
+    @apply py-12 sm:py-16;
+  }
+
+  /* Prose content styling for markdown */
+  .prose-content {
+    @apply prose prose-slate dark:prose-invert
+           prose-headings:font-bold
+           prose-a:text-primary dark:prose-a:text-primary-400
+           prose-a:decoration-primary/30 hover:prose-a:decoration-primary
+           prose-img:rounded-lg prose-img:shadow-sm prose-img:mx-auto
+           max-w-none;
+  }
+
+  .prose-code {
+    @apply prose-code:before:content-none prose-code:after:content-none
+           prose-code:font-mono prose-code:text-sm
+           prose-code:bg-slate-100 prose-code:dark:bg-slate-800
+           prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded;
+  }
+
+  .prose-toc {
+    @apply prose-headings:scroll-mt-20;
+  }
+}
+
 /* Scrollbar */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
@@ -262,4 +329,9 @@ button { cursor: pointer; }
 }
 @media (prefers-color-scheme: dark) {
   .toc-active { color: var(--color-primary-400) !important; }
+}
+
+/* Language switcher dropdown chevron */
+#lang-toggle[aria-expanded="true"] svg:last-child {
+  transform: rotate(180deg);
 }
