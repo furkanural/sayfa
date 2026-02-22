@@ -77,13 +77,13 @@ defmodule Sayfa.Blocks.CategoryCloud do
     ratio = count / max_count
 
     if ratio > 0.6 do
-      "text-sm font-medium bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/40"
+      "text-sm font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/20 dark:text-amber-300 hover:bg-amber-200 dark:hover:bg-amber-900/40"
     else
-      "text-xs font-medium bg-amber-50/50 text-amber-600 dark:bg-amber-900/10 dark:text-amber-400/80 hover:bg-amber-50 hover:text-amber-700 dark:hover:bg-amber-900/20 dark:hover:text-amber-400"
+      "text-xs font-medium bg-amber-100 text-amber-700 dark:bg-amber-900/10 dark:text-amber-300/80 hover:bg-amber-100 hover:text-amber-800 dark:hover:bg-amber-900/20 dark:hover:text-amber-300"
     end
   end
 
   defp size_classes(_, _),
     do:
-      "text-xs font-medium bg-amber-50/50 text-amber-600 dark:bg-amber-900/10 dark:text-amber-400/80 hover:bg-amber-50 hover:text-amber-700 dark:hover:bg-amber-900/20 dark:hover:text-amber-400"
+      "text-xs font-medium bg-amber-100 text-amber-700 dark:bg-amber-900/10 dark:text-amber-300/80 hover:bg-amber-100 hover:text-amber-800 dark:hover:bg-amber-900/20 dark:hover:text-amber-300"
 end

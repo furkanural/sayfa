@@ -53,7 +53,7 @@ defmodule Sayfa.Blocks.RecentContent do
     if sections == [] and featured_html == "" do
       ""
     else
-      "#{featured_html}<div class=\"max-w-2xl mx-auto px-5 sm:px-6 pb-16\">\n  <div class=\"space-y-12\">\n#{Enum.join(sections, "\n")}\n  </div>\n</div>"
+      "#{featured_html}<div class=\"container-content section-spacing\">\n  <div class=\"space-y-12\">\n#{Enum.join(sections, "\n")}\n  </div>\n</div>"
     end
   end
 
@@ -104,7 +104,7 @@ defmodule Sayfa.Blocks.RecentContent do
       end
 
     """
-    <section class="max-w-2xl mx-auto px-5 sm:px-6 pb-14">
+    <section class="container-content section-spacing">
       <a href="#{url}" class="featured-accent group block pl-5 py-4">
         <span class="inline-flex items-center gap-1.5 text-xs font-medium text-primary dark:text-primary-400 uppercase tracking-wide mb-2">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg> #{Block.escape_html(t.("featured"))}

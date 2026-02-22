@@ -40,6 +40,6 @@ defmodule Sayfa.Blocks.SocialLinks do
     escaped_url = Block.escape_html(url)
     rel = Block.social_rel(label)
 
-    "<a href=\"#{escaped_url}\" rel=\"#{rel}\" class=\"inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-slate-200/70 dark:border-slate-800 text-sm text-slate-600 dark:text-slate-300 hover:border-primary/30 hover:text-primary dark:hover:border-primary-700/40 dark:hover:text-primary-400 bg-slate-50 dark:bg-slate-800/50\">#{icon} #{escaped_label}</a>"
+    "<a href=\"#{escaped_url}\" rel=\"#{rel}\" class=\"btn-secondary gap-2 text-sm text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary-400 bg-slate-50 dark:bg-slate-800/50\">#{icon} #{escaped_label}</a>"
   end
 end

@@ -36,10 +36,8 @@ defmodule Sayfa.Blocks.Hero do
       end
 
     """
-    <section class="max-w-2xl mx-auto px-5 sm:px-6 pt-14 sm:pt-20 pb-10">\
-      <h1 class="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-slate-50">#{title}</h1>\
-      #{subtitle_html}\
-    </section>\
+    <h1 class="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-slate-50">#{title}</h1>\
+    #{subtitle_html}\
     """
   end
 end

@@ -56,7 +56,7 @@ defmodule Sayfa.Blocks.RecentPosts do
         end
 
       """
-      <section class="max-w-2xl mx-auto px-5 sm:px-6 pb-16">\
+      <section class="container-content section-spacing">\
         <div class="flex items-center justify-between mb-6">\
           <h2 class="text-lg sm:text-xl font-semibold text-slate-900 dark:text-slate-50">#{Block.escape_html(t.("recent_posts"))}</h2>\
           #{view_all_html}\
@@ -75,7 +75,7 @@ defmodule Sayfa.Blocks.RecentPosts do
 
     date_html =
       if post.date do
-        "<time class=\"shrink-0 text-sm tabular-nums text-slate-400 dark:text-slate-500 w-[5.5rem]\">#{Sayfa.DateFormat.format(post.date, lang || :en, site)}</time>"
+        "<time class=\"shrink-0 text-sm tabular-nums text-slate-500 dark:text-slate-400 w-[5.5rem]\">#{Sayfa.DateFormat.format(post.date, lang || :en, site)}</time>"
       else
         ""
       end
