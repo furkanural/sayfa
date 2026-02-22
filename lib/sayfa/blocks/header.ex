@@ -30,7 +30,10 @@ defmodule Sayfa.Blocks.Header do
     site_title = Block.escape_html(Map.get(site, :title, ""))
     nav = Map.get(assigns, :nav, [])
     page_url = Map.get(assigns, :page_url)
-    lang_switcher = LanguageSwitcher.render(assigns)
+
+    # Generate desktop and mobile language switchers with unique IDs
+    lang_switcher_desktop = LanguageSwitcher.render(Map.put(assigns, :variant, :desktop))
+    lang_switcher_mobile = LanguageSwitcher.render(Map.put(assigns, :variant, :mobile))
 
     lang = Map.get(assigns, :lang)
     default_lang = Map.get(site, :default_lang, :en)
@@ -38,7 +41,7 @@ defmodule Sayfa.Blocks.Header do
     home_url = if lang_prefix == "", do: "/", else: "#{lang_prefix}/"
 
     nav = prefix_nav_urls(nav, lang_prefix)
-    nav_html = render_nav(nav, lang_switcher, page_url)
+    nav_html = render_nav(nav, lang_switcher_desktop, lang_switcher_mobile, page_url)
 
     """
     <header class="sticky top-0 z-50 border-b border-slate-200/80 dark:border-slate-800 bg-white/85 dark:bg-slate-900/85 backdrop-blur-lg">\
@@ -64,15 +67,15 @@ defmodule Sayfa.Blocks.Header do
     end)
   end
 
-  defp render_nav([], "", _page_url), do: ""
+  defp render_nav([], "", "", _page_url), do: ""
 
-  defp render_nav([], lang_switcher, _page_url) do
+  defp render_nav([], lang_switcher_desktop, _lang_switcher_mobile, _page_url) do
     """
-          <div class="flex items-center">#{lang_switcher}</div>\
+          <div class="flex items-center">#{lang_switcher_desktop}</div>\
     """
   end
 
-  defp render_nav(nav, lang_switcher, page_url) do
+  defp render_nav(nav, lang_switcher_desktop, lang_switcher_mobile, page_url) do
     desktop_items =
       Enum.map_join(nav, "", fn {label, url} ->
         classes =
@@ -99,8 +102,8 @@ defmodule Sayfa.Blocks.Header do
 
     """
           <div class="flex items-center gap-2">\
-            <nav class="hidden md:flex items-center gap-7">#{desktop_items}</nav>\
-    #{lang_switcher}\
+            <nav class="hidden md:flex items-center gap-7">#{desktop_items}#{lang_switcher_desktop}</nav>\
+    #{if lang_switcher_mobile != "", do: "<div class=\"md:hidden\">#{lang_switcher_mobile}</div>", else: ""}\
             <button id="menu-toggle" class="md:hidden p-2 -mr-2 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100" aria-label="Toggle menu" aria-expanded="false" aria-controls="mobile-menu">\
               <svg class="w-5 h-5 menu-open" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true"><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/></svg>\
               <svg class="w-5 h-5 menu-close hidden" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>\

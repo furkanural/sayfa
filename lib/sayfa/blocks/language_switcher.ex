@@ -13,10 +13,13 @@ defmodule Sayfa.Blocks.LanguageSwitcher do
   - `:content` — current `Sayfa.Content` struct (nil on list/home pages)
   - `:lang` — current language atom
   - `:page_url` — current page URL (for list pages)
+  - `:variant` — optional atom (`:desktop`, `:mobile`, or `:default`) for unique IDs (default: `:default`)
 
   ## Examples
 
       <%= @block.(:language_switcher, []) %>
+      <%= @block.(:language_switcher, variant: :desktop) %>
+      <%= @block.(:language_switcher, variant: :mobile) %>
 
   """
 
@@ -37,9 +40,10 @@ defmodule Sayfa.Blocks.LanguageSwitcher do
     else
       content = Map.get(assigns, :content)
       current_lang = Map.get(assigns, :lang, Map.get(site, :default_lang, :en))
+      variant = Map.get(assigns, :variant, :default)
 
       alternates = build_alternates(content, assigns, languages, current_lang, site)
-      render_switcher(alternates, current_lang, languages)
+      render_switcher(alternates, current_lang, languages, variant)
     end
   end
 
@@ -101,11 +105,11 @@ defmodule Sayfa.Blocks.LanguageSwitcher do
     end
   end
 
-  defp render_switcher(alternates, _current_lang, _languages)
+  defp render_switcher(alternates, _current_lang, _languages, _variant)
        when map_size(alternates) <= 1,
        do: ""
 
-  defp render_switcher(alternates, current_lang, languages) do
+  defp render_switcher(alternates, current_lang, languages, variant) do
     items =
       languages
       |> Keyword.keys()
@@ -120,23 +124,33 @@ defmodule Sayfa.Blocks.LanguageSwitcher do
     if length(items) <= 1 do
       ""
     else
-      render_dropdown(items, current_lang)
+      render_dropdown(items, current_lang, variant)
     end
   end
 
-  defp render_dropdown(items, current_lang) do
+  defp render_dropdown(items, current_lang, variant) do
     current_code = current_lang |> to_string() |> String.upcase()
     dropdown_items = Enum.map_join(items, "", &render_dropdown_item(&1, current_lang))
 
-    globe_svg =
-      ~s(<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>)
+    # Generate unique IDs based on variant
+    id_suffix = if variant == :default, do: "", else: "-#{variant}"
+    switcher_id = "lang-switcher#{id_suffix}"
+    toggle_id = "lang-toggle#{id_suffix}"
+    menu_id = "lang-menu#{id_suffix}"
 
-    ~s(<div class="relative" id="lang-switcher">) <>
-      ~s(<button id="lang-toggle" class="flex items-center gap-1.5 p-2 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100" aria-expanded="false" aria-haspopup="listbox" aria-label="Language">) <>
+    globe_svg =
+      ~s(<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>)
+
+    chevron_svg =
+      ~s(<svg class="w-3 h-3 transition-transform" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>)
+
+    ~s(<div class="relative" id="#{switcher_id}">) <>
+      ~s(<button id="#{toggle_id}" class="flex items-center gap-1.5 p-2 text-sm text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors" aria-expanded="false" aria-haspopup="listbox" aria-label="Language">) <>
       globe_svg <>
       ~s(<span class="text-xs font-medium">#{current_code}</span>) <>
+      chevron_svg <>
       ~s(</button>) <>
-      ~s(<div id="lang-menu" class="hidden absolute right-0 mt-1 min-w-[8rem] py-1 rounded-lg border border-slate-200/80 dark:border-slate-700 bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg shadow-lg" role="listbox" aria-label="Language">) <>
+      ~s(<div id="#{menu_id}" class="hidden absolute right-0 mt-1 min-w-[8rem] py-1 rounded-lg border border-slate-200/80 dark:border-slate-700 bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg shadow-lg" role="listbox" aria-label="Language">) <>
       dropdown_items <>
       ~s(</div>) <>
       ~s(</div>)
