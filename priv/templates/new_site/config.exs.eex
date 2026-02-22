@@ -16,7 +16,11 @@ config :sayfa, :site,
   # social_links: [
   #   {"GitHub", "https://github.com/yourname"},
   #   {"X", "https://x.com/yourname"},
-  #   {"Goodreads", "https://goodreads.com/yourname"}
+  #   {"LinkedIn", "https://linkedin.com/in/yourname"},
+  #   {"Bluesky", "https://bsky.app/profile/yourname"},
+  #   {"Mastodon", "https://mastodon.social/@yourname"},
+  #   {"YouTube", "https://youtube.com/@yourname"},
+  #   {"Instagram", "https://instagram.com/yourname"},
   #   {"Feed", "/feed.xml"}
   # ],
   # theme: "custom",  # Uncomment after running: mix sayfa.gen.layout <name>

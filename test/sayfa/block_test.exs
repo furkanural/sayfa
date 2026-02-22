@@ -108,6 +108,99 @@ defmodule Sayfa.BlockTest do
     end
   end
 
+  describe "social_icon/2" do
+    @brand_platforms [
+      {"github", "GitHub"},
+      {"twitter", "X/Twitter"},
+      {"x", "X/Twitter"},
+      {"mastodon", "Mastodon"},
+      {"goodreads", "Goodreads"},
+      {"linkedin", "LinkedIn"},
+      {"linked in", "LinkedIn"},
+      {"youtube", "YouTube"},
+      {"yt", "YouTube"},
+      {"instagram", "Instagram"},
+      {"ig", "Instagram"},
+      {"bluesky", "Bluesky"},
+      {"bsky", "Bluesky"},
+      {"threads", "Threads"},
+      {"discord", "Discord"},
+      {"reddit", "Reddit"},
+      {"stackoverflow", "Stack Overflow"},
+      {"stack overflow", "Stack Overflow"},
+      {"so", "Stack Overflow"},
+      {"facebook", "Facebook"},
+      {"fb", "Facebook"},
+      {"medium", "Medium"},
+      {"dev.to", "Dev.to"},
+      {"devto", "Dev.to"},
+      {"dev", "Dev.to"},
+      {"telegram", "Telegram"},
+      {"tg", "Telegram"},
+      {"kofi", "Ko-fi"},
+      {"ko-fi", "Ko-fi"},
+      {"codeberg", "Codeberg"},
+      {"letterboxd", "Letterboxd"},
+      {"spotify", "Spotify"},
+      {"hackernews", "Hacker News"},
+      {"hacker news", "Hacker News"},
+      {"hn", "Hacker News"},
+      {"twitch", "Twitch"}
+    ]
+
+    for {label, platform} <- @brand_platforms do
+      test "renders filled SVG for #{platform} (#{label})" do
+        svg = Block.social_icon(unquote(label))
+        assert svg =~ "<svg"
+        assert svg =~ ~s(fill="currentColor")
+        assert svg =~ ~s(stroke="none")
+      end
+    end
+
+    test "aliases return the same icon" do
+      assert Block.social_icon("linkedin") == Block.social_icon("linked in")
+      assert Block.social_icon("youtube") == Block.social_icon("yt")
+      assert Block.social_icon("instagram") == Block.social_icon("ig")
+      assert Block.social_icon("bluesky") == Block.social_icon("bsky")
+      assert Block.social_icon("stackoverflow") == Block.social_icon("stack overflow")
+      assert Block.social_icon("stackoverflow") == Block.social_icon("so")
+      assert Block.social_icon("facebook") == Block.social_icon("fb")
+      assert Block.social_icon("dev.to") == Block.social_icon("devto")
+      assert Block.social_icon("dev.to") == Block.social_icon("dev")
+      assert Block.social_icon("telegram") == Block.social_icon("tg")
+      assert Block.social_icon("kofi") == Block.social_icon("ko-fi")
+      assert Block.social_icon("hackernews") == Block.social_icon("hacker news")
+      assert Block.social_icon("hackernews") == Block.social_icon("hn")
+    end
+
+    test "is case-insensitive" do
+      assert Block.social_icon("GitHub") == Block.social_icon("github")
+      assert Block.social_icon("LinkedIn") == Block.social_icon("linkedin")
+      assert Block.social_icon("YOUTUBE") == Block.social_icon("youtube")
+    end
+
+    test "custom size parameter" do
+      svg = Block.social_icon("github", "w-8 h-8")
+      assert svg =~ ~s(class="w-8 h-8")
+    end
+
+    test "utility icons use outlined style" do
+      for label <- ["email", "rss", "feed"] do
+        svg = Block.social_icon(label)
+        assert svg =~ ~s(fill="none")
+        assert svg =~ ~s(stroke="currentColor")
+        assert svg =~ ~s(stroke-width="1.5")
+      end
+    end
+
+    test "fallback for unknown platforms uses outlined style" do
+      svg = Block.social_icon("unknown-platform")
+      assert svg =~ "<svg"
+      assert svg =~ ~s(fill="none")
+      assert svg =~ ~s(stroke="currentColor")
+    end
+  end
+
   # --- Individual Block Tests ---
 
   describe "Hero" do
