@@ -30,7 +30,7 @@ defmodule Sayfa.Blocks.ReadingTime do
     if minutes do
       label = Sayfa.I18n.t("min_read", lang, site, count: minutes)
 
-      "<span class=\"inline-flex items-center gap-1.5\"><svg class=\"w-4 h-4\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" viewBox=\"0 0 24 24\"><circle cx=\"12\" cy=\"12\" r=\"10\"/><polyline points=\"12 6 12 12 16 14\"/></svg>#{label}</span>"
+      "<span class=\"inline-flex items-center gap-1.5\"><svg class=\"w-4 h-4\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"10\"/><polyline points=\"12 6 12 12 16 14\"/></svg>#{label}</span>"
     else
       ""
     end

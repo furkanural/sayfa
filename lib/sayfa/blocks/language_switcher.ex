@@ -129,7 +129,7 @@ defmodule Sayfa.Blocks.LanguageSwitcher do
     dropdown_items = Enum.map_join(items, "", &render_dropdown_item(&1, current_lang))
 
     globe_svg =
-      ~s(<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>)
+      ~s(<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>)
 
     toggle_js =
       "(function(e){e.stopPropagation();var m=document.getElementById('lang-menu'),b=document.getElementById('lang-toggle'),v=m.classList.contains('hidden');m.classList.toggle('hidden');b.setAttribute('aria-expanded',!v)})(event)"

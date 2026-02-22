@@ -71,7 +71,7 @@ defmodule Sayfa.Blocks.Breadcrumb do
 
   defp render_html(crumbs, home_label, home_url) do
     chevron =
-      ~s(<svg class="w-3.5 h-3.5 text-slate-300 dark:text-slate-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>)
+      ~s(<svg class="w-3.5 h-3.5 text-slate-300 dark:text-slate-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>)
 
     items =
       Enum.map(crumbs, fn {name, url} ->

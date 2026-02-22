@@ -35,7 +35,7 @@ defmodule Sayfa.Blocks.SocialLinks do
   end
 
   defp render_link({label, url}) do
-    icon = Block.social_icon(label, "w-4 h-4")
+    icon = Block.social_icon(label, "w-5 h-5")
     escaped_label = Block.escape_html(label)
     escaped_url = Block.escape_html(url)
     rel = Block.social_rel(label)

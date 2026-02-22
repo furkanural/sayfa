@@ -257,20 +257,20 @@ defmodule Sayfa.Block do
         outlined_icon(normalized, size)
 
       path ->
-        ~s(<svg class="#{size}" fill="currentColor" stroke="none" viewBox="0 0 24 24"><path d="#{path}"/></svg>)
+        ~s(<svg class="#{size}" fill="currentColor" stroke="none" viewBox="0 0 24 24" aria-hidden="true"><path d="#{path}"/></svg>)
     end
   end
 
   defp outlined_icon(label, size) do
     case label do
       "email" ->
-        ~s(<svg class="#{size}" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>)
+        ~s(<svg class="#{size}" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>)
 
       x when x in ["rss", "feed"] ->
-        ~s(<svg class="#{size}" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>)
+        ~s(<svg class="#{size}" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>)
 
       _ ->
-        ~s(<svg class="#{size}" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>)
+        ~s(<svg class="#{size}" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>)
     end
   end
 

@@ -50,7 +50,7 @@ defmodule Sayfa.Blocks.RecentPosts do
 
       view_all_html =
         if show_view_all do
-          "<a href=\"#{lang_prefix}/posts/\" class=\"inline-flex items-center gap-1 text-sm text-primary dark:text-primary-400 hover:text-primary-dark dark:hover:text-primary-300\">#{Block.escape_html(t.("view_all"))} <svg class=\"w-3.5 h-3.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" viewBox=\"0 0 24 24\"><path d=\"m9 18 6-6-6-6\"/></svg></a>"
+          "<a href=\"#{lang_prefix}/posts/\" class=\"inline-flex items-center gap-1 text-sm text-primary dark:text-primary-400 hover:text-primary-dark dark:hover:text-primary-300\">#{Block.escape_html(t.("view_all"))} <svg class=\"w-3.5 h-3.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"m9 18 6-6-6-6\"/></svg></a>"
         else
           ""
         end

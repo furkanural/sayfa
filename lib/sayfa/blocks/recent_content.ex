@@ -75,7 +75,7 @@ defmodule Sayfa.Blocks.RecentContent do
 
     date_html =
       if content.date do
-        ~s(<span class="inline-flex items-center gap-1"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4M8 2v4m-5 4h18"/></svg> #{Sayfa.DateFormat.format(content.date, lang || :en, site)}</span>)
+        ~s(<span class="inline-flex items-center gap-1"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4M8 2v4m-5 4h18"/></svg> #{Sayfa.DateFormat.format(content.date, lang || :en, site)}</span>)
       else
         ""
       end
@@ -84,14 +84,14 @@ defmodule Sayfa.Blocks.RecentContent do
 
     reading_time_html =
       if reading_time do
-        ~s(<span class="inline-flex items-center gap-1"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> #{reading_time_label}</span>)
+        ~s(<span class="inline-flex items-center gap-1"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> #{reading_time_label}</span>)
       else
         ""
       end
 
     tag_html =
       if first_tag do
-        ~s(<span class="inline-flex items-center gap-0.5 h-5 px-1.5 rounded text-xs font-medium bg-primary-50 text-primary dark:bg-primary-900/30 dark:text-primary-400"><svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="4" x2="20" y1="9" y2="9"/><line x1="4" x2="20" y1="15" y2="15"/><line x1="10" x2="8" y1="3" y2="21"/><line x1="16" x2="14" y1="3" y2="21"/></svg>#{Block.escape_html(first_tag)}</span>)
+        ~s(<span class="inline-flex items-center gap-0.5 h-5 px-1.5 rounded text-xs font-medium bg-primary-50 text-primary dark:bg-primary-900/30 dark:text-primary-400"><svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><line x1="4" x2="20" y1="9" y2="9"/><line x1="4" x2="20" y1="15" y2="15"/><line x1="10" x2="8" y1="3" y2="21"/><line x1="16" x2="14" y1="3" y2="21"/></svg>#{Block.escape_html(first_tag)}</span>)
       else
         ""
       end
@@ -107,7 +107,7 @@ defmodule Sayfa.Blocks.RecentContent do
     <section class="max-w-2xl mx-auto px-5 sm:px-6 pb-14">
       <a href="#{url}" class="featured-accent group block pl-5 py-4">
         <span class="inline-flex items-center gap-1.5 text-xs font-medium text-primary dark:text-primary-400 uppercase tracking-wide mb-2">
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg> #{Block.escape_html(t.("featured"))}
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg> #{Block.escape_html(t.("featured"))}
         </span>
         <h2 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-50 group-hover:text-primary dark:group-hover:text-primary-400">#{title}</h2>
         #{description_html}
@@ -137,7 +137,7 @@ defmodule Sayfa.Blocks.RecentContent do
         <div>
           <div class="flex items-center justify-between mb-6">
             <h2 class="text-lg sm:text-xl font-semibold text-slate-900 dark:text-slate-50">#{heading}</h2>
-            <a href="#{lang_prefix}/#{type}/" class="inline-flex items-center gap-1 text-sm text-primary dark:text-primary-400 hover:text-primary-dark dark:hover:text-primary-300">#{view_all_text} <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></a>
+            <a href="#{lang_prefix}/#{type}/" class="inline-flex items-center gap-1 text-sm text-primary dark:text-primary-400 hover:text-primary-dark dark:hover:text-primary-300">#{view_all_text} <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></a>
           </div>
           <div class="#{container_class}">
     #{items_html}
@@ -188,7 +188,7 @@ defmodule Sayfa.Blocks.RecentContent do
 
     tag_html =
       if first_tag do
-        ~s(<span class="inline-flex items-center gap-0.5 h-5 px-1.5 rounded text-xs font-medium bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400"><svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="4" x2="20" y1="9" y2="9"/><line x1="4" x2="20" y1="15" y2="15"/><line x1="10" x2="8" y1="3" y2="21"/><line x1="16" x2="14" y1="3" y2="21"/></svg>#{Block.escape_html(first_tag)}</span>)
+        ~s(<span class="inline-flex items-center gap-0.5 h-5 px-1.5 rounded text-xs font-medium bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400"><svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><line x1="4" x2="20" y1="9" y2="9"/><line x1="4" x2="20" y1="15" y2="15"/><line x1="10" x2="8" y1="3" y2="21"/><line x1="16" x2="14" y1="3" y2="21"/></svg>#{Block.escape_html(first_tag)}</span>)
       else
         ""
       end
