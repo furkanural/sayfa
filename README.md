@@ -78,7 +78,7 @@ Sayfa follows a **two-layer architecture**:
 
 ### Templates & Theming
 - Three-layer template composition (content -> layout -> base)
-- 10 built-in blocks (hero, header, footer, social links, TOC, recent posts, tag cloud, reading time, code copy, language switcher) with 24 platform icons including GitHub, X/Twitter, Mastodon, LinkedIn, Bluesky, YouTube, Instagram, and more
+- 16 built-in blocks (hero, header, footer, social links, TOC, recent posts, tag cloud, category cloud, reading time, code copy, copy link, breadcrumb, recent content, search, language switcher, related posts) with 24 platform icons including GitHub, X/Twitter, Mastodon, LinkedIn, Bluesky, YouTube, Instagram, and more
 - Theme inheritance (custom -> parent -> default)
 - EEx templates with `@block` helper
 
@@ -301,12 +301,15 @@ Blocks are reusable EEx components invoked via the `@block` helper:
 | Table of Contents | `:toc` | Auto-generated TOC from headings |
 | Recent Posts | `:recent_posts` | List of recent posts |
 | Tag Cloud | `:tag_cloud` | Tag cloud with counts |
+| Category Cloud | `:category_cloud` | Category cloud with counts |
 | Reading Time | `:reading_time` | Estimated reading time |
 | Code Copy | `:code_copy` | Copy button for code blocks |
 | Copy Link | `:copy_link` | Copy page URL to clipboard |
 | Breadcrumb | `:breadcrumb` | Breadcrumb navigation |
 | Recent Content | `:recent_content` | Recent items from any content type |
+| Search | `:search` | Pagefind search UI |
 | Language Switcher | `:language_switcher` | Switch between content translations |
+| Related Posts | `:related_posts` | Posts related by tags/categories |
 
 ### Custom Blocks
 
@@ -515,7 +518,7 @@ Templates automatically include Open Graph and description meta tags based on fr
 
 ## Configuration
 
-Site configuration lives in `config/site.exs`:
+Site configuration lives in `config/config.exs`:
 
 ```elixir
 import Config

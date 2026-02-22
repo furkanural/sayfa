@@ -42,6 +42,7 @@ Sayfa uses [TailwindCSS](https://tailwindcss.com/) for styling. The TailwindCSS 
 | `mix sayfa.build` | Build the site to `output/` |
 | `mix sayfa.serve` | Start dev server at http://localhost:4000 |
 | `mix sayfa.gen.layout home` | Copy a layout for customization |
+| `mix sayfa.gen.layout --list` | List all available layouts |
 | `mix sayfa.gen.content post "Title"` | Generate a new content file |
 | `mix sayfa.gen.content post "Title" --lang=en,tr` | Generate multilingual content |
 

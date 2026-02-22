@@ -77,7 +77,7 @@ Sayfa **iki katmanli bir mimari** kullanir:
 
 ### Sablonlar ve Tema
 - Uc katmanli sablon bilesimi (icerik -> duzen -> temel)
-- 10 yerlesik blok (hero, baslik, altbilgi, sosyal baglantilar, icerik tablosu, son yazilar, etiket bulutu, okuma suresi, kod kopyalama, dil degistirici) ve GitHub, X/Twitter, Mastodon, Goodreads, Email, Feed için platform ikonları
+- 16 yerlesik blok (hero, baslik, altbilgi, sosyal baglantilar, icerik tablosu, son yazilar, etiket bulutu, kategori bulutu, okuma suresi, kod kopyalama, baglanti kopyalama, breadcrumb, son icerikler, arama, dil degistirici, ilgili yazilar) ve 24 platform ikonu (GitHub, X/Twitter, Mastodon, LinkedIn, Bluesky, YouTube, Instagram ve daha fazlasi)
 - Tema mirasi (ozel -> ust -> varsayilan)
 - `@block` yardimcisi ile EEx sablonlari
 
@@ -262,6 +262,21 @@ Cozumleme sirasi:
 | `list.html.eex` | Icerik listeleri | sayfalama |
 | `base.html.eex` | HTML sarmalayici | header, footer |
 
+### Sablon Degiskenleri
+
+Tum sablonlar su degiskenleri alir:
+
+| Degisken | Tur | Aciklama |
+|----------|-----|----------|
+| `@content` | `Sayfa.Content.t()` | Mevcut icerik (liste sayfalarinda nil) |
+| `@contents` | `[Sayfa.Content.t()]` | Tum site icerikleri |
+| `@site` | `map()` | Cozumlenms site yapilandirmasi |
+| `@block` | `function` | Blok render yardimcisi |
+| `@t` | `function` | Ceviri fonksiyonu (`@t.("anahtar")`) |
+| `@lang` | `atom()` | Mevcut icerik dili |
+| `@dir` | `String.t()` | Metin yonu (`"ltr"` veya `"rtl"`) |
+| `@inner_content` | `String.t()` | Render edilmis ic HTML (yalnizca base layout) |
+
 ---
 
 ## Bloklar
@@ -285,12 +300,15 @@ Bloklar, `@block` yardimcisi ile cagirilan yeniden kullanilabilir EEx bilesenler
 | Icerik Tablosu | `:toc` | Basliklardan otomatik uretilen icerik tablosu |
 | Son Yazilar | `:recent_posts` | Son yazilarin listesi |
 | Etiket Bulutu | `:tag_cloud` | Sayili etiket bulutu |
+| Kategori Bulutu | `:category_cloud` | Sayili kategori bulutu |
 | Okuma Suresi | `:reading_time` | Tahmini okuma suresi |
 | Kod Kopyalama | `:code_copy` | Kod bloklari icin kopyalama dugmesi |
 | Baglanti Kopyalama | `:copy_link` | Sayfa URL'sini panoya kopyala |
 | Icerik Yolu | `:breadcrumb` | Icerik yolu navigasyonu |
 | Son Icerikler | `:recent_content` | Herhangi bir icerik turunun son ogeler |
+| Arama | `:search` | Pagefind arama arayuzu |
 | Dil Degistirici | `:language_switcher` | Icerik cevirileri arasinda gecis |
+| Ilgili Yazilar | `:related_posts` | Etiket/kategoriye gore ilgili yazilar |
 
 ### Ozel Bloklar
 
@@ -483,7 +501,7 @@ Sablonlar, on bilgi alanlarina dayali Open Graph ve aciklama meta etiketlerini o
 
 ## Yapilandirma
 
-Site yapilandirmasi `config/site.exs` dosyasinda bulunur:
+Site yapilandirmasi `config/config.exs` dosyasinda bulunur:
 
 ```elixir
 import Config
@@ -622,6 +640,36 @@ sitem/
 ├── output/                     # Olusturulan site (git-ignored)
 │
 └── mix.exs
+```
+
+---
+
+## Dagitim
+
+`mix sayfa.new` bir **Dockerfile** ve **GitHub Actions is akisi** olusturur, boylece hemen dagitim yapabilirsiniz.
+
+### GitHub Pages
+
+Olusturulan projeniz `.github/workflows/deploy.yml` dosyasini icerir. Depo ayarlarinizda GitHub Pages'i etkinlestirin (Kaynak olarak **GitHub Actions**'i secin), `main`'e yapilan her push sitenizi otomatik olarak derleyip dagitacaktir.
+
+### Docker / Coolify
+
+Cok asamali bir `Dockerfile` dahildir — sitenizi Elixir + Rust ile derler, ardindan nginx ile sunar:
+
+```bash
+docker build -t sitem .
+docker run -p 8080:80 sitem
+```
+
+[Coolify](https://coolify.io/) icin **Dockerfile** derleme paketini secin.
+
+### VPS (rsync)
+
+Yerel olarak derleyin ve sunucunuza senkronize edin:
+
+```bash
+mix sayfa.build
+rsync -avz --delete output/ kullanici@sunucu:/var/www/sitem/
 ```
 
 ---
