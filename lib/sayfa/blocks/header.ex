@@ -115,7 +115,14 @@ defmodule Sayfa.Blocks.Header do
 
   defp active?(_nav_url, nil), do: false
 
-  defp active?("/", page_url), do: page_url == "/"
+  defp active?(nav_url, page_url) do
+    if home_url?(nav_url) do
+      page_url == nav_url
+    else
+      String.starts_with?(page_url, nav_url)
+    end
+  end
 
-  defp active?(nav_url, page_url), do: String.starts_with?(page_url, nav_url)
+  defp home_url?("/"), do: true
+  defp home_url?(url), do: Regex.match?(~r"^/[a-z]{2}/$", url)
 end

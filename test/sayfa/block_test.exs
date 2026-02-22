@@ -357,6 +357,36 @@ defmodule Sayfa.BlockTest do
       assert html =~ ~r/href="\/tr\/posts\/"[^>]*font-medium text-slate-900/
     end
 
+    test "localized homepage is not active on subpages" do
+      html =
+        Header.render(%{
+          site: %{title: "Blog", default_lang: :en},
+          lang: :tr,
+          nav: [{"Ana Sayfa", "/"}, {"Yazılar", "/posts/"}],
+          page_url: "/tr/posts/"
+        })
+
+      # Ana Sayfa (/tr/) should NOT be active when on /tr/posts/
+      assert html =~ ~r/href="\/tr\/"[^>]*text-slate-500/
+      # Yazılar should be active
+      assert html =~ ~r/href="\/tr\/posts\/"[^>]*font-medium text-slate-900/
+    end
+
+    test "localized homepage is active on exact match" do
+      html =
+        Header.render(%{
+          site: %{title: "Blog", default_lang: :en},
+          lang: :tr,
+          nav: [{"Ana Sayfa", "/"}, {"Yazılar", "/posts/"}],
+          page_url: "/tr/"
+        })
+
+      # Ana Sayfa should be active on /tr/
+      assert html =~ ~r/href="\/tr\/"[^>]*font-medium text-slate-900/
+      # Yazılar should NOT be active
+      assert html =~ ~r/href="\/tr\/posts\/"[^>]*text-slate-500/
+    end
+
     test "nav URLs are unchanged for default language" do
       html =
         Header.render(%{
