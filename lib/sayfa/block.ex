@@ -2,7 +2,7 @@ defmodule Sayfa.Block do
   @moduledoc """
   Registry and lookup functions for blocks.
 
-  Maps block names to block modules. By default, sixteen built-in blocks
+  Maps block names to block modules. By default, fifteen built-in blocks
   are registered. Custom blocks can be added via application config:
 
       config :sayfa, :blocks, [MyApp.Blocks.Banner | Sayfa.Block.default_blocks()]
@@ -18,7 +18,7 @@ defmodule Sayfa.Block do
   ## Examples
 
       iex> length(Sayfa.Block.default_blocks())
-      16
+      15
 
       iex> Sayfa.Block.find_by_name(:hero)
       Sayfa.Blocks.Hero
@@ -34,7 +34,7 @@ defmodule Sayfa.Block do
   ## Examples
 
       iex> length(Sayfa.Block.default_blocks())
-      16
+      15
 
   """
   @spec default_blocks() :: [module()]
@@ -51,7 +51,6 @@ defmodule Sayfa.Block do
       Sayfa.Blocks.ReadingTime,
       Sayfa.Blocks.CodeCopy,
       Sayfa.Blocks.RecentContent,
-      Sayfa.Blocks.Search,
       Sayfa.Blocks.CopyLink,
       Sayfa.Blocks.Breadcrumb,
       Sayfa.Blocks.LanguageSwitcher,

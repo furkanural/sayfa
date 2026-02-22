@@ -306,7 +306,6 @@ Bloklar, `@block` yardimcisi ile cagirilan yeniden kullanilabilir EEx bilesenler
 | Baglanti Kopyalama | `:copy_link` | Sayfa URL'sini panoya kopyala |
 | Icerik Yolu | `:breadcrumb` | Icerik yolu navigasyonu |
 | Son Icerikler | `:recent_content` | Herhangi bir icerik turunun son ogeler |
-| Arama | `:search` | Pagefind arama arayuzu |
 | Dil Degistirici | `:language_switcher` | Icerik cevirileri arasinda gecis |
 | Ilgili Yazilar | `:related_posts` | Etiket/kategoriye gore ilgili yazilar |
 
@@ -474,24 +473,6 @@ Sayfa otomatik olarak Atom XML beslemeleri uretir:
 ### Sitemap
 
 Tum yayinlanmis sayfalari iceren bir `sitemap.xml` cikis dizininin kokunde uretilir.
-
-### Arama
-
-Sayfa, statik arama icin [Pagefind](https://pagefind.app/) ile entegredir. Pagefind **istege baglidir** — siteniz onsuz da sorunsuz derlenir ve calisir.
-
-Kuruldugunda, Pagefind `mix sayfa.build` sonunda otomatik olarak calisir. HTML ciktinizi tarar ve istemci tarafli bir arama dizini uretir — sunucu gerektirmez.
-
-**Kurulum:**
-
-```bash
-npm install -g pagefind   # Global kurulum
-# veya
-npx pagefind              # Kurmadan tek seferlik kullanim
-```
-
-`pagefind` ikili dosyasi PATH'inizde bulunamazsa, Sayfa dizinleme adimini atlar ve normal sekilde devam eder.
-
-Daha fazla bilgi icin [Pagefind dokumantasyonuna](https://pagefind.app/docs/) bakiniz.
 
 ### SEO Meta Etiketleri
 
@@ -725,6 +706,7 @@ Icerigin nasil organize edildigini tanimlayin. [Ozel Icerik Turleri](#ozel-iceri
 
 Sayfa icin gelecek planlari:
 
+- Arama islevselligi (istemci tarafli arama ve dizinleme)
 - Gorsel optimizasyonu (otomatik boyutlandirma, WebP donusumu)
 - Varsayilan temada karanlik mod gecisi
 - Dagitim yardimcilari (GitHub Pages, Netlify)

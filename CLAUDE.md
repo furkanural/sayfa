@@ -72,7 +72,6 @@ sayfa/
 │   │   │   ├── reading_time.ex
 │   │   │   ├── code_copy.ex
 │   │   │   ├── recent_content.ex
-│   │   │   ├── search.ex
 │   │   │   ├── copy_link.ex
 │   │   │   ├── breadcrumb.ex
 │   │   │   └── language_switcher.ex
@@ -225,6 +224,28 @@ mix test --cover                      # With coverage
 mix format            # Auto-format
 mix credo --strict    # Static analysis
 ```
+
+### JavaScript Minification
+
+**IMPORTANT**: When modifying JavaScript files, always manually minify them after changes.
+
+```bash
+# After editing priv/default_theme/assets/js/enhancements.js
+# Manually create/update priv/default_theme/assets/js/enhancements.min.js
+```
+
+The minified version should:
+- Keep section comments (`/* 1. Reading progress bar */`) for readability
+- Remove all other comments and unnecessary whitespace
+- Use shortened variable names within each IIFE
+- Keep each feature/section on a separate line
+- Maintain functionality and behavior of the original code
+
+**Example minification approach**:
+- Original: `var article = document.querySelector("article");`
+- Minified: `var a=document.querySelector("article");`
+
+The `.min.js` file is maintained for potential future use in production builds.
 
 ### Building Documentation
 

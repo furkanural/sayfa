@@ -11,15 +11,14 @@ defmodule Sayfa.BlockTest do
   alias Sayfa.Blocks.ReadingTime, as: ReadingTimeBlock
   alias Sayfa.Blocks.RecentContent
   alias Sayfa.Blocks.RecentPosts
-  alias Sayfa.Blocks.Search
   alias Sayfa.Blocks.SocialLinks
   alias Sayfa.Blocks.TagCloud
   alias Sayfa.Blocks.TOC, as: TOCBlock
   alias Sayfa.Content
 
   describe "default_blocks/0" do
-    test "returns 16 built-in blocks" do
-      assert length(Block.default_blocks()) == 16
+    test "returns 15 built-in blocks" do
+      assert length(Block.default_blocks()) == 15
     end
 
     test "all modules implement the block behaviour" do
@@ -53,7 +52,6 @@ defmodule Sayfa.BlockTest do
         :reading_time,
         :code_copy,
         :recent_content,
-        :search,
         :copy_link
       ]
 
@@ -902,60 +900,6 @@ defmodule Sayfa.BlockTest do
 
       assert html =~ ~s(href="/posts/")
       refute html =~ ~s(href="/en/posts/")
-    end
-  end
-
-  describe "Search" do
-    test "renders search modal with defaults" do
-      html = Search.render(%{})
-      assert html =~ ~s(id="search-modal")
-      assert html =~ ~s(role="dialog")
-      assert html =~ ~s(aria-modal="true")
-      assert html =~ ~s(id="search-backdrop")
-      assert html =~ ~s(id="search-esc")
-      assert html =~ ~s(id="search-footer")
-      assert html =~ ~s(<div id="search")
-      assert html =~ ~s(data-show-sub-results="true")
-      assert html =~ ~s(data-show-images="true")
-      refute html =~ "<script>"
-    end
-
-    test "renders with custom options" do
-      html = Search.render(%{show_sub_results: false, show_images: false})
-      assert html =~ ~s(data-show-sub-results="false")
-      assert html =~ ~s(data-show-images="false")
-    end
-
-    test "uses translation function for labels" do
-      t = fn
-        "search" -> "Ara"
-        "search_placeholder" -> "Ara..."
-        "search_no_results" -> "Sonuç bulunamadı"
-        key -> key
-      end
-
-      html = Search.render(%{t: t})
-      assert html =~ "Ara"
-      assert html =~ ~s(data-placeholder="Ara...")
-      assert html =~ ~s(data-no-results="Sonuç bulunamadı")
-    end
-
-    test "render_trigger returns search button" do
-      html = Search.render_trigger(%{})
-      assert html =~ ~s(id="search-trigger")
-      assert html =~ ~s(aria-label="Search")
-      assert html =~ "<svg"
-      assert html =~ "<circle"
-    end
-
-    test "render_trigger uses translation function" do
-      t = fn
-        "search" -> "Ara"
-        key -> key
-      end
-
-      html = Search.render_trigger(%{t: t})
-      assert html =~ ~s(aria-label="Ara")
     end
   end
 end

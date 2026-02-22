@@ -43,7 +43,6 @@ Initial release of Sayfa — a static site generator built in Elixir.
 #### Feeds & SEO
 - Atom feed generation
 - Sitemap XML generation
-- Pagefind search integration (post-build indexing)
 - SEO meta tags (Open Graph, description)
 - Reading time calculation
 - Table of contents extraction from headings

@@ -15,7 +15,6 @@ defmodule Sayfa.Builder do
   9. **Indexes** — generate paginated content type index pages
   10. **Feeds** — generate Atom feeds (main + per-type)
   11. **Sitemap** — generate XML sitemap
-  12. **Pagefind** — run search indexing (optional, skipped if binary not found)
 
   ## Examples
 
@@ -126,7 +125,6 @@ defmodule Sayfa.Builder do
         Tailwind.compile(config, config.output_dir)
       end)
 
-      timed_sync("Pagefind indexing", verbose, fn -> run_pagefind(config) end)
       elapsed = System.monotonic_time(:millisecond) - start_time
 
       verbose_log(verbose, "Build complete in #{elapsed}ms")
@@ -916,28 +914,6 @@ defmodule Sayfa.Builder do
         nil -> []
       end
     end)
-  end
-
-  # --- Pagefind ---
-
-  defp run_pagefind(config) do
-    case System.find_executable("pagefind") do
-      nil ->
-        Logger.info(
-          "Pagefind binary not found, skipping search indexing. " <>
-            "Install it with: npm install -g pagefind " <>
-            "(or see https://pagefind.app/docs/installation/)"
-        )
-
-      _path ->
-        case System.cmd("pagefind", ["--site", config.output_dir], stderr_to_stdout: true) do
-          {_output, 0} ->
-            Logger.info("Pagefind indexing complete")
-
-          {output, _code} ->
-            Logger.warning("Pagefind indexing failed: #{output}")
-        end
-    end
   end
 
   # --- Shared List Rendering ---

@@ -307,7 +307,6 @@ Blocks are reusable EEx components invoked via the `@block` helper:
 | Copy Link | `:copy_link` | Copy page URL to clipboard |
 | Breadcrumb | `:breadcrumb` | Breadcrumb navigation |
 | Recent Content | `:recent_content` | Recent items from any content type |
-| Search | `:search` | Pagefind search UI |
 | Language Switcher | `:language_switcher` | Switch between content translations |
 | Related Posts | `:related_posts` | Posts related by tags/categories |
 
@@ -491,24 +490,6 @@ Sayfa generates Atom XML feeds automatically:
 ### Sitemap
 
 A `sitemap.xml` is generated at the root of the output directory containing all published pages.
-
-### Search
-
-Sayfa integrates with [Pagefind](https://pagefind.app/) for static search. Pagefind is **optional** — your site builds and works perfectly without it.
-
-When installed, Pagefind runs automatically at the end of `mix sayfa.build`. It scans your HTML output and generates a client-side search index — no server required.
-
-**Installation:**
-
-```bash
-npm install -g pagefind   # Global install
-# or
-npx pagefind              # One-off usage without installing
-```
-
-If the `pagefind` binary is not found on your PATH, Sayfa skips the indexing step and continues normally.
-
-For more details, see the [Pagefind documentation](https://pagefind.app/docs/).
 
 ### SEO Meta Tags
 
@@ -739,6 +720,7 @@ Define how content is organized. See [Custom Content Types](#custom-content-type
 
 Future plans for Sayfa:
 
+- Search functionality (client-side search with indexing)
 - Image optimization (automatic resizing, WebP conversion)
 - Dark mode toggle in default theme
 - Plugin system for third-party extensions
