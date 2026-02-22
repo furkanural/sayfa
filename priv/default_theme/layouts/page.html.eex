@@ -1,9 +1,9 @@
-<article class="max-w-2xl mx-auto px-5 sm:px-6 py-12 sm:py-16">
+<article class="container-content page-wrapper">
   <%= @block.(:breadcrumb, []) %>
   <header class="mb-8">
     <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-50"><%= @content.title %></h1>
   </header>
-  <div class="prose prose-slate dark:prose-invert prose-headings:font-bold prose-a:text-primary dark:prose-a:text-primary-400 prose-a:decoration-primary/30 hover:prose-a:decoration-primary prose-img:rounded-lg prose-img:shadow-sm prose-img:mx-auto max-w-none">
+  <div class="prose-content prose-code">
     <%= @inner_content %>
   </div>
 </article>

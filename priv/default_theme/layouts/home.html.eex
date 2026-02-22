@@ -1,8 +1,10 @@
 <main>
-  <%= @block.(:hero, title: @site.title, subtitle: Map.get(@site, :description, "")) %>
+  <section class="container-content pt-14 sm:pt-20 section-spacing-lg">
+    <%= @block.(:hero, title: @site.title, subtitle: Map.get(@site, :description, "")) %>
+  </section>
 
-  <section class="max-w-2xl mx-auto px-5 sm:px-6 pb-8">
-    <div class="prose prose-slate dark:prose-invert max-w-none">
+  <section class="container-content section-spacing-sm">
+    <div class="prose-content">
       <%= @inner_content %>
     </div>
   </section>
@@ -10,7 +12,7 @@
   <%= @block.(:recent_content, limit: 5) %>
 
   <%= if Map.get(@site, :social_links, []) != [] do %>
-  <section class="max-w-2xl mx-auto px-5 sm:px-6 pb-16">
+  <section class="container-content section-spacing">
     <h2 class="text-lg sm:text-xl font-semibold text-slate-900 dark:text-slate-50 mb-5"><%= @t.("connect") %></h2>
     <%= @block.(:social_links, links: @site.social_links) %>
   </section>

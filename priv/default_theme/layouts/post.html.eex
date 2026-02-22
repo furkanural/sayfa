@@ -1,6 +1,6 @@
-<article class="max-w-5xl mx-auto px-5 sm:px-6 py-12 sm:py-16">
+<article class="container-content-wide page-wrapper">
   <%= @block.(:breadcrumb, []) %>
-  <div class="lg:grid lg:grid-cols-[minmax(0,42rem)_200px] lg:gap-16 lg:justify-center">
+  <div class="lg:grid lg:grid-cols-[minmax(0,42rem)_200px] xl:grid-cols-[minmax(0,48rem)_280px] lg:gap-16 xl:gap-20 lg:justify-center">
     <div class="min-w-0">
       <header class="mb-10">
         <h1 class="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-slate-50"><%= @content.title %></h1>
@@ -50,7 +50,7 @@
         <%= @block.(:toc, variant: :mobile) %>
       </div>
 
-      <div class="prose prose-slate dark:prose-invert prose-headings:font-bold prose-headings:scroll-mt-20 prose-a:text-primary dark:prose-a:text-primary-400 prose-a:decoration-primary/30 hover:prose-a:decoration-primary prose-code:before:content-none prose-code:after:content-none prose-code:font-mono prose-code:text-sm prose-code:bg-slate-100 prose-code:dark:bg-slate-800 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-img:rounded-lg prose-img:shadow-sm prose-img:mx-auto max-w-none">
+      <div class="prose-content prose-code prose-toc">
         <%= @inner_content %>
       </div>
 
