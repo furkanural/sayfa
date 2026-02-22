@@ -7,8 +7,12 @@
         <div class="mt-5 flex flex-wrap items-center gap-4 text-sm text-slate-400 dark:text-slate-500">
 <%= if @content.date do %>
           <span class="inline-flex items-center gap-1.5">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>
             <time datetime="<%= @content.date %>"><%= @format_date.(@content.date) %></time>
+<%= if @content.meta["updated"] && to_string(@content.meta["updated"]) != to_string(@content.date) do %>
+            <span class="text-slate-300 dark:text-slate-600">&middot;</span>
+            <span><%= @t.("updated_on") |> String.replace("%{date}", @format_date.(@content.meta["updated"])) %></span>
+<% end %>
           </span>
 <% end %>
 <%= if @content.meta["reading_time"] do %>
@@ -49,6 +53,8 @@
       <div class="prose prose-slate dark:prose-invert prose-headings:font-bold prose-headings:scroll-mt-20 prose-a:text-primary dark:prose-a:text-primary-400 prose-a:decoration-primary/30 hover:prose-a:decoration-primary prose-code:before:content-none prose-code:after:content-none prose-code:font-mono prose-code:text-sm prose-code:bg-slate-100 prose-code:dark:bg-slate-800 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-img:rounded-lg prose-img:shadow-sm prose-img:mx-auto max-w-none">
         <%= @inner_content %>
       </div>
+
+      <%= @block.(:related_posts, []) %>
 
     </div>
 
