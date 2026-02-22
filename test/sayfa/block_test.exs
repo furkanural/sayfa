@@ -717,7 +717,7 @@ defmodule Sayfa.BlockTest do
       assert html =~ "Copy link"
       assert html =~ "clipboard"
       assert html =~ "<button"
-      assert html =~ "border-t"
+      assert html =~ "cursor-pointer"
     end
   end
 

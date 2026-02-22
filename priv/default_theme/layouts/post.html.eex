@@ -4,7 +4,6 @@
     <div class="min-w-0">
       <header class="mb-10">
         <h1 class="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-slate-50"><%= @content.title %></h1>
-<%= if @content.date || @content.meta["reading_time"] do %>
         <div class="mt-5 flex flex-wrap items-center gap-4 text-sm text-slate-400 dark:text-slate-500">
 <%= if @content.date do %>
           <span class="inline-flex items-center gap-1.5">
@@ -15,8 +14,8 @@
 <%= if @content.meta["reading_time"] do %>
           <%= @block.(:reading_time, []) %>
 <% end %>
+          <%= @block.(:copy_link, []) %>
         </div>
-<% end %>
 <%= if @content.categories != [] do %>
 <% cat_base = if (@content.meta["lang_prefix"] || "") == "", do: "/categories/", else: "/#{@content.meta["lang_prefix"]}/categories/" %>
         <div class="mt-4 flex flex-wrap gap-1.5">
@@ -51,7 +50,6 @@
         <%= @inner_content %>
       </div>
 
-      <%= @block.(:copy_link, []) %>
     </div>
 
     <aside class="hidden lg:block">
