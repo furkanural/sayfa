@@ -32,6 +32,7 @@ defmodule Sayfa.Builder do
   alias Sayfa.Config
   alias Sayfa.Content
   alias Sayfa.ContentType
+  alias Sayfa.Excerpt
   alias Sayfa.Feed
   alias Sayfa.I18n
   alias Sayfa.Pagination
@@ -676,11 +677,13 @@ defmodule Sayfa.Builder do
     Enum.map(contents, fn content ->
       reading_time = ReadingTime.calculate(content.body)
       toc = TOC.extract(content.body)
+      excerpt = Excerpt.extract(content)
 
       meta =
         content.meta
         |> Map.put("reading_time", reading_time)
         |> Map.put("toc", toc)
+        |> Map.put("excerpt", excerpt)
 
       %{content | meta: meta}
     end)
