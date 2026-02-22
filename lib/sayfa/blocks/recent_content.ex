@@ -80,9 +80,11 @@ defmodule Sayfa.Blocks.RecentContent do
         ""
       end
 
+    reading_time_label = I18n.t("min_read", lang || :en, site, count: reading_time)
+
     reading_time_html =
       if reading_time do
-        ~s(<span class="inline-flex items-center gap-1"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> #{reading_time}</span>)
+        ~s(<span class="inline-flex items-center gap-1"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> #{reading_time_label}</span>)
       else
         ""
       end

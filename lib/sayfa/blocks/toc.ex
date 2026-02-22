@@ -63,7 +63,7 @@ defmodule Sayfa.Blocks.TOC do
     """
     <details class="rounded-lg border border-slate-200/70 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50">\
       <summary class="flex items-center gap-2 cursor-pointer p-4 text-sm font-medium text-slate-700 dark:text-slate-300 select-none">\
-        <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><line x1="8" x2="21" y1="6" y2="6"/><line x1="8" x2="21" y1="12" y2="12"/><line x1="8" x2="21" y1="18" y2="18"/><line x1="3" x2="3.01" y1="6" y2="6"/><line x1="3" x2="3.01" y1="12" y2="12"/><line x1="3" x2="3.01" y1="18" y2="18"/></svg>\
+        <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="10" x2="20" y1="18" y2="18"/></svg>\
         #{heading}\
       </summary>\
       <ul class="px-4 pb-4 space-y-2 text-sm">\
