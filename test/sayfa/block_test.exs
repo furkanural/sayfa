@@ -18,8 +18,8 @@ defmodule Sayfa.BlockTest do
   alias Sayfa.Content
 
   describe "default_blocks/0" do
-    test "returns 15 built-in blocks" do
-      assert length(Block.default_blocks()) == 15
+    test "returns 16 built-in blocks" do
+      assert length(Block.default_blocks()) == 16
     end
 
     test "all modules implement the block behaviour" do
@@ -905,24 +905,70 @@ defmodule Sayfa.BlockTest do
   end
 
   describe "Search" do
-    test "renders pagefind UI with defaults" do
+    test "renders search modal with defaults" do
       html = Search.render(%{})
-      assert html =~ ~s(<link href="/pagefind/pagefind-ui.css" rel="stylesheet">)
-      assert html =~ ~s(<script src="/pagefind/pagefind-ui.js"></script>)
-      assert html =~ ~s(<div id="search"></div>)
-      assert html =~ ~s(showSubResults: true)
-      assert html =~ ~s(showImages: true)
+      assert html =~ ~s(id="search-modal")
+      assert html =~ ~s(role="dialog")
+      assert html =~ ~s(aria-modal="true")
+      assert html =~ ~s(id="search-backdrop")
+      assert html =~ ~s(id="search-close")
+      assert html =~ ~s(<div id="search")
+      assert html =~ ~s(showSubResults:true)
+      assert html =~ ~s(showImages:true)
+      assert html =~ ~s(pagefind-ui.js)
+      assert html =~ ~s(pagefind-ui.css)
     end
 
     test "renders with custom options" do
       html = Search.render(%{show_sub_results: false, show_images: false})
-      assert html =~ ~s(showSubResults: false)
-      assert html =~ ~s(showImages: false)
+      assert html =~ ~s(showSubResults:false)
+      assert html =~ ~s(showImages:false)
     end
 
-    test "renders with custom element selector" do
-      html = Search.render(%{element: "#custom-search"})
-      assert html =~ ~s(element: "#custom-search")
+    test "uses translation function for labels" do
+      t = fn
+        "search" -> "Ara"
+        "search_placeholder" -> "Ara..."
+        "search_no_results" -> "Sonuç bulunamadı"
+        key -> key
+      end
+
+      html = Search.render(%{t: t})
+      assert html =~ "Ara"
+      assert html =~ "Ara..."
+      assert html =~ "Sonuç bulunamadı"
+    end
+
+    test "keyboard shortcut script included" do
+      html = Search.render(%{})
+      assert html =~ "metaKey"
+      assert html =~ "ctrlKey"
+      assert html =~ ~s(e.key==='k')
+    end
+
+    test "lazy-loads pagefind assets" do
+      html = Search.render(%{})
+      assert html =~ "createElement('link')"
+      assert html =~ "createElement('script')"
+      refute html =~ ~s(<link href="/pagefind/)
+    end
+
+    test "render_trigger returns search button" do
+      html = Search.render_trigger(%{})
+      assert html =~ ~s(id="search-trigger")
+      assert html =~ ~s(aria-label="Search")
+      assert html =~ "<svg"
+      assert html =~ "<circle"
+    end
+
+    test "render_trigger uses translation function" do
+      t = fn
+        "search" -> "Ara"
+        key -> key
+      end
+
+      html = Search.render_trigger(%{t: t})
+      assert html =~ ~s(aria-label="Ara")
     end
   end
 end
