@@ -192,5 +192,72 @@ defmodule Sayfa.Blocks.LanguageSwitcherTest do
       assert html =~ ~s(id="lang-menu" class="hidden)
       assert html =~ ~s(aria-expanded="false")
     end
+
+    test "render/1 with variant parameter generates unique IDs" do
+      content = %Content{
+        title: "Hello",
+        body: "<p>Hello</p>",
+        slug: "hello",
+        lang: :en,
+        meta: %{
+          "hreflang_alternates" => [
+            {"en", "/posts/hello/"},
+            {"tr", "/tr/posts/hello/"}
+          ]
+        }
+      }
+
+      assigns = %{site: @multi_lang_site, content: content, lang: :en, variant: :mobile}
+      html = LanguageSwitcher.render(assigns)
+
+      assert html =~ ~s(id="lang-switcher-mobile")
+      assert html =~ ~s(id="lang-toggle-mobile")
+      assert html =~ ~s(id="lang-menu-mobile")
+    end
+
+    test "render/1 without variant uses default IDs" do
+      content = %Content{
+        title: "Hello",
+        body: "<p>Hello</p>",
+        slug: "hello",
+        lang: :en,
+        meta: %{
+          "hreflang_alternates" => [
+            {"en", "/posts/hello/"},
+            {"tr", "/tr/posts/hello/"}
+          ]
+        }
+      }
+
+      assigns = %{site: @multi_lang_site, content: content, lang: :en}
+      html = LanguageSwitcher.render(assigns)
+
+      assert html =~ ~s(id="lang-switcher")
+      assert html =~ ~s(id="lang-toggle")
+      assert html =~ ~s(id="lang-menu")
+      refute html =~ "-default"
+    end
+
+    test "render/1 with desktop variant generates desktop IDs" do
+      content = %Content{
+        title: "Hello",
+        body: "<p>Hello</p>",
+        slug: "hello",
+        lang: :en,
+        meta: %{
+          "hreflang_alternates" => [
+            {"en", "/posts/hello/"},
+            {"tr", "/tr/posts/hello/"}
+          ]
+        }
+      }
+
+      assigns = %{site: @multi_lang_site, content: content, lang: :en, variant: :desktop}
+      html = LanguageSwitcher.render(assigns)
+
+      assert html =~ ~s(id="lang-switcher-desktop")
+      assert html =~ ~s(id="lang-toggle-desktop")
+      assert html =~ ~s(id="lang-menu-desktop")
+    end
   end
 end

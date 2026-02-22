@@ -259,7 +259,17 @@ defmodule Sayfa.BlockTest do
           page_url: "/posts/"
         })
 
-      assert html =~ ~s(id="lang-switcher")
+      # Desktop variant (hidden on mobile)
+      assert html =~ ~s(id="lang-switcher-desktop")
+      assert html =~ ~s(id="lang-toggle-desktop")
+      assert html =~ ~s(id="lang-menu-desktop")
+
+      # Mobile variant (visible on mobile)
+      assert html =~ ~s(id="lang-switcher-mobile")
+      assert html =~ ~s(id="lang-toggle-mobile")
+      assert html =~ ~s(id="lang-menu-mobile")
+
+      # Hamburger menu button
       assert html =~ ~s(id="menu-toggle")
     end
 
@@ -714,7 +724,7 @@ defmodule Sayfa.BlockTest do
     test "renders copy link button" do
       html = CopyLink.render(%{})
       assert html =~ "Copy link"
-      assert html =~ "clipboard"
+      assert html =~ "data-action=\"copy-link\""
       assert html =~ "<button"
       assert html =~ "cursor-pointer"
     end
