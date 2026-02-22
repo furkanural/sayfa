@@ -1,0 +1,207 @@
+---
+title: "Building with Sayfa"
+date: <%= Date.utc_today() |> Date.to_iso8601() %>
+updated: <%= Date.utc_today() |> Date.to_iso8601() %>
+description: "A complete guide to building your site with Sayfa, the Elixir static site generator."
+categories: [guides]
+tags: [sayfa, elixir, tutorial]
+featured: true
+image: /images/placeholder.svg
+---
+
+## Why Sayfa?
+
+Sayfa is a static site generator built in Elixir. Unlike most SSGs that rely on Node.js, Sayfa runs entirely on the BEAM VM with Rust-powered Markdown rendering via MDEx. The result is a fast, reliable tool with a small dependency footprint.
+
+What sets it apart:
+
+- **No Node.js required** — TailwindCSS is handled via a standalone binary
+- **Block system** — Reusable components without a JS framework
+- **Built-in i18n** — 14 languages supported out of the box
+- **5 content types** — Posts, notes, projects, talks, and pages
+
+## Content Types
+
+Sayfa organizes your content into types, each with its own directory and URL pattern:
+
+| Type | Directory | URL | Best for |
+|------|-----------|-----|----------|
+| Posts | `content/posts/` | `/posts/slug/` | Blog articles, tutorials |
+| Notes | `content/notes/` | `/notes/slug/` | Quick thoughts, TILs |
+| Projects | `content/projects/` | `/projects/slug/` | Portfolio, showcases |
+| Talks | `content/talks/` | `/talks/slug/` | Presentations, events |
+| Pages | `content/pages/` | `/slug/` | About, contact, etc. |
+
+Generate new content with the CLI:
+
+```bash
+mix sayfa.gen.content post "My New Post"
+mix sayfa.gen.content note "Quick Tip"
+mix sayfa.gen.content project "My App"
+```
+
+## Front Matter
+
+Every content file starts with YAML front matter. Here's a complete example:
+
+```yaml
+---
+title: "My Post Title"
+date: 2024-01-15
+updated: 2024-01-20
+description: "A short description for SEO and social sharing"
+categories: [guides, elixir]
+tags: [tutorial, beginner]
+featured: true
+draft: false
+image: /images/cover.jpg
+layout: post
+translations:
+  tr: yazimin-basligi
+---
+```
+
+Only `title` is required. Everything else is optional — Sayfa fills in sensible defaults.
+
+## Writing Content
+
+Sayfa uses MDEx for Markdown rendering, which supports GitHub Flavored Markdown with syntax highlighting built in.
+
+### Code Blocks
+
+Fenced code blocks get automatic syntax highlighting:
+
+```elixir
+defmodule MyApp.Greeter do
+  @moduledoc "A simple greeter module."
+
+  def hello(name) do
+    name
+    |> String.trim()
+    |> then(&"Hello, #{&1}!")
+  end
+end
+```
+
+### Tables
+
+Standard Markdown tables work:
+
+| Feature | Status |
+|---------|--------|
+| Markdown | Done |
+| Syntax Highlighting | Done |
+| Dark Mode | Done |
+
+### Task Lists
+
+- [x] Install Sayfa
+- [x] Create first post
+- [ ] Deploy to production
+
+## The Block System
+
+Blocks are reusable components you can use in your EEx templates:
+
+```elixir
+# In your templates:
+<%%= @block.(:hero, title: "Welcome") %>
+<%%= @block.(:recent_posts, limit: 5) %>
+<%%= @block.(:tag_cloud) %>
+```
+
+Sayfa ships with 16 built-in blocks including hero sections, navigation, table of contents, search, and more. You can also create custom blocks by implementing the `Sayfa.Behaviours.Block` behaviour.
+
+## Customizing Your Site
+
+### Configuration
+
+Edit `config/config.exs` to set your site title, author, navigation, and social links.
+
+### Overriding Layouts
+
+To customize a layout, copy it for editing:
+
+```bash
+# List available layouts
+mix sayfa.gen.layout --list
+
+# Copy one to customize
+mix sayfa.gen.layout post
+```
+
+This copies the layout to `themes/custom/layouts/` where you can edit it freely.
+
+## Images
+
+**Featured images** — Add `image:` to your front matter to display a cover image and set the OpenGraph image for social sharing:
+
+```yaml
+---
+image: /images/cover.jpg
+---
+```
+
+**Inline images** — Use standard Markdown:
+
+```markdown
+![Alt text](/images/screenshot.png)
+```
+
+Place your image files in `static/images/` and reference them with `/images/` paths.
+
+## Multilingual Content
+
+Sayfa supports directory-based multilingual sites. Place translations in language subdirectories:
+
+```
+content/
+  posts/
+    hello-world.md          # Default language
+  tr/
+    posts/
+      hello-world.md        # Turkish translation
+```
+
+Generate multilingual content:
+
+```bash
+mix sayfa.gen.content post "Hello World" --lang=en,tr
+```
+
+In templates, use the translation function:
+
+```elixir
+<%%= @t.("recent_posts") %>
+```
+
+## Deployment
+
+### GitHub Pages
+
+Your project includes a GitHub Actions workflow. Enable GitHub Pages in your repo settings (set Source to **GitHub Actions**), and every push to `main` deploys automatically.
+
+### Docker
+
+A multi-stage `Dockerfile` is included:
+
+```bash
+docker build -t my-site .
+docker run -p 8080:80 my-site
+```
+
+### VPS
+
+Build locally and sync:
+
+```bash
+mix sayfa.build
+rsync -avz --delete output/ user@server:/var/www/my-site/
+```
+
+## What's Next?
+
+- Edit `config/config.exs` to set your site title and author
+- Browse the example content in `content/` to see each content type
+- Run `mix sayfa.serve` to preview your site locally
+- Check out the [Sayfa documentation](https://hex.pm/packages/sayfa) for the full API reference
