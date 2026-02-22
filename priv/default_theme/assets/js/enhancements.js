@@ -92,33 +92,40 @@
 
 /* 4. Language switcher dropdown */
 (function () {
-  var switcher = document.getElementById("lang-switcher");
-  if (!switcher) return;
+  function initLanguageSwitcher(variant) {
+    var suffix = variant ? "-" + variant : "";
+    var switcher = document.getElementById("lang-switcher" + suffix);
+    if (!switcher) return;
 
-  var btn = document.getElementById("lang-toggle");
-  var menu = document.getElementById("lang-menu");
+    var btn = document.getElementById("lang-toggle" + suffix);
+    var menu = document.getElementById("lang-menu" + suffix);
 
-  btn.addEventListener("click", function (e) {
-    e.stopPropagation();
-    var isHidden = menu.classList.contains("hidden");
-    menu.classList.toggle("hidden");
-    btn.setAttribute("aria-expanded", String(isHidden));
-  });
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var isHidden = menu.classList.contains("hidden");
+      menu.classList.toggle("hidden");
+      btn.setAttribute("aria-expanded", String(isHidden));
+    });
 
-  document.addEventListener("click", function (e) {
-    if (!switcher.contains(e.target)) {
-      menu.classList.add("hidden");
-      btn.setAttribute("aria-expanded", "false");
-    }
-  });
+    document.addEventListener("click", function (e) {
+      if (!switcher.contains(e.target)) {
+        menu.classList.add("hidden");
+        btn.setAttribute("aria-expanded", "false");
+      }
+    });
 
-  document.addEventListener("keydown", function (e) {
-    if (e.key === "Escape" && !menu.classList.contains("hidden")) {
-      menu.classList.add("hidden");
-      btn.setAttribute("aria-expanded", "false");
-      btn.focus();
-    }
-  });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && !menu.classList.contains("hidden")) {
+        menu.classList.add("hidden");
+        btn.setAttribute("aria-expanded", "false");
+        btn.focus();
+      }
+    });
+  }
+
+  // Initialize both desktop and mobile variants
+  initLanguageSwitcher("desktop");
+  initLanguageSwitcher("mobile");
 })();
 
 /* 5. Code copy buttons */
@@ -178,5 +185,29 @@
     parent.insertBefore(wrapper, pre);
     wrapper.appendChild(header);
     wrapper.appendChild(pre);
+  });
+})();
+
+/* 6. Copy link buttons */
+(function () {
+  document.addEventListener("click", function (e) {
+    var btn = e.target.closest('[data-action="copy-link"]');
+    if (!btn) return;
+
+    var span = btn.querySelector("span");
+    var copyText = btn.getAttribute("data-copy-text");
+    var copiedText = btn.getAttribute("data-copied-text");
+
+    navigator.clipboard
+      .writeText(window.location.href)
+      .then(function () {
+        span.textContent = copiedText;
+        setTimeout(function () {
+          span.textContent = copyText;
+        }, 2000);
+      })
+      .catch(function () {
+        // Fallback for older browsers - do nothing
+      });
   });
 })();
