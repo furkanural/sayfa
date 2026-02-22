@@ -35,16 +35,48 @@ Sayfa uses [TailwindCSS](https://tailwindcss.com/) for styling. The TailwindCSS 
 └── mix.exs
 ```
 
-## Common Commands
+## Common Tasks
+
+### Creating Content
+
+```bash
+# Create a blog post
+mix sayfa.gen.content post "My Post Title"
+
+# Create with tags and categories
+mix sayfa.gen.content post "Title" --tags=elixir,web --categories=tutorials
+
+# Create multilingual content
+mix sayfa.gen.content post "Title" --lang=en,tr
+
+# Create a draft
+mix sayfa.gen.content post "WIP" --draft
+```
+
+### Building & Deploying
+
+```bash
+# Build for production
+mix sayfa.build
+
+# Build with drafts (for preview)
+mix sayfa.build --drafts
+
+# Deploy to GitHub Pages (workflow included)
+git push origin main
+
+# Deploy with Docker
+docker build -t my-blog .
+docker run -p 8080:80 my-blog
+```
+
+### Other Commands
 
 | Command | Description |
 |---------|-------------|
-| `mix sayfa.build` | Build the site to `output/` |
 | `mix sayfa.serve` | Start dev server at http://localhost:4000 |
 | `mix sayfa.gen.layout home` | Copy a layout for customization |
 | `mix sayfa.gen.layout --list` | List all available layouts |
-| `mix sayfa.gen.content post "Title"` | Generate a new content file |
-| `mix sayfa.gen.content post "Title" --lang=en,tr` | Generate multilingual content |
 
 ## Multilingual
 
@@ -110,6 +142,42 @@ Build locally and sync to your server:
 ```bash
 mix sayfa.build
 rsync -avz --delete output/ user@server:/var/www/my-site/
+```
+
+## Troubleshooting
+
+### Build fails with "Rust not found"
+
+Sayfa requires Rust for the MDEx markdown parser:
+
+```bash
+# macOS
+brew install rust
+
+# Linux
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+# Windows
+# Download from https://rustup.rs/
+```
+
+### Styles not updating
+
+TailwindCSS is compiled on build. If styles aren't updating:
+
+```bash
+# Clear the output directory
+rm -rf output/
+mix sayfa.build
+```
+
+### Dev server not reloading
+
+Restart the dev server:
+
+```bash
+# Kill existing server (Ctrl+C)
+mix sayfa.serve
 ```
 
 ## Learn More

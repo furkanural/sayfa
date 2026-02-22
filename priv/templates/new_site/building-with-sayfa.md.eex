@@ -31,15 +31,17 @@ Every content file starts with YAML front matter. Here's what's available:
 
 ```yaml
 ---
-title: "My Post"
+title: "Building with Sayfa"
 date: 2024-01-15
-updated: 2024-01-20
-description: "A short description for SEO"
-categories: [guides]
-tags: [elixir, web]
-featured: true
-draft: false
-layout: post
+updated: 2024-01-20              # Shows "Updated: ..." in metadata
+description: "Guide to Sayfa"    # Used for SEO meta description
+categories: [guides]              # Creates category archive pages
+tags: [sayfa, elixir]            # Creates tag archive pages
+featured: true                    # Highlight in featured section
+image: /images/cover.jpg         # Cover image + social sharing
+excerpt: "Short custom excerpt"  # Override auto-generated excerpt
+layout: post                      # Use specific layout
+draft: false                      # Hide from production builds
 ---
 ```
 
@@ -80,6 +82,39 @@ Blocks are reusable components you can use in your templates:
 <%%= @block.(:tag_cloud) %>
 ```
 
+## Block System
+
+Sayfa includes 15 built-in blocks you can use in your layouts:
+
+### Navigation Blocks
+- `:header` — Site header with navigation
+- `:footer` — Site footer
+- `:breadcrumb` — Breadcrumb navigation with SEO
+- `:language_switcher` — Switch between translations
+
+### Content Blocks
+- `:hero` — Hero section for homepage
+- `:recent_posts` — Recent posts list
+- `:recent_content` — Recent items from any content type
+- `:related_posts` — Related posts by tags/categories
+
+### Utility Blocks
+- `:toc` — Table of contents
+- `:reading_time` — Estimated reading time
+- `:social_links` — Social media icons
+- `:tag_cloud` — Tag frequency cloud
+- `:category_cloud` — Category frequency cloud
+- `:code_copy` — Copy buttons for code blocks
+- `:copy_link` — Copy page URL
+
+Use blocks in your custom layouts:
+
+```elixir
+<%%= @block.(:breadcrumb, []) %>
+<%%= @block.(:recent_posts, limit: 5) %>
+<%%= @block.(:related_posts, limit: 3) %>
+```
+
 ## Images
 
 Sayfa supports images through the `static/` directory. Any file in `static/` is copied to your site's root during build.
@@ -99,6 +134,67 @@ image: /images/cover.jpg
 ```
 
 Place your image files in `static/images/` and reference them with `/images/` paths.
+
+## Multilingual Support
+
+Sayfa has built-in i18n with 14 language translations. To add a Turkish version of a post:
+
+1. Create the directory structure:
+   ```bash
+   mkdir -p content/tr/posts
+   ```
+
+2. Create the translated content:
+   ```bash
+   mix sayfa.gen.content post "Building with Sayfa" --lang=en,tr
+   ```
+
+3. The language switcher block will automatically detect and link translations
+
+Supported languages: en, tr, de, es, fr, it, pt, ja, ko, zh, ar, ru, nl, pl
+
+RTL languages (Arabic, Hebrew, Farsi, Urdu) are automatically detected and rendered with `dir="rtl"`.
+
+## Extending Sayfa
+
+### Custom Blocks
+
+Create reusable components by implementing the Block behaviour:
+
+```elixir
+# lib/blocks/callout.ex
+defmodule MyBlog.Blocks.Callout do
+  @behaviour Sayfa.Behaviours.Block
+
+  @impl true
+  def name, do: :callout
+
+  @impl true
+  def render(assigns) do
+    type = Map.get(assigns, :type, "info")
+    text = Map.get(assigns, :text, "")
+
+    """
+    <div class="callout callout-#{type}">
+      #{text}
+    </div>
+    """
+  end
+end
+```
+
+Register in `config/config.exs`:
+
+```elixir
+config :sayfa, :site,
+  blocks: [MyBlog.Blocks.Callout]
+```
+
+Use in templates:
+
+```elixir
+<%%= @block.(:callout, type: "warning", text: "Important note!") %>
+```
 
 ## What's Next?
 
