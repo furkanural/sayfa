@@ -16,6 +16,7 @@
   <%= @inner_content %>
   <%= @block.(:footer, author: Map.get(@site, :author, @site.title)) %>
   <%= @block.(:code_copy, []) %>
+  <script src="/assets/js/enhancements.js" defer></script>
 </body>
 <!-- Built with Sayfa https://hex.pm/packages/sayfa -->
 </html>

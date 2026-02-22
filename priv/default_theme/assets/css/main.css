@@ -223,3 +223,25 @@ button { cursor: pointer; }
 .copy-btn .icon-check { display: none; }
 .copy-btn.copied .icon-copy { display: none; }
 .copy-btn.copied .icon-check { display: block; }
+
+/* Reading progress bar */
+#reading-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-primary-light));
+  z-index: 60;
+  width: 0%;
+  transition: width 0.1s linear;
+}
+
+/* ToC active state */
+.toc-active {
+  border-left-color: var(--color-primary) !important;
+  color: var(--color-primary) !important;
+  font-weight: 500;
+}
+@media (prefers-color-scheme: dark) {
+  .toc-active { color: var(--color-primary-400) !important; }
+}
