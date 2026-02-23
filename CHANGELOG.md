@@ -5,6 +5,41 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2026-02-23
+
+### Added
+
+- **Internationalization**: Translation system with 14 built-in languages (English, Turkish, German, Spanish, French, Italian, Portuguese, Japanese, Korean, Chinese, Arabic, Russian, Dutch, Polish)
+- **New Blocks**: Language switcher, category cloud, related posts, breadcrumb, copy link
+- **Image Helper**: Responsive image module with srcset, lazy loading, and WebP support
+- **Excerpt Extraction**: Automatic content summaries for list pages and feeds
+- **Reading Progress**: Visual progress bar and ToC scroll-spy for long articles
+- **Mix Tasks**: `mix sayfa.gen.content` and `mix sayfa.gen.layout` generators
+- **SEO Enhancements**: JSON-LD structured data, hreflang tags for multilingual content
+- **Multilingual Archives**: Tag and category archive pages with language support
+- **Self-Hosted Fonts**: Eliminate Google Fonts dependency for better privacy
+- **Deployment Support**: Production-ready Dockerfile and GitHub Pages workflow
+- **Component Classes**: Reusable Tailwind utilities for consistent styling
+- **Expanded Social Icons**: Support for 24 social media platforms
+
+### Fixed
+
+- Language switcher mobile functionality with unique IDs for desktop/mobile variants
+- Localized home URL detection in header active state
+- Translated reading time labels across all languages
+- TailwindCSS typography plugin for proper prose styling
+- URL generation with correct trailing slash handling
+
+### Changed
+
+- Redesigned default theme layouts with Tailwind utilities
+- Simplified block implementations to use component classes
+- DevServer dependencies now required (no longer optional)
+
+### Removed
+
+- Pagefind search functionality (will be replaced in future release)
+
 ## [0.1.1] - 2026-02-11
 
 ### Fixed
@@ -64,5 +99,6 @@ Initial release of Sayfa — a static site generator built in Elixir.
 - Build caching for incremental rebuilds
 - Verbose logging with per-stage timing
 
+[0.2.0]: https://github.com/furkanural/sayfa/compare/v0.1.1...v0.2.0
 [0.1.1]: https://github.com/furkanural/sayfa/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/furkanural/sayfa/releases/tag/v0.1.0
