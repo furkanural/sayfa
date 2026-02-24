@@ -1,7 +1,0 @@
-_build/
-deps/
-output/
-.git/
-.github/
-*.md
-.formatter.exs

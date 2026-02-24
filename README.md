@@ -644,22 +644,18 @@ my_site/
 
 ## Deployment
 
-`mix sayfa.new` generates a **Dockerfile** and a **GitHub Actions workflow** so you can deploy immediately.
+`mix sayfa.new` generates a **nixpacks.toml** and a **GitHub Actions workflow** so you can deploy immediately.
 
 ### GitHub Pages
 
 Your generated project includes `.github/workflows/deploy.yml`. Enable GitHub Pages in your repo settings (set Source to **GitHub Actions**), and every push to `main` will build and deploy your site automatically.
 
-### Docker / Coolify
+### Nixpacks (Railway / Coolify)
 
-A multi-stage `Dockerfile` is included — it builds your site with Elixir + Rust, then serves it with nginx:
+A `nixpacks.toml` is included that builds your site using [Nixpacks](https://nixpacks.com/). This works out of the box with platforms like [Railway](https://railway.app/) and [Coolify](https://coolify.io/).
 
-```bash
-docker build -t my-site .
-docker run -p 8080:80 my-site
-```
-
-For [Coolify](https://coolify.io/), select the **Dockerfile** build pack.
+- **Railway**: Connect your repo and Railway will detect `nixpacks.toml` automatically. Set the publish directory to `output/` for static site serving.
+- **Coolify**: Select the **Nixpacks** build pack and point it at your repo.
 
 ### VPS (rsync)
 

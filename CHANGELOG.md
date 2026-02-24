@@ -18,7 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **SEO Enhancements**: JSON-LD structured data, hreflang tags for multilingual content
 - **Multilingual Archives**: Tag and category archive pages with language support
 - **Self-Hosted Fonts**: Eliminate Google Fonts dependency for better privacy
-- **Deployment Support**: Production-ready Dockerfile and GitHub Pages workflow
+- **Deployment Support**: Nixpacks config and GitHub Pages workflow
 - **Component Classes**: Reusable Tailwind utilities for consistent styling
 - **Expanded Social Icons**: Support for 24 social media platforms
 

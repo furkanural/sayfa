@@ -1,0 +1,17 @@
+[phases.setup]
+nixpkgsArchive = "eebeb17c3f40773c4af77c4c0b64fec9069bad1a"
+nixPkgs = ["beam28Packages.elixir_1_19", "cargo", "rustc"]
+
+[phases.install]
+cmds = [
+  "mix local.hex --force",
+  "mix local.rebar --force",
+  "mix deps.get --only prod",
+  "MIX_ENV=prod mix deps.compile",
+]
+
+[phases.build]
+cmds = ["MIX_ENV=prod mix sayfa.build"]
+
+[start]
+cmd = ""

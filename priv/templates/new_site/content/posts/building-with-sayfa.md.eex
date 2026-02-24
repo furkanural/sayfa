@@ -181,14 +181,9 @@ In templates, use the translation function:
 
 Your project includes a GitHub Actions workflow. Enable GitHub Pages in your repo settings (set Source to **GitHub Actions**), and every push to `main` deploys automatically.
 
-### Docker
+### Nixpacks (Railway / Coolify)
 
-A multi-stage `Dockerfile` is included:
-
-```bash
-docker build -t my-site .
-docker run -p 8080:80 my-site
-```
+A `nixpacks.toml` is included. Connect your repo to [Railway](https://railway.app/) or [Coolify](https://coolify.io/) and select the **Nixpacks** build pack — no extra configuration needed.
 
 ### VPS
 

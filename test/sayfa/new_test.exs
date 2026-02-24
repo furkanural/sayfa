@@ -56,20 +56,12 @@ defmodule Mix.Tasks.Sayfa.NewTest do
       assert readme =~ "My Blog"
       assert readme =~ "## Deployment"
 
-      # Verify Dockerfile
-      assert File.exists?(Path.join(project_path, "Dockerfile"))
-      dockerfile = File.read!(Path.join(project_path, "Dockerfile"))
-      assert dockerfile =~ "nginx"
-      assert dockerfile =~ "mix sayfa.build"
-
-      # Verify nginx.conf
-      assert File.exists?(Path.join(project_path, "nginx.conf"))
-      nginx_conf = File.read!(Path.join(project_path, "nginx.conf"))
-      assert nginx_conf =~ "try_files"
-      assert nginx_conf =~ "gzip"
-
-      # Verify .dockerignore
-      assert File.exists?(Path.join(project_path, ".dockerignore"))
+      # Verify nixpacks.toml
+      assert File.exists?(Path.join(project_path, "nixpacks.toml"))
+      nixpacks = File.read!(Path.join(project_path, "nixpacks.toml"))
+      assert nixpacks =~ "elixir_1_19"
+      assert nixpacks =~ "rustc"
+      assert nixpacks =~ "mix sayfa.build"
 
       # Verify GitHub Actions deploy workflow
       assert File.exists?(Path.join(project_path, ".github/workflows/deploy.yml"))

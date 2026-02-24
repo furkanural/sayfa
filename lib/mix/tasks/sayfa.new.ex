@@ -159,9 +159,7 @@ defmodule Mix.Tasks.Sayfa.New do
     # Copy static files (no EEx processing)
     copy_static(templates_dir, "formatter.exs", Path.join(path, ".formatter.exs"))
     copy_static(templates_dir, "gitignore", Path.join(path, ".gitignore"))
-    copy_static(templates_dir, "Dockerfile", Path.join(path, "Dockerfile"))
-    copy_static(templates_dir, "nginx.conf", Path.join(path, "nginx.conf"))
-    copy_static(templates_dir, "dockerignore", Path.join(path, ".dockerignore"))
+    copy_static(templates_dir, "nixpacks.toml", Path.join(path, "nixpacks.toml"))
 
     copy_static(
       templates_dir,

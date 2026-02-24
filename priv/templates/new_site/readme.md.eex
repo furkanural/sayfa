@@ -65,9 +65,6 @@ mix sayfa.build --drafts
 # Deploy to GitHub Pages (workflow included)
 git push origin main
 
-# Deploy with Docker
-docker build -t my-blog .
-docker run -p 8080:80 my-blog
 ```
 
 ### Other Commands
@@ -124,16 +121,12 @@ To enable it:
 
 That's it — pushes to `main` will deploy automatically.
 
-### Docker / Coolify
+### Nixpacks (Railway / Coolify)
 
-A `Dockerfile` is included that builds your site and serves it with nginx:
+A `nixpacks.toml` is included that builds your site using [Nixpacks](https://nixpacks.com/). This works out of the box with platforms like [Railway](https://railway.app/) and [Coolify](https://coolify.io/).
 
-```bash
-docker build -t my-site .
-docker run -p 8080:80 my-site
-```
-
-For [Coolify](https://coolify.io/), select the **Dockerfile** build pack and point it at your repo.
+- **Railway**: Connect your repo and Railway will detect `nixpacks.toml` automatically. Set the **publish directory** to `output/` for static site serving.
+- **Coolify**: Select the **Nixpacks** build pack and point it at your repo.
 
 ### VPS (rsync)
 

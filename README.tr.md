@@ -630,22 +630,18 @@ sitem/
 
 ## Dagitim
 
-`mix sayfa.new` bir **Dockerfile** ve **GitHub Actions is akisi** olusturur, boylece hemen dagitim yapabilirsiniz.
+`mix sayfa.new` bir **nixpacks.toml** ve **GitHub Actions is akisi** olusturur, boylece hemen dagitim yapabilirsiniz.
 
 ### GitHub Pages
 
 Olusturulan projeniz `.github/workflows/deploy.yml` dosyasini icerir. Depo ayarlarinizda GitHub Pages'i etkinlestirin (Kaynak olarak **GitHub Actions**'i secin), `main`'e yapilan her push sitenizi otomatik olarak derleyip dagitacaktir.
 
-### Docker / Coolify
+### Nixpacks (Railway / Coolify)
 
-Cok asamali bir `Dockerfile` dahildir — sitenizi Elixir + Rust ile derler, ardindan nginx ile sunar:
+`nixpacks.toml` dosyasi dahildir ve sitenizi [Nixpacks](https://nixpacks.com/) ile derler. [Railway](https://railway.app/) ve [Coolify](https://coolify.io/) gibi platformlarla kutudan ciktiginda calisir.
 
-```bash
-docker build -t sitem .
-docker run -p 8080:80 sitem
-```
-
-[Coolify](https://coolify.io/) icin **Dockerfile** derleme paketini secin.
+- **Railway**: Deponuzu baglayin; Railway `nixpacks.toml` dosyasini otomatik algilar. Statik site sunumu icin yayim dizinini `output/` olarak ayarlayin.
+- **Coolify**: **Nixpacks** derleme paketini secin ve deponuzu gosterin.
 
 ### VPS (rsync)
 
