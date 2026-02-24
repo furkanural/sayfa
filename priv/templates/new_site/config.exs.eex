@@ -13,6 +13,8 @@ config :sayfa, :site,
     {"Talks", "/talks/"},
     {"About", "/about/"}
   ],
+  # logo: "/images/logo.svg",           # Optional: replace title text with your logo
+  # logo_dark: "/images/logo-dark.svg", # Optional: dark mode logo variant
   # social_links: [
   #   {"GitHub", "https://github.com/yourname"},
   #   {"X", "https://x.com/yourname"},

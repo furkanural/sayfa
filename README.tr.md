@@ -294,7 +294,7 @@ Bloklar, `@block` yardimcisi ile cagirilan yeniden kullanilabilir EEx bilesenler
 | Blok | Atom | Aciklama |
 |------|------|----------|
 | Hero | `:hero` | Baslik ve alt baslikli hero bolumu |
-| Baslik | `:header` | Navigasyonlu site basligi |
+| Baslik | `:header` | Navigasyonlu site basligi; yapilandirmada `logo:` ayarlandiginda logo gorseli render eder |
 | Altbilgi | `:footer` | Site altbilgisi |
 | Sosyal Baglantilar | `:social_links` | Sosyal medya baglanti ikonlari |
 | Icerik Tablosu | `:toc` | Basliklardan otomatik uretilen icerik tablosu |
@@ -511,6 +511,10 @@ config :sayfa, :site,
   theme: "default",
   theme_parent: "default",
 
+  # Logo (istege bagli — baslikta yazi basliginin yerine gosterilir)
+  # logo: "/images/logo.svg",
+  # logo_dark: "/images/logo-dark.svg",  # karanlik modda logo yerine gosterilir
+
   # Gelistirme sunucusu
   port: 4000,
   verbose: false
@@ -534,6 +538,8 @@ config :sayfa, :site,
 | `theme_parent` | String | `"default"` | Miras icin ust tema |
 | `static_dir` | String | `"static"` | Statik varliklar dizini |
 | `tailwind_version` | String | `"4.1.12"` | Kullanilacak TailwindCSS surumu |
+| `logo` | String | `nil` | Logo gorsel yolu (baslikta yazi basliginin yerine goster) |
+| `logo_dark` | String | `nil` | Karanlik mod logosu yolu (karanlik modda `logo` yerine gosterilir) |
 | `social_links` | Map | `%{}` | Sosyal medya baglantilari (github, twitter, vb.) |
 | `port` | Integer | `4000` | Gelistirme sunucusu portu |
 | `verbose` | Boolean | `false` | Ayrintili derleme loglama |

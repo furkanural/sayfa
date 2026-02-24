@@ -295,7 +295,7 @@ Blocks are reusable EEx components invoked via the `@block` helper:
 | Block | Atom | Description |
 |-------|------|-------------|
 | Hero | `:hero` | Hero section with title and subtitle |
-| Header | `:header` | Site header with navigation |
+| Header | `:header` | Site header with navigation; renders a logo image when `logo:` is set in config |
 | Footer | `:footer` | Site footer |
 | Social Links | `:social_links` | Social media link icons |
 | Table of Contents | `:toc` | Auto-generated TOC from headings |
@@ -525,6 +525,10 @@ config :sayfa, :site,
   theme: "default",
   theme_parent: "default",
 
+  # Logo (optional — replaces the text title in the header)
+  # logo: "/images/logo.svg",
+  # logo_dark: "/images/logo-dark.svg",  # shown in dark mode instead of logo
+
   # Dev server
   port: 4000,
   verbose: false
@@ -548,6 +552,8 @@ config :sayfa, :site,
 | `theme_parent` | String | `"default"` | Parent theme for inheritance |
 | `static_dir` | String | `"static"` | Directory for static assets |
 | `tailwind_version` | String | `"4.1.12"` | TailwindCSS version to use |
+| `logo` | String | `nil` | Path to logo image (replaces text title in header) |
+| `logo_dark` | String | `nil` | Path to dark-mode logo (shown instead of `logo` in dark mode) |
 | `social_links` | Map | `%{}` | Social media links (github, twitter, etc.) |
 | `port` | Integer | `4000` | Dev server port |
 | `verbose` | Boolean | `false` | Verbose build logging |

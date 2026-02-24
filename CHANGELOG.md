@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **Logo support in header**: Set `logo: "/images/logo.svg"` in site config to replace the plain text title with an image in the header block. Optionally set `logo_dark:` for a separate dark-mode variant — the light logo gains `dark:hidden` and the dark logo `hidden dark:block` Tailwind classes automatically. Falls back to text title when neither key is present.
+
 ## [0.2.0] - 2026-02-23
 
 ### Added

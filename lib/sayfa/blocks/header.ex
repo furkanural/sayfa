@@ -2,13 +2,25 @@ defmodule Sayfa.Blocks.Header do
   @moduledoc """
   Site header block.
 
-  Renders a sticky header with glassmorphism backdrop-blur, the site title,
-  and optional navigation links with a mobile hamburger menu.
+  Renders a sticky header with glassmorphism backdrop-blur, the site title
+  (or logo image), and optional navigation links with a mobile hamburger menu.
 
   ## Assigns
 
-  - `:site` — site config map (used for title)
+  - `:site` — site config map (used for title, logo, logo_dark)
   - `:nav` — list of `{label, url}` tuples for navigation (optional)
+
+  ## Logo support
+
+  Set `logo:` and optionally `logo_dark:` in your site config:
+
+      config :sayfa, :site,
+        logo: "/images/logo.svg",
+        logo_dark: "/images/logo-dark.svg"
+
+  When `logo` is set, an `<img>` is rendered instead of the plain text title.
+  When both `logo` and `logo_dark` are set, the light logo is hidden in dark
+  mode and the dark logo is shown (`dark:hidden` / `hidden dark:block`).
 
   ## Examples
 
@@ -28,6 +40,8 @@ defmodule Sayfa.Blocks.Header do
   def render(assigns) do
     site = Map.get(assigns, :site, %{})
     site_title = Block.escape_html(Map.get(site, :title, ""))
+    logo = Map.get(site, :logo)
+    logo_dark = Map.get(site, :logo_dark)
     nav = Map.get(assigns, :nav, [])
     page_url = Map.get(assigns, :page_url)
 
@@ -43,16 +57,39 @@ defmodule Sayfa.Blocks.Header do
     nav = prefix_nav_urls(nav, lang_prefix)
     nav_html = render_nav(nav, lang_switcher_desktop, lang_switcher_mobile, page_url)
 
+    {brand_html, link_class} =
+      if logo do
+        img = render_logo_img(logo, logo_dark, site_title)
+        {img, "flex items-center hover:opacity-80 transition-opacity"}
+      else
+        {site_title,
+         "text-lg font-bold text-slate-900 dark:text-slate-100 hover:text-primary dark:hover:text-primary-400"}
+      end
+
     """
     <header class="sticky top-0 z-50 border-b border-slate-200/80 dark:border-slate-800 bg-white/85 dark:bg-slate-900/85 backdrop-blur-lg">\
       <div class="max-w-3xl mx-auto px-5 sm:px-6">\
         <div class="flex items-center justify-between h-14">\
-          <a href="#{home_url}" class="text-lg font-bold text-slate-900 dark:text-slate-100 hover:text-primary dark:hover:text-primary-400">#{site_title}</a>\
+          <a href="#{home_url}" class="#{link_class}">#{brand_html}</a>\
     #{nav_html}\
         </div>\
       </div>\
     </header>\
     """
+  end
+
+  defp render_logo_img(logo, nil, alt) do
+    ~s(<img src="#{Block.escape_html(logo)}" alt="#{alt}" class="max-h-8 w-auto" loading="eager">)
+  end
+
+  defp render_logo_img(logo, logo_dark, alt) do
+    light =
+      ~s(<img src="#{Block.escape_html(logo)}" alt="#{alt}" class="max-h-8 w-auto dark:hidden" loading="eager">)
+
+    dark =
+      ~s(<img src="#{Block.escape_html(logo_dark)}" alt="#{alt}" class="max-h-8 w-auto hidden dark:block" loading="eager">)
+
+    light <> dark
   end
 
   defp prefix_nav_urls(nav, ""), do: nav
