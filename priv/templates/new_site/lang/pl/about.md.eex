@@ -1,0 +1,22 @@
+---
+title: "O mnie"
+description: "Dowiedz się więcej o <%= @title %>."
+layout: page
+lang: pl
+translations:
+  <%= @default_lang %>: about
+---
+
+# O <%= @title %>
+
+Witaj! Ta strona jest zbudowana za pomocą **[Sayfa](https://github.com/furkanural/sayfa)**, generatora stron statycznych stworzonego w [Elixir](https://elixir-lang.org).
+
+## O mnie
+
+> *Zastąp tę sekcję własną historią.*
+
+Jestem programistą z pasją do programowania funkcyjnego i open source.
+
+## Kontakt
+
+Możesz mnie znaleźć na [GitHub](https://github.com/yourname).

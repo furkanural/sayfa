@@ -1,0 +1,11 @@
+---
+title: "主页"
+layout: home
+lang: zh
+translations:
+  <%= @default_lang %>: index
+---
+
+欢迎来到 **<%= @title %>**！这是您的主页。
+
+编辑 `content/zh/pages/index.md` 来介绍自己或描述您的网站。

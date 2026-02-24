@@ -1,0 +1,11 @@
+---
+title: "Accueil"
+layout: home
+lang: fr
+translations:
+  <%= @default_lang %>: index
+---
+
+Bienvenue sur **<%= @title %>** ! Voici votre page d'accueil.
+
+Modifiez `content/fr/pages/index.md` pour vous présenter ou décrire votre site.

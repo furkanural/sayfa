@@ -1,0 +1,11 @@
+---
+title: "Inicio"
+layout: home
+lang: es
+translations:
+  <%= @default_lang %>: index
+---
+
+¡Bienvenido a **<%= @title %>**! Esta es tu página de inicio.
+
+Edita `content/es/pages/index.md` para presentarte o describir tu sitio.

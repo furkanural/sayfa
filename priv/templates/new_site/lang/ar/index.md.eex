@@ -1,0 +1,11 @@
+---
+title: "الرئيسية"
+layout: home
+lang: ar
+translations:
+  <%= @default_lang %>: index
+---
+
+مرحباً بك في **<%= @title %>**! هذه صفحتك الرئيسية.
+
+عدّل الملف `content/ar/pages/index.md` لتعريف نفسك أو وصف موقعك.

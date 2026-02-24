@@ -1,0 +1,24 @@
+---
+title: "Budowanie z Sayfa"
+date: <%= Date.utc_today() |> Date.to_iso8601() %>
+description: "Szybki przewodnik po budowaniu witryny z Sayfa."
+categories: [przewodniki]
+tags: [sayfa, elixir, tutorial]
+featured: true
+lang: pl
+translations:
+  <%= @default_lang %>: building-with-sayfa
+---
+
+Sayfa to generator stron statycznych zbudowany w Elixir. Ten post obejmuje kluczowe polecenia, aby zacząć.
+
+## Szybki przewodnik
+
+```bash
+mix deps.get          # Zainstaluj zależności
+mix sayfa.serve       # Uruchom serwer deweloperski z przeładowaniem na żywo
+mix sayfa.build       # Zbuduj stronę statyczną do _site/
+mix sayfa.gen.content post "Mój wpis"  # Wygeneruj nowy wpis
+```
+
+Pełny przewodnik znajdziesz w [angielskiej wersji](/posts/building-with-sayfa/).

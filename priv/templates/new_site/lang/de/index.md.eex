@@ -1,0 +1,11 @@
+---
+title: "Startseite"
+layout: home
+lang: de
+translations:
+  <%= @default_lang %>: index
+---
+
+Willkommen bei **<%= @title %>**! Dies ist Ihre Startseite.
+
+Bearbeiten Sie `content/de/pages/index.md`, um sich vorzustellen oder Ihre Website zu beschreiben.

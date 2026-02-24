@@ -1,0 +1,22 @@
+---
+title: "Sobre"
+description: "Saiba mais sobre <%= @title %>."
+layout: page
+lang: pt
+translations:
+  <%= @default_lang %>: about
+---
+
+# Sobre <%= @title %>
+
+Bem-vindo! Este site é criado com **[Sayfa](https://github.com/furkanural/sayfa)**, um gerador de sites estáticos construído com [Elixir](https://elixir-lang.org).
+
+## Sobre mim
+
+> *Substitua esta secção com a sua própria história.*
+
+Sou um desenvolvedor de software apaixonado por programação funcional e código aberto.
+
+## Contacto
+
+Pode encontrar-me no [GitHub](https://github.com/yourname).

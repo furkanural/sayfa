@@ -1,0 +1,11 @@
+---
+title: "Ana Sayfa"
+layout: home
+lang: tr
+translations:
+  <%= @default_lang %>: index
+---
+
+**<%= @title %>**'a hoş geldiniz! Burası ana sayfanız.
+
+Kendinizi tanıtmak veya sitenizi açıklamak için `content/tr/pages/index.md` dosyasını düzenleyin.

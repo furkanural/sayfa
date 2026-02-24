@@ -1,0 +1,22 @@
+---
+title: "About"
+description: "Learn more about <%= @title %>."
+layout: page
+lang: <%= @lang %>
+translations:
+  <%= @default_lang %>: about
+---
+
+# About <%= @title %>
+
+Welcome! This is a site powered by **[Sayfa](https://github.com/furkanural/sayfa)**, a static site generator built with [Elixir](https://elixir-lang.org).
+
+## About Me
+
+> *Replace this with your own intro in <%= @lang %>.*
+
+Feel free to update this page with your own story.
+
+## Get in Touch
+
+You can find me on [GitHub](https://github.com/yourname).

@@ -1,0 +1,22 @@
+---
+title: "Over"
+description: "Meer weten over <%= @title %>."
+layout: page
+lang: nl
+translations:
+  <%= @default_lang %>: about
+---
+
+# Over <%= @title %>
+
+Welkom! Deze site is gemaakt met **[Sayfa](https://github.com/furkanural/sayfa)**, een generator voor statische websites gebouwd met [Elixir](https://elixir-lang.org).
+
+## Over mij
+
+> *Vervang dit gedeelte door uw eigen verhaal.*
+
+Ik ben een softwareontwikkelaar met een passie voor functioneel programmeren en open source.
+
+## Contact
+
+U kunt mij vinden op [GitHub](https://github.com/yourname).

@@ -1,0 +1,11 @@
+---
+title: "ホーム"
+layout: home
+lang: ja
+translations:
+  <%= @default_lang %>: index
+---
+
+**<%= @title %>** へようこそ！ここはあなたのホームページです。
+
+自己紹介やサイトの説明を書くには `content/ja/pages/index.md` を編集してください。

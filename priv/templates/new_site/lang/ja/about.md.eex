@@ -1,0 +1,22 @@
+---
+title: "このサイトについて"
+description: "<%= @title %> についてもっと詳しく。"
+layout: page
+lang: ja
+translations:
+  <%= @default_lang %>: about
+---
+
+# <%= @title %> について
+
+ようこそ！このサイトは [Elixir](https://elixir-lang.org) で作られた静的サイトジェネレーター **[Sayfa](https://github.com/furkanural/sayfa)** で構築されています。
+
+## 自己紹介
+
+> *このセクションをあなた自身の紹介に置き換えてください。*
+
+関数型プログラミングとオープンソースに情熱を持つソフトウェア開発者です。
+
+## 連絡先
+
+[GitHub](https://github.com/yourname) で見つけることができます。

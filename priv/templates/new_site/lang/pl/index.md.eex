@@ -1,0 +1,11 @@
+---
+title: "Strona główna"
+layout: home
+lang: pl
+translations:
+  <%= @default_lang %>: index
+---
+
+Witaj na **<%= @title %>**! To jest twoja strona główna.
+
+Edytuj `content/pl/pages/index.md`, aby się przedstawić lub opisać swój serwis.

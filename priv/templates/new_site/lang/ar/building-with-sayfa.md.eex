@@ -1,0 +1,24 @@
+---
+title: "البناء مع Sayfa"
+date: <%= Date.utc_today() |> Date.to_iso8601() %>
+description: "دليل سريع لبناء موقعك مع Sayfa."
+categories: [أدلة]
+tags: [sayfa, elixir, tutorial]
+featured: true
+lang: ar
+translations:
+  <%= @default_lang %>: building-with-sayfa
+---
+
+Sayfa هو مولّد مواقع ثابتة مبني بـ Elixir. يغطي هذا المنشور الأوامر الأساسية للبدء.
+
+## مرجع سريع
+
+```bash
+mix deps.get          # تثبيت التبعيات
+mix sayfa.serve       # تشغيل خادم التطوير مع إعادة التحميل التلقائي
+mix sayfa.build       # بناء الموقع الثابت في _site/
+mix sayfa.gen.content post "مقالتي"  # إنشاء منشور جديد
+```
+
+للدليل الكامل، راجع [النسخة الإنجليزية](/posts/building-with-sayfa/).

@@ -1,0 +1,24 @@
+---
+title: "Sayfa ile Site Oluşturma"
+date: <%= Date.utc_today() |> Date.to_iso8601() %>
+description: "Sayfa statik site üreticisi ile sitenizi nasıl oluşturacağınıza dair kısa bir rehber."
+categories: [rehberler]
+tags: [sayfa, elixir, tutorial]
+featured: true
+lang: tr
+translations:
+  <%= @default_lang %>: building-with-sayfa
+---
+
+Sayfa, Elixir ile geliştirilmiş bir statik site üreticisidir. Bu yazı, başlamanız için gereken temel komutları kapsamaktadır.
+
+## Hızlı Başvuru
+
+```bash
+mix deps.get          # Bağımlılıkları yükle
+mix sayfa.serve       # Canlı yenileme ile geliştirme sunucusunu başlat
+mix sayfa.build       # Statik siteyi _site/ klasörüne derle
+mix sayfa.gen.content post "Yazım"  # Yeni bir yazı oluştur
+```
+
+Tam rehber için [İngilizce versiyona](/posts/building-with-sayfa/) bakın.

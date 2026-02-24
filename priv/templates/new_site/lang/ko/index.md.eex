@@ -1,0 +1,11 @@
+---
+title: "홈"
+layout: home
+lang: ko
+translations:
+  <%= @default_lang %>: index
+---
+
+**<%= @title %>**에 오신 것을 환영합니다! 이곳이 당신의 홈 페이지입니다.
+
+자기소개나 사이트 설명을 작성하려면 `content/ko/pages/index.md`를 편집하세요.

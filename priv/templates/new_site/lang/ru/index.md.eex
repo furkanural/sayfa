@@ -1,0 +1,11 @@
+---
+title: "Главная"
+layout: home
+lang: ru
+translations:
+  <%= @default_lang %>: index
+---
+
+Добро пожаловать на **<%= @title %>**! Это ваша главная страница.
+
+Отредактируйте `content/ru/pages/index.md`, чтобы рассказать о себе или описать свой сайт.

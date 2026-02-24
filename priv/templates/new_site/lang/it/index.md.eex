@@ -1,0 +1,11 @@
+---
+title: "Home"
+layout: home
+lang: it
+translations:
+  <%= @default_lang %>: index
+---
+
+Benvenuto su **<%= @title %>**! Questa è la tua home page.
+
+Modifica `content/it/pages/index.md` per presentarti o descrivere il tuo sito.

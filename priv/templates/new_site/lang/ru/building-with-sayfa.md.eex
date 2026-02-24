@@ -1,0 +1,24 @@
+---
+title: "Создание сайта с Sayfa"
+date: <%= Date.utc_today() |> Date.to_iso8601() %>
+description: "Краткое руководство по созданию сайта с Sayfa."
+categories: [руководства]
+tags: [sayfa, elixir, tutorial]
+featured: true
+lang: ru
+translations:
+  <%= @default_lang %>: building-with-sayfa
+---
+
+Sayfa — это генератор статических сайтов, созданный на Elixir. В этой статье рассмотрены основные команды для начала работы.
+
+## Краткий справочник
+
+```bash
+mix deps.get          # Установить зависимости
+mix sayfa.serve       # Запустить сервер разработки с горячей перезагрузкой
+mix sayfa.build       # Собрать статический сайт в _site/
+mix sayfa.gen.content post "Моя статья"  # Создать новую запись
+```
+
+Полное руководство доступно в [английской версии](/posts/building-with-sayfa/).

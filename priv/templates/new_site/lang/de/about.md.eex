@@ -1,0 +1,22 @@
+---
+title: "Über mich"
+description: "Erfahren Sie mehr über <%= @title %>."
+layout: page
+lang: de
+translations:
+  <%= @default_lang %>: about
+---
+
+# Über <%= @title %>
+
+Willkommen! Diese Website wurde mit **[Sayfa](https://github.com/furkanural/sayfa)** erstellt, einem statischen Website-Generator für [Elixir](https://elixir-lang.org).
+
+## Über mich
+
+> *Ersetzen Sie diesen Abschnitt durch Ihre eigene Geschichte.*
+
+Ich bin ein Softwareentwickler mit Begeisterung für funktionale Programmierung und Open Source.
+
+## Kontakt
+
+Sie können mich auf [GitHub](https://github.com/yourname) finden.

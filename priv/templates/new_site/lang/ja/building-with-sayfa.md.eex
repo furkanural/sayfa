@@ -1,0 +1,24 @@
+---
+title: "Sayfaで構築する"
+date: <%= Date.utc_today() |> Date.to_iso8601() %>
+description: "Sayfaでサイトを構築するためのクイックガイド。"
+categories: [ガイド]
+tags: [sayfa, elixir, tutorial]
+featured: true
+lang: ja
+translations:
+  <%= @default_lang %>: building-with-sayfa
+---
+
+SayfaはElixirで構築された静的サイトジェネレーターです。この投稿では、始めるための主要なコマンドを説明します。
+
+## クイックリファレンス
+
+```bash
+mix deps.get          # 依存関係のインストール
+mix sayfa.serve       # ライブリロード付き開発サーバーの起動
+mix sayfa.build       # 静的サイトを _site/ にビルド
+mix sayfa.gen.content post "私の投稿"  # 新しい投稿を生成
+```
+
+完全なガイドは[英語版](/posts/building-with-sayfa/)をご覧ください。

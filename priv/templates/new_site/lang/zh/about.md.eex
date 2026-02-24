@@ -1,0 +1,22 @@
+---
+title: "关于"
+description: "了解更多关于 <%= @title %> 的信息。"
+layout: page
+lang: zh
+translations:
+  <%= @default_lang %>: about
+---
+
+# 关于 <%= @title %>
+
+欢迎！本网站使用 **[Sayfa](https://github.com/furkanural/sayfa)** 构建，这是一个用 [Elixir](https://elixir-lang.org) 开发的静态站点生成器。
+
+## 关于我
+
+> *请将此部分替换为您自己的故事。*
+
+我是一名热爱函数式编程和开源的软件开发者。
+
+## 联系方式
+
+您可以在 [GitHub](https://github.com/yourname) 上找到我。

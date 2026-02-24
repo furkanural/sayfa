@@ -1,0 +1,24 @@
+---
+title: "使用 Sayfa 构建网站"
+date: <%= Date.utc_today() |> Date.to_iso8601() %>
+description: "使用 Sayfa 构建网站的快速指南。"
+categories: [指南]
+tags: [sayfa, elixir, tutorial]
+featured: true
+lang: zh
+translations:
+  <%= @default_lang %>: building-with-sayfa
+---
+
+Sayfa 是一个用 Elixir 构建的静态站点生成器。本文涵盖了入门所需的关键命令。
+
+## 快速参考
+
+```bash
+mix deps.get          # 安装依赖
+mix sayfa.serve       # 启动带热重载的开发服务器
+mix sayfa.build       # 将静态网站构建到 _site/
+mix sayfa.gen.content post "我的文章"  # 生成新文章
+```
+
+完整指南请参阅[英文版本](/posts/building-with-sayfa/)。

@@ -1,0 +1,22 @@
+---
+title: "Hakkında"
+description: "<%= @title %> hakkında daha fazla bilgi edinin."
+layout: page
+lang: tr
+translations:
+  <%= @default_lang %>: about
+---
+
+# <%= @title %> Hakkında
+
+Merhaba! Bu site, [Elixir](https://elixir-lang.org) ile geliştirilmiş bir statik site üreteci olan **[Sayfa](https://github.com/furkanural/sayfa)** ile oluşturulmuştur.
+
+## Hakkımda
+
+> *Bu bölümü kendi hikayenizle değiştirin.*
+
+Yazılım geliştirme, işlevsel programlama ve açık kaynak konularına ilgi duyuyorum.
+
+## İletişim
+
+Bana [GitHub](https://github.com/yourname) üzerinden ulaşabilirsiniz.

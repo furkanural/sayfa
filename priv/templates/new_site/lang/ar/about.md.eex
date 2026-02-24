@@ -1,0 +1,22 @@
+---
+title: "حول الموقع"
+description: "تعرف على المزيد حول <%= @title %>."
+layout: page
+lang: ar
+translations:
+  <%= @default_lang %>: about
+---
+
+# حول <%= @title %>
+
+مرحباً! تم إنشاء هذا الموقع باستخدام **[Sayfa](https://github.com/furkanural/sayfa)**، وهو مولّد مواقع ثابتة مبني بـ [Elixir](https://elixir-lang.org).
+
+## عن نفسي
+
+> *استبدل هذا القسم بقصتك الخاصة.*
+
+أنا مطور برمجيات شغوف بالبرمجة الوظيفية والمصدر المفتوح.
+
+## التواصل
+
+يمكنك إيجادي على [GitHub](https://github.com/yourname).

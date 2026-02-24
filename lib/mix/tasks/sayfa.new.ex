@@ -87,15 +87,13 @@ defmodule Mix.Tasks.Sayfa.New do
 
     Enum.each(dirs, &File.mkdir_p!/1)
 
-    # Create language subdirectories for non-default languages
-    languages
-    |> tl()
-    |> Enum.each(fn lang ->
-      File.mkdir_p!(Path.join([path, "content", lang, "posts"]))
-    end)
-
     # Generate files from templates
     templates_dir = templates_path()
+
+    # Create language subdirectories and content files for non-default languages
+    languages
+    |> tl()
+    |> Enum.each(&generate_lang_content(&1, path, templates_dir, assigns))
 
     write_template(templates_dir, "mix.exs.eex", Path.join(path, "mix.exs"), assigns)
     write_template(templates_dir, "config.exs.eex", Path.join(path, "config/config.exs"), assigns)
@@ -191,6 +189,43 @@ defmodule Mix.Tasks.Sayfa.New do
 
     # Print project structure and next steps
     print_success(path, project_name)
+  end
+
+  defp generate_lang_content(lang, path, templates_dir, assigns) do
+    lang_path = Path.join([path, "content", lang])
+    File.mkdir_p!(Path.join(lang_path, "pages"))
+    File.mkdir_p!(Path.join(lang_path, "posts"))
+
+    lang_assigns = Keyword.put(assigns, :lang, lang)
+
+    write_template(
+      templates_dir,
+      lang_template_name(templates_dir, lang, "index.md.eex"),
+      Path.join([lang_path, "pages", "index.md"]),
+      lang_assigns
+    )
+
+    write_template(
+      templates_dir,
+      lang_template_name(templates_dir, lang, "about.md.eex"),
+      Path.join([lang_path, "pages", "about.md"]),
+      lang_assigns
+    )
+
+    write_template(
+      templates_dir,
+      lang_template_name(templates_dir, lang, "building-with-sayfa.md.eex"),
+      Path.join([lang_path, "posts", "building-with-sayfa.md"]),
+      lang_assigns
+    )
+  end
+
+  defp lang_template_name(templates_dir, lang, name) do
+    specific = "lang/#{lang}/#{name}"
+
+    if File.exists?(Path.join(templates_dir, specific)),
+      do: specific,
+      else: "lang/#{name}"
   end
 
   defp write_template(templates_dir, template_name, dest_path, assigns) do

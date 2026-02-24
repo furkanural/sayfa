@@ -1,0 +1,11 @@
+---
+title: "Startpagina"
+layout: home
+lang: nl
+translations:
+  <%= @default_lang %>: index
+---
+
+Welkom bij **<%= @title %>**! Dit is uw startpagina.
+
+Bewerk `content/nl/pages/index.md` om uzelf voor te stellen of uw site te beschrijven.
