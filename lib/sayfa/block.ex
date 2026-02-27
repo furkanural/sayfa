@@ -18,7 +18,7 @@ defmodule Sayfa.Block do
   ## Examples
 
       iex> length(Sayfa.Block.default_blocks())
-      15
+      16
 
       iex> Sayfa.Block.find_by_name(:hero)
       Sayfa.Blocks.Hero
@@ -34,7 +34,7 @@ defmodule Sayfa.Block do
   ## Examples
 
       iex> length(Sayfa.Block.default_blocks())
-      15
+      16
 
   """
   @spec default_blocks() :: [module()]
@@ -54,7 +54,8 @@ defmodule Sayfa.Block do
       Sayfa.Blocks.CopyLink,
       Sayfa.Blocks.Breadcrumb,
       Sayfa.Blocks.LanguageSwitcher,
-      Sayfa.Blocks.RelatedPosts
+      Sayfa.Blocks.RelatedPosts,
+      Sayfa.Blocks.Analytics
     ]
   end
 

@@ -9,6 +9,7 @@
   <%= Sayfa.SEO.json_ld(assigns[:content], @site) %>
   <%= Sayfa.SEO.hreflang_tags(assigns[:content], @site, assigns[:archive_alternates]) %>
   <link rel="alternate" type="application/atom+xml" title="<%= @site.title %>" href="<%= String.trim_trailing(@site.base_url, "/") %>/feed.xml">
+  <link rel="alternate" type="application/feed+json" title="<%= @site.title %>" href="<%= String.trim_trailing(@site.base_url, "/") %>/feed.json">
   <link rel="stylesheet" href="/assets/css/main.css">
 </head>
 <body class="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 font-sans antialiased">
@@ -17,6 +18,7 @@
   <%= @block.(:footer, author: Map.get(@site, :author, @site.title)) %>
   <%= @block.(:code_copy, []) %>
   <script src="/assets/js/enhancements.js" defer></script>
+  <%= @block.(:analytics, []) %>
 </body>
 <!-- Built with Sayfa https://hex.pm/packages/sayfa -->
 </html>

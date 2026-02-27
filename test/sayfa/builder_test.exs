@@ -101,8 +101,8 @@ defmodule Sayfa.BuilderTest do
 
       assert {:ok, result} = Builder.build(build_opts(ctx))
 
-      # 1 individual + 1 posts index + 1 feed.xml + 1 sitemap.xml = 4 (no per-type feed: no dated content)
-      assert result.files_written == 4
+      # 1 individual + 1 posts index + 1 feed.xml + 1 feed.json + 1 sitemap.xml = 5 (no per-type feed: no dated content)
+      assert result.files_written == 5
       assert result.content_count == 1
     end
 
@@ -117,8 +117,8 @@ defmodule Sayfa.BuilderTest do
 
       assert {:ok, result} = Builder.build(build_opts(ctx, drafts: true))
 
-      # 1 individual + 1 posts index + 1 feed.xml + 1 sitemap.xml = 4 (no per-type feed: no dated content)
-      assert result.files_written == 4
+      # 1 individual + 1 posts index + 1 feed.xml + 1 feed.json + 1 sitemap.xml = 5 (no per-type feed: no dated content)
+      assert result.files_written == 5
       assert result.content_count == 1
     end
 
@@ -129,8 +129,8 @@ defmodule Sayfa.BuilderTest do
 
     test "builds with no content files", ctx do
       assert {:ok, result} = Builder.build(build_opts(ctx))
-      # feed.xml + sitemap.xml always generated
-      assert result.files_written == 2
+      # feed.xml + feed.json + sitemap.xml always generated
+      assert result.files_written == 3
       assert result.content_count == 0
     end
 
@@ -145,8 +145,8 @@ defmodule Sayfa.BuilderTest do
       """)
 
       assert {:ok, result} = Builder.build(build_opts(ctx))
-      # 1 individual + 1 feed.xml + 1 sitemap.xml = 3
-      assert result.files_written == 3
+      # 1 individual + 1 feed.xml + 1 feed.json + 1 sitemap.xml = 4
+      assert result.files_written == 4
 
       # home layout wraps with <section class="home">
       # (default theme layout)

@@ -18,7 +18,7 @@ defmodule Sayfa.BlockTest do
 
   describe "default_blocks/0" do
     test "returns 15 built-in blocks" do
-      assert length(Block.default_blocks()) == 15
+      assert length(Block.default_blocks()) == 16
     end
 
     test "all modules implement the block behaviour" do

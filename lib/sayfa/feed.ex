@@ -14,6 +14,7 @@ defmodule Sayfa.Feed do
   """
 
   alias Sayfa.Content
+  alias Slug
 
   @doc """
   Generates an Atom XML feed string for all dated content.
@@ -66,6 +67,107 @@ defmodule Sayfa.Feed do
     |> Enum.filter(& &1.date)
     |> Content.sort_by_date(:desc)
     |> build_feed(config, "/feed/#{type_name}.xml")
+  end
+
+  @doc """
+  Generates a JSON Feed 1.1 string for all dated content.
+
+  Contents are sorted by date descending (newest first).
+  Contents without a date are excluded.
+
+  ## Examples
+
+      iex> contents = [%Sayfa.Content{title: "Hello", body: "<p>World</p>", date: ~D[2024-01-15], slug: "hello", meta: %{"url_prefix" => "posts"}}]
+      iex> config = %{title: "My Site", base_url: "https://example.com", author: "Author"}
+      iex> json = Sayfa.Feed.generate_json(contents, config)
+      iex> json =~ "jsonfeed.org"
+      true
+      iex> json =~ "Hello"
+      true
+
+  """
+  @spec generate_json([Content.t()], map()) :: String.t()
+  def generate_json(contents, config) do
+    contents
+    |> Enum.filter(& &1.date)
+    |> Content.sort_by_date(:desc)
+    |> build_json_feed(config, "/feed.json")
+  end
+
+  @doc """
+  Generates a JSON Feed 1.1 string for a specific content type.
+
+  ## Examples
+
+      iex> contents = [
+      ...>   %Sayfa.Content{title: "Post", body: "<p>A</p>", date: ~D[2024-01-15], slug: "post", meta: %{"content_type" => "posts", "url_prefix" => "posts"}},
+      ...>   %Sayfa.Content{title: "Note", body: "<p>B</p>", date: ~D[2024-01-10], slug: "note", meta: %{"content_type" => "notes", "url_prefix" => "notes"}}
+      ...> ]
+      iex> config = %{title: "My Site", base_url: "https://example.com", author: "Author"}
+      iex> json = Sayfa.Feed.generate_json_for_type(contents, "posts", config)
+      iex> json =~ "Post"
+      true
+      iex> json =~ "Note"
+      false
+
+  """
+  @spec generate_json_for_type([Content.t()], String.t(), map()) :: String.t()
+  def generate_json_for_type(contents, type_name, config) do
+    contents
+    |> Content.all_of_type(type_name)
+    |> Enum.filter(& &1.date)
+    |> Content.sort_by_date(:desc)
+    |> build_json_feed(config, "/feed/#{type_name}.json")
+  end
+
+  @doc """
+  Generates an Atom XML feed for a specific tag.
+
+  Filters to content with the given tag, sorts by date descending.
+
+  ## Examples
+
+      iex> contents = [%Sayfa.Content{title: "Tagged", body: "<p>A</p>", date: ~D[2024-01-15], slug: "tagged", tags: ["elixir"], meta: %{"url_prefix" => "posts"}}]
+      iex> config = %{title: "My Site", base_url: "https://example.com", author: "Author"}
+      iex> xml = Sayfa.Feed.generate_for_tag(contents, "elixir", config)
+      iex> xml =~ "Tagged"
+      true
+
+  """
+  @spec generate_for_tag([Content.t()], String.t(), map()) :: String.t()
+  def generate_for_tag(contents, tag, config) do
+    slug = Slug.slugify(tag)
+
+    contents
+    |> Content.with_tag(tag)
+    |> Enum.filter(& &1.date)
+    |> Content.sort_by_date(:desc)
+    |> build_feed(config, "/feed/tags/#{slug}.xml")
+  end
+
+  @doc """
+  Generates an Atom XML feed for a specific category.
+
+  Filters to content with the given category, sorts by date descending.
+
+  ## Examples
+
+      iex> contents = [%Sayfa.Content{title: "Categorized", body: "<p>A</p>", date: ~D[2024-01-15], slug: "categorized", categories: ["news"], meta: %{"url_prefix" => "posts"}}]
+      iex> config = %{title: "My Site", base_url: "https://example.com", author: "Author"}
+      iex> xml = Sayfa.Feed.generate_for_category(contents, "news", config)
+      iex> xml =~ "Categorized"
+      true
+
+  """
+  @spec generate_for_category([Content.t()], String.t(), map()) :: String.t()
+  def generate_for_category(contents, category, config) do
+    slug = Slug.slugify(category)
+
+    contents
+    |> Content.with_category(category)
+    |> Enum.filter(& &1.date)
+    |> Content.sort_by_date(:desc)
+    |> build_feed(config, "/feed/categories/#{slug}.xml")
   end
 
   defp build_feed(contents, config, feed_path) do
@@ -125,5 +227,49 @@ defmodule Sayfa.Feed do
 
   defp prepend_xml_declaration(xml) do
     ~s(<?xml version="1.0" encoding="utf-8"?>) <> xml
+  end
+
+  defp build_json_feed(contents, config, feed_url_path) do
+    base_url = String.trim_trailing(config.base_url, "/")
+    author = Map.get(config, :author)
+
+    feed =
+      %{
+        "version" => "https://jsonfeed.org/version/1.1",
+        "title" => config.title,
+        "home_page_url" => base_url <> "/",
+        "feed_url" => base_url <> feed_url_path,
+        "items" => Enum.map(contents, &json_item(&1, config))
+      }
+
+    feed =
+      if is_binary(author) and author != "" do
+        Map.put(feed, "authors", [%{"name" => author}])
+      else
+        feed
+      end
+
+    JSON.encode!(feed)
+  end
+
+  defp json_item(%Content{} = content, config) do
+    url = Sayfa.SEO.content_url(content, config)
+    description = content.meta["description"]
+    summary = if description, do: description, else: truncate_text(content.body, 300)
+
+    item = %{
+      "id" => url,
+      "url" => url,
+      "title" => content.title,
+      "summary" => summary,
+      "content_html" => content.body,
+      "date_published" => to_rfc3339(content.date)
+    }
+
+    if content.tags && content.tags != [] do
+      Map.put(item, "tags", content.tags)
+    else
+      item
+    end
   end
 end

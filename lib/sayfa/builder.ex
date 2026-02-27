@@ -784,7 +784,56 @@ defmodule Sayfa.Builder do
         tc + 1
       end)
 
-    {:ok, 1 + lang_count + type_count}
+    # 4. JSON feed (root)
+    json = Feed.generate_json(contents, config)
+    json_path = Path.join(config.output_dir, "feed.json")
+    File.mkdir_p!(Path.dirname(json_path))
+    File.write!(json_path, json)
+
+    # 5. Per-type JSON feeds
+    json_type_count =
+      Enum.reduce(type_groups, 0, fn {type, _items}, tc ->
+        json_type = Feed.generate_json_for_type(contents, type, config)
+        path = Path.join([config.output_dir, "feed", "#{type}.json"])
+        File.mkdir_p!(Path.dirname(path))
+        File.write!(path, json_type)
+        tc + 1
+      end)
+
+    # 6. Per-tag feeds
+    tags =
+      contents
+      |> Content.group_by_tag()
+      |> Map.keys()
+
+    tag_count =
+      Enum.reduce(tags, 0, fn tag, count ->
+        xml = Feed.generate_for_tag(contents, tag, config)
+        path = Path.join([config.output_dir, "feed", "tags", "#{Slug.slugify(tag)}.xml"])
+        File.mkdir_p!(Path.dirname(path))
+        File.write!(path, xml)
+        count + 1
+      end)
+
+    # 7. Per-category feeds
+    categories =
+      contents
+      |> Content.group_by_category()
+      |> Map.keys()
+
+    cat_count =
+      Enum.reduce(categories, 0, fn category, count ->
+        xml = Feed.generate_for_category(contents, category, config)
+
+        path =
+          Path.join([config.output_dir, "feed", "categories", "#{Slug.slugify(category)}.xml"])
+
+        File.mkdir_p!(Path.dirname(path))
+        File.write!(path, xml)
+        count + 1
+      end)
+
+    {:ok, 1 + lang_count + type_count + json_type_count + 1 + tag_count + cat_count}
   end
 
   # --- Sitemap ---
