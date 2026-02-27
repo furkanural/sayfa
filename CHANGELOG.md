@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-02-27
+
+### Changed
+
+- **Elixir requirement**: Updated minimum Elixir version from `~> 1.18` to `~> 1.19`
+- **Dependency updates**: Updated core dependencies to latest stable versions — mdex `~> 0.11`, yaml_elixir `~> 2.12`, xml_builder `~> 2.4`, plug_cowboy `~> 2.8`, file_system `~> 1.1`, ex_doc `~> 0.40`
+
+### Fixed
+
+- **`mix sayfa.new` version constraint**: New sites were scaffolded with `{:sayfa, "~> 0.1"}` — now correctly uses `"~> 0.3"`
+- **ExDoc module groups**: Added 8 missing blocks to the docs module groups — `CategoryCloud`, `RecentContent`, `CopyLink`, `Breadcrumb`, `LanguageSwitcher`, `RelatedPosts`, `RelatedContent`, `Analytics`
+
 ## [0.3.0] - 2026-02-27
 
 ### Added
@@ -124,6 +136,8 @@ Initial release of Sayfa — a static site generator built in Elixir.
 - Build caching for incremental rebuilds
 - Verbose logging with per-stage timing
 
+[0.3.1]: https://github.com/furkanural/sayfa/compare/v0.3.0...v0.3.1
+[0.3.0]: https://github.com/furkanural/sayfa/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/furkanural/sayfa/compare/v0.1.1...v0.2.0
 [0.1.1]: https://github.com/furkanural/sayfa/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/furkanural/sayfa/releases/tag/v0.1.0
