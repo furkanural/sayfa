@@ -145,7 +145,7 @@
 
     var wrapper = document.createElement("div");
     wrapper.className =
-      "not-prose my-6 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700";
+      "not-prose my-6 max-w-full rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700";
 
     var header = document.createElement("div");
     header.className =

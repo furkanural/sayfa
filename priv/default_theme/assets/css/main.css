@@ -221,6 +221,12 @@
   .prose-toc {
     @apply prose-headings:scroll-mt-20;
   }
+
+  /* Prevent code blocks from overflowing viewport on mobile */
+  .prose-content pre {
+    max-width: 100%;
+    overflow-x: auto;
+  }
 }
 
 /* Scrollbar */
