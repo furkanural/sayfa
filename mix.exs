@@ -8,7 +8,7 @@ defmodule Sayfa.MixProject do
     [
       app: :sayfa,
       version: @version,
-      elixir: "~> 1.18",
+      elixir: "~> 1.19",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       name: "Sayfa",
@@ -27,14 +27,14 @@ defmodule Sayfa.MixProject do
 
   defp deps do
     [
-      {:mdex, "~> 0.2"},
-      {:yaml_elixir, "~> 2.9"},
+      {:mdex, "~> 0.11"},
+      {:yaml_elixir, "~> 2.12"},
       {:slugify, "~> 1.3"},
-      {:xml_builder, "~> 2.2"},
+      {:xml_builder, "~> 2.4"},
       {:tailwind, "~> 0.4", runtime: false},
-      {:plug_cowboy, "~> 2.7"},
-      {:file_system, "~> 1.0"},
-      {:ex_doc, "~> 0.34", only: :dev, runtime: false},
+      {:plug_cowboy, "~> 2.8"},
+      {:file_system, "~> 1.1"},
+      {:ex_doc, "~> 0.40", only: :dev, runtime: false},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false}
     ]
   end
@@ -67,8 +67,16 @@ defmodule Sayfa.MixProject do
           Sayfa.Blocks.Toc,
           Sayfa.Blocks.RecentPosts,
           Sayfa.Blocks.TagCloud,
+          Sayfa.Blocks.CategoryCloud,
           Sayfa.Blocks.ReadingTime,
-          Sayfa.Blocks.CodeCopy
+          Sayfa.Blocks.CodeCopy,
+          Sayfa.Blocks.RecentContent,
+          Sayfa.Blocks.CopyLink,
+          Sayfa.Blocks.Breadcrumb,
+          Sayfa.Blocks.LanguageSwitcher,
+          Sayfa.Blocks.RelatedPosts,
+          Sayfa.Blocks.RelatedContent,
+          Sayfa.Blocks.Analytics
         ],
         Features: [
           Sayfa.Feed,

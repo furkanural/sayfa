@@ -13,7 +13,7 @@ Thank you for your interest in contributing to Sayfa! Whether it's a bug report,
 
 ### Requirements
 
-- Elixir ~> 1.18 (OTP 27+)
+- Elixir ~> 1.19 (OTP 27+)
 - Rust (latest stable) — required for MDEx NIF compilation
 
 ### Getting Started
