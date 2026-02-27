@@ -9,12 +9,13 @@ defmodule Sayfa.Builder do
   3. **Parse** — parse front matter and render Markdown for each file
   4. **Classify** — determine content type from directory structure, enrich with type metadata
   5. **Filter** — exclude drafts (unless `drafts: true`)
-  6. **Enrich** — add reading time and table of contents to content metadata
-  7. **Render** — apply three-layer template pipeline for individual pages
-  8. **Archives** — generate tag and category archive pages
-  9. **Indexes** — generate paginated content type index pages
-  10. **Feeds** — generate Atom feeds (main + per-type)
-  11. **Sitemap** — generate XML sitemap
+  6. **Validate** — log warnings for missing required fields (e.g., `date` on posts)
+  7. **Enrich** — add reading time, table of contents, and prev/next navigation to content metadata
+  8. **Render** — apply three-layer template pipeline for individual pages
+  9. **Archives** — generate tag and category archive pages
+  10. **Indexes** — generate paginated content type index pages
+  11. **Feeds** — generate Atom feeds (main + per-type)
+  12. **Sitemap** — generate XML sitemap
 
   ## Examples
 
@@ -41,6 +42,7 @@ defmodule Sayfa.Builder do
   alias Sayfa.Tailwind
   alias Sayfa.Template
   alias Sayfa.TOC
+  alias Sayfa.Validator
 
   require Logger
 
@@ -91,9 +93,12 @@ defmodule Sayfa.Builder do
            end),
          _ <- verbose_log(verbose, "Parsed #{length(contents)} contents"),
          contents <-
-           timed_sync("Filter drafts", verbose, fn -> filter_drafts(contents, config.drafts) end),
+           timed_sync("Filter drafts", verbose, fn -> filter_drafts(contents, config) end),
          _ <- verbose_log(verbose, "#{length(contents)} contents after filtering"),
+         _ <- timed_sync("Validate contents", verbose, fn -> Validator.validate_all(contents) end),
          contents <- timed_sync("Enrich contents", verbose, fn -> enrich_contents(contents) end),
+         contents <-
+           timed_sync("Enrich prev/next", verbose, fn -> enrich_prev_next(contents) end),
          contents <-
            timed_sync("Auto-link translations", verbose, fn ->
              auto_link_translations(contents, config)
@@ -309,10 +314,9 @@ defmodule Sayfa.Builder do
     %{content | meta: meta, lang: lang}
   end
 
-  defp filter_drafts(contents, true), do: contents
-
-  defp filter_drafts(contents, _) do
-    Enum.reject(contents, & &1.draft)
+  defp filter_drafts(contents, config) do
+    include_drafts = Map.get(config, :drafts, false)
+    if include_drafts, do: contents, else: Enum.reject(contents, & &1.draft)
   end
 
   defp render_and_write(contents, config) do
@@ -687,6 +691,51 @@ defmodule Sayfa.Builder do
 
       %{content | meta: meta}
     end)
+  end
+
+  # --- Prev / Next Navigation ---
+
+  defp enrich_prev_next(contents) do
+    # Build sorted lists per {content_type, lang_prefix} (ascending = oldest first)
+    # so prev = older, next = newer from the reader's perspective.
+    sorted_groups =
+      contents
+      |> Enum.group_by(fn c -> {c.meta["content_type"], c.meta["lang_prefix"] || ""} end)
+      |> Map.new(fn {key, items} ->
+        sorted = items |> Enum.filter(& &1.date) |> Content.sort_by_date(:asc)
+        {key, sorted}
+      end)
+
+    Enum.map(contents, &enrich_one_prev_next(&1, sorted_groups))
+  end
+
+  defp enrich_one_prev_next(content, _sorted_groups) when is_nil(content.date), do: content
+
+  defp enrich_one_prev_next(content, sorted_groups) do
+    key = {content.meta["content_type"], content.meta["lang_prefix"] || ""}
+    sorted_items = Map.get(sorted_groups, key, [])
+    idx = Enum.find_index(sorted_items, fn c -> c.slug == content.slug end)
+    apply_prev_next(content, sorted_items, idx)
+  end
+
+  defp apply_prev_next(content, _sorted_items, nil), do: content
+
+  defp apply_prev_next(content, sorted_items, idx) do
+    prev_item = if idx > 0, do: Enum.at(sorted_items, idx - 1), else: nil
+    next_item = if idx < length(sorted_items) - 1, do: Enum.at(sorted_items, idx + 1), else: nil
+
+    meta =
+      content.meta
+      |> Map.put("prev_content", nav_info(prev_item))
+      |> Map.put("next_content", nav_info(next_item))
+
+    %{content | meta: meta}
+  end
+
+  defp nav_info(nil), do: nil
+
+  defp nav_info(content) do
+    %{title: content.title, url: Content.url(content), date: content.date, slug: content.slug}
   end
 
   # --- Feeds ---

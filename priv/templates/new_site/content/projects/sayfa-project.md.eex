@@ -14,14 +14,13 @@ Sayfa is a static site generator built in Elixir. It's designed to be simple, ex
 
 - **5 content types** — Posts, notes, projects, talks, and pages
 - **Markdown with syntax highlighting** — Powered by MDEx (Rust NIF)
-- **16 built-in blocks** — Reusable template components (hero, TOC, search, related posts, and more)
+- **15 built-in blocks** — Reusable template components (hero, TOC, related posts, and more)
 - **Atom feeds & sitemap** — Built-in feed and sitemap generation
 - **SEO** — Meta tags, Open Graph, JSON-LD structured data
 - **i18n** — Multilingual support with 14 built-in translations
 - **Dark mode** — Automatic via `prefers-color-scheme`
 - **TailwindCSS** — No Node.js required, standalone binary
 - **Dev server** — Live reload during development
-- **Pagefind search** — Static search integration
 
 ## Tech Stack
 

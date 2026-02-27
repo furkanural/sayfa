@@ -42,10 +42,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Simplified block implementations to use component classes
 - DevServer dependencies now required (no longer optional)
 
-### Removed
-
-- Pagefind search functionality (will be replaced in future release)
-
 ## [0.1.1] - 2026-02-11
 
 ### Fixed

@@ -110,7 +110,7 @@ Blocks are reusable components you can use in your EEx templates:
 <%%= @block.(:tag_cloud) %>
 ```
 
-Sayfa ships with 16 built-in blocks including hero sections, navigation, table of contents, search, and more. You can also create custom blocks by implementing the `Sayfa.Behaviours.Block` behaviour.
+Sayfa ships with 15 built-in blocks including hero sections, navigation, table of contents, and more. You can also create custom blocks by implementing the `Sayfa.Behaviours.Block` behaviour.
 
 ## Customizing Your Site
 
