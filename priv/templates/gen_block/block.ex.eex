@@ -1,0 +1,20 @@
+defmodule <%= @module_name %> do
+  @moduledoc """
+  Custom block: <%= @block_name %>.
+
+  Renders HTML for the `:<%= @block_name %>` block.
+  """
+
+  @behaviour Sayfa.Behaviours.Block
+
+  @impl true
+  def name, do: :<%= @block_name %>
+
+  @impl true
+  def render(assigns) do
+    _site = Map.get(assigns, :site, %{})
+    _content = Map.get(assigns, :content)
+
+    "<div><!-- <%= @module_name %> block --></div>"
+  end
+end

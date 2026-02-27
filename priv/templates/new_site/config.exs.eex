@@ -26,6 +26,8 @@ config :sayfa, :site,
   #   {"Feed", "/feed.xml"}
   # ],
   # theme: "custom",  # Uncomment after running: mix sayfa.gen.layout <name>
+  # highlight_theme: "github_light",  # Syntax highlighting theme (default: "github_light")
+  # view_transitions: false,          # Enable View Transitions API for smooth page navigation
   # Generate content: mix sayfa.gen.content post "My Title"
   # Multilingual:     mix sayfa.gen.content post "My Title" --lang=en,tr
   default_lang: :<%= @default_lang %>,

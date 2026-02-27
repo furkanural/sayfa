@@ -43,7 +43,9 @@ defmodule Sayfa.Config do
     description: "",
     social_links: [],
     tailwind_version: "4.1.12",
-    static_dir: "static"
+    static_dir: "static",
+    highlight_theme: "github_light",
+    view_transitions: false
   }
 
   @doc """

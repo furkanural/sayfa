@@ -335,3 +335,20 @@ button { cursor: pointer; }
 #lang-toggle[aria-expanded="true"] svg:last-child {
   transform: rotate(180deg);
 }
+
+/* Print styles */
+@media print {
+  header, footer, nav, aside, #reading-progress,
+  .toc-sidebar, [data-noprint] { display: none !important; }
+
+  body { background: white !important; color: black !important; font-size: 12pt; }
+  a { color: black !important; text-decoration: underline; }
+  a[href^="http"]:after { content: " (" attr(href) ")"; font-size: 0.75em; color: #555; }
+  a[href^="#"]:after { content: ""; }
+
+  pre, blockquote { page-break-inside: avoid; border: 1px solid #ccc; }
+  h1, h2, h3 { page-break-after: avoid; }
+  img { max-width: 100% !important; }
+
+  .container-content, .container-content-wide { max-width: 100% !important; padding: 0 !important; }
+}

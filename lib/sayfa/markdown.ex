@@ -5,6 +5,8 @@ defmodule Sayfa.Markdown do
   Provides a consistent interface with `{:ok, html}` / `{:error, reason}`
   tuples and a bang variant that raises on error.
 
+  Supports optional syntax highlighting theme selection via the `theme` parameter.
+
   ## Examples
 
       iex> {:ok, html} = Sayfa.Markdown.render("# Hello")
@@ -20,6 +22,7 @@ defmodule Sayfa.Markdown do
   Renders a Markdown string to HTML.
 
   Headings include anchor IDs for linking (e.g., `<h1 id="hello">...</h1>`).
+  An optional `theme` string selects the syntax highlighting theme (default: `"github_light"`).
 
   ## Examples
 
@@ -32,8 +35,9 @@ defmodule Sayfa.Markdown do
 
   """
   @spec render(String.t()) :: {:ok, String.t()} | {:error, term()}
-  def render(markdown) when is_binary(markdown) do
-    MDEx.to_html(markdown, opts())
+  @spec render(String.t(), String.t()) :: {:ok, String.t()} | {:error, term()}
+  def render(markdown, theme \\ "github_light") when is_binary(markdown) do
+    MDEx.to_html(markdown, opts(theme))
   end
 
   @doc """
@@ -47,14 +51,15 @@ defmodule Sayfa.Markdown do
 
   """
   @spec render!(String.t()) :: String.t()
-  def render!(markdown) when is_binary(markdown) do
-    case render(markdown) do
+  @spec render!(String.t(), String.t()) :: String.t()
+  def render!(markdown, theme \\ "github_light") when is_binary(markdown) do
+    case render(markdown, theme) do
       {:ok, html} -> html
       {:error, reason} -> raise "Markdown rendering failed: #{inspect(reason)}"
     end
   end
 
-  defp opts do
+  defp opts(theme) do
     [
       extension: [
         strikethrough: true,
@@ -65,6 +70,9 @@ defmodule Sayfa.Markdown do
       ],
       render: [
         unsafe_: true
+      ],
+      syntax_highlight: [
+        formatter: {:html_inline, theme: theme}
       ]
     ]
   end

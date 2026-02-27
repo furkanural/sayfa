@@ -257,7 +257,7 @@ defmodule Sayfa.Builder do
       :miss ->
         with {:ok, raw} <- Content.parse_raw_file(file),
              {:ok, raw} <- run_hook_list(hooks, :before_parse, raw),
-             {:ok, content} <- Content.from_raw(raw),
+             {:ok, content} <- Content.from_raw(raw, config),
              {:ok, content} <- run_hook_list(hooks, :after_parse, content) do
           {:ok, classify_content(content, file, content_dir, config)}
         end

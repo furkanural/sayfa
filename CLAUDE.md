@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-**Sayfa** (Turkish for "page") is an open-source static site generator built in Elixir (v0.1.0). It follows a two-layer architecture:
+**Sayfa** (Turkish for "page") is an open-source static site generator built in Elixir (v0.2.0). It follows a two-layer architecture:
 
 1. **Sayfa (this package)** — Reusable Hex package with core SSG functionality
 2. **User sites** — Projects that depend on Sayfa via `{:sayfa, "~> x.x"}`
@@ -61,7 +61,7 @@ sayfa/
 │   │   │   ├── hook.ex             # Hook behaviour
 │   │   │   └── content_type.ex     # Content type behaviour
 │   │   │
-│   │   ├── blocks/                 # Built-in blocks (15 total)
+│   │   ├── blocks/                 # Built-in blocks (17 total)
 │   │   │   ├── hero.ex
 │   │   │   ├── header.ex
 │   │   │   ├── footer.ex
@@ -76,7 +76,9 @@ sayfa/
 │   │   │   ├── copy_link.ex
 │   │   │   ├── breadcrumb.ex
 │   │   │   ├── language_switcher.ex
-│   │   │   └── related_posts.ex
+│   │   │   ├── related_posts.ex
+│   │   │   ├── related_content.ex
+│   │   │   └── analytics.ex
 │   │   │
 │   │   ├── content_types/          # Built-in content types
 │   │   │   ├── post.ex
@@ -94,8 +96,11 @@ sayfa/
 │   └── mix/tasks/                  # CLI commands
 │       ├── sayfa.new.ex            # Project generator
 │       ├── sayfa.build.ex          # Build site
-│       ├── sayfa.gen.layout.ex      # Layout generator
+│       ├── sayfa.gen.layout.ex     # Layout generator
 │       ├── sayfa.gen.content.ex    # Content file generator
+│       ├── sayfa.gen.block.ex      # Custom block scaffold
+│       ├── sayfa.gen.content_type.ex # Custom content type scaffold
+│       ├── sayfa.gen.images.ex     # Image optimization pipeline scaffold
 │       └── sayfa.serve.ex          # Dev server
 │
 ├── priv/

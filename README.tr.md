@@ -77,9 +77,12 @@ Sayfa **iki katmanli bir mimari** kullanir:
 
 ### Sablonlar ve Tema
 - Uc katmanli sablon bilesimi (icerik -> duzen -> temel)
-- 15 yerlesik blok (hero, baslik, altbilgi, sosyal baglantilar, icerik tablosu, son yazilar, etiket bulutu, kategori bulutu, okuma suresi, kod kopyalama, baglanti kopyalama, breadcrumb, son icerikler, dil degistirici, ilgili yazilar) ve 24 platform ikonu (GitHub, X/Twitter, Mastodon, LinkedIn, Bluesky, YouTube, Instagram ve daha fazlasi)
+- 17 yerlesik blok (hero, baslik, altbilgi, sosyal baglantilar, icerik tablosu, son yazilar, etiket bulutu, kategori bulutu, okuma suresi, kod kopyalama, baglanti kopyalama, breadcrumb, son icerikler, dil degistirici, ilgili yazilar, ilgili icerikler, analitik) ve 24 platform ikonu (GitHub, X/Twitter, Mastodon, LinkedIn, Bluesky, YouTube, Instagram ve daha fazlasi)
 - Tema mirasi (ozel -> ust -> varsayilan)
 - `@block` yardimcisi ile EEx sablonlari
+- Yapilandirilabilir sozdizimi vurgulama temasi (`highlight_theme`)
+- Sayfa gecisleri icin View Transitions API destegi (`view_transitions: true`)
+- Yerlesik baski stilleri (`@media print`)
 
 ### Uluslararasilastirma
 - Dizin tabanli cok dilli destek
@@ -164,7 +167,13 @@ hakkimda.md                    →  /hakkimda/
 
 ### Ozel Icerik Turleri
 
-`Sayfa.Behaviours.ContentType` behaviour'unu uygulayin:
+Yeni bir icerik turu iskelet olusturmak icin:
+
+```bash
+mix sayfa.gen.content_type Tarif  # → lib/content_types/tarif.ex
+```
+
+Ya da `Sayfa.Behaviours.ContentType` behaviour'unu elle uygulayabilirsiniz:
 
 ```elixir
 defmodule Uygulamam.ContentTypes.Tarif do
@@ -308,13 +317,21 @@ Bloklar, `@block` yardimcisi ile cagirilan yeniden kullanilabilir EEx bilesenler
 | Son Icerikler | `:recent_content` | Herhangi bir icerik turunun son ogeler |
 | Dil Degistirici | `:language_switcher` | Icerik cevirileri arasinda gecis |
 | Ilgili Yazilar | `:related_posts` | Etiket/kategoriye gore ilgili yazilar |
+| Ilgili Icerikler | `:related_content` | Etiket/kategoriye gore ilgili icerikler (turu otomatik algilar; `type:` atamasini kabul eder) |
 
 ### Ozel Bloklar
 
-`Sayfa.Behaviours.Block` behaviour'unu uygulayin:
+Yeni bir blok iskelet olusturmak icin:
+
+```bash
+mix sayfa.gen.block AfisBlok          # → lib/blocks/afis_blok.ex
+mix sayfa.gen.block Uygulamam.Blocks.Hero # → lib/blocks/hero.ex
+```
+
+Ya da `Sayfa.Behaviours.Block` behaviour'unu elle uygulayabilirsiniz:
 
 ```elixir
-defmodule Uygulamam.Blocks.Afiş do
+defmodule Uygulamam.Blocks.Afis do
   @behaviour Sayfa.Behaviours.Block
 
   @impl true
@@ -326,6 +343,12 @@ defmodule Uygulamam.Blocks.Afiş do
     ~s(<div class="afis">#{metin}</div>)
   end
 end
+```
+
+Ozel bloklari site yapilandirmaniza kaydedin:
+
+```elixir
+config :sayfa, :blocks, [Uygulamam.Blocks.Afis | Sayfa.Block.default_blocks()]
 ```
 
 ---
@@ -515,6 +538,12 @@ config :sayfa, :site,
   # logo: "/images/logo.svg",
   # logo_dark: "/images/logo-dark.svg",  # karanlik modda logo yerine gosterilir
 
+  # Kod bloklari icin sozdizimi vurgulama temasi
+  # highlight_theme: "github_light",
+
+  # Sayfa gecisleri icin View Transitions API
+  # view_transitions: false,
+
   # Gelistirme sunucusu
   port: 4000,
   verbose: false
@@ -541,6 +570,8 @@ config :sayfa, :site,
 | `logo` | String | `nil` | Logo gorsel yolu (baslikta yazi basliginin yerine goster) |
 | `logo_dark` | String | `nil` | Karanlik mod logosu yolu (karanlik modda `logo` yerine gosterilir) |
 | `social_links` | Map | `%{}` | Sosyal medya baglantilari (github, twitter, vb.) |
+| `highlight_theme` | String | `"github_light"` | Kod bloklari icin sozdizimi vurgulama temasi |
+| `view_transitions` | Boolean | `false` | Sayfa gecisleri icin View Transitions API'yi etkinlestir |
 | `port` | Integer | `4000` | Gelistirme sunucusu portu |
 | `verbose` | Boolean | `false` | Ayrintili derleme loglama |
 
@@ -581,6 +612,28 @@ mix sayfa.gen.content --list                                # Icerik turlerini l
 ```
 
 Secenekler: `--date`, `--tags`, `--categories`, `--draft`, `--lang`, `--slug`.
+
+### `mix sayfa.gen.block`
+
+Ozel bir blok modulu iskelet olusturun:
+
+```bash
+mix sayfa.gen.block AfisBlok          # → lib/blocks/afis_blok.ex
+mix sayfa.gen.block Uygulamam.Blocks.Hero # → lib/blocks/hero.ex
+```
+
+`Sayfa.Behaviours.Block` davranisini uygulayan bir modul olusturur ve `config/config.exs` icin kayit satirini yazdirir.
+
+### `mix sayfa.gen.content_type`
+
+Ozel bir icerik turu modulu iskelet olusturun:
+
+```bash
+mix sayfa.gen.content_type Tarif                       # → lib/content_types/tarif.ex
+mix sayfa.gen.content_type Uygulamam.ContentTypes.Video # → lib/content_types/video.ex
+```
+
+`Sayfa.Behaviours.ContentType` davranisini uygulayan bir modul olusturur ve kayit ile `mkdir` talimatlarini yazdirir.
 
 ### `mix sayfa.serve`
 
@@ -712,9 +765,6 @@ Icerigin nasil organize edildigini tanimlayin. [Ozel Icerik Turleri](#ozel-iceri
 Sayfa icin gelecek planlari:
 
 - Arama islevselligi (istemci tarafli arama ve dizinleme)
-- Gorsel optimizasyonu (otomatik boyutlandirma, WebP donusumu)
-- Varsayilan temada karanlik mod gecisi
-- Dagitim yardimcilari (GitHub Pages, Netlify)
 - Ucuncu parti uzantilar icin eklenti sistemi
 - Varlik parmak izi
 

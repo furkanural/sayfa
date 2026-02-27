@@ -78,9 +78,12 @@ Sayfa follows a **two-layer architecture**:
 
 ### Templates & Theming
 - Three-layer template composition (content -> layout -> base)
-- 15 built-in blocks (hero, header, footer, social links, TOC, recent posts, tag cloud, category cloud, reading time, code copy, copy link, breadcrumb, recent content, language switcher, related posts) with 24 platform icons including GitHub, X/Twitter, Mastodon, LinkedIn, Bluesky, YouTube, Instagram, and more
+- 17 built-in blocks (hero, header, footer, social links, TOC, recent posts, tag cloud, category cloud, reading time, code copy, copy link, breadcrumb, recent content, language switcher, related posts, related content, analytics) with 24 platform icons including GitHub, X/Twitter, Mastodon, LinkedIn, Bluesky, YouTube, Instagram, and more
 - Theme inheritance (custom -> parent -> default)
 - EEx templates with `@block` helper
+- Configurable syntax highlighting theme (`highlight_theme`)
+- View Transitions API support (`view_transitions: true`)
+- Print-friendly styles built in (`@media print`)
 
 ### Internationalization
 - Directory-based multilingual support
@@ -165,7 +168,13 @@ about.md                     →  /about/
 
 ### Custom Content Types
 
-Implement the `Sayfa.Behaviours.ContentType` behaviour:
+Scaffold a new content type with:
+
+```bash
+mix sayfa.gen.content_type Recipe  # → lib/content_types/recipe.ex
+```
+
+Or implement the `Sayfa.Behaviours.ContentType` behaviour manually:
 
 ```elixir
 defmodule MyApp.ContentTypes.Recipe do
@@ -309,10 +318,18 @@ Blocks are reusable EEx components invoked via the `@block` helper:
 | Recent Content | `:recent_content` | Recent items from any content type |
 | Language Switcher | `:language_switcher` | Switch between content translations |
 | Related Posts | `:related_posts` | Posts related by tags/categories |
+| Related Content | `:related_content` | Content related by tags/categories (auto-detects type; accepts `type:` assign) |
 
 ### Custom Blocks
 
-Implement the `Sayfa.Behaviours.Block` behaviour:
+Scaffold a new block with:
+
+```bash
+mix sayfa.gen.block MyBanner          # → lib/blocks/my_banner.ex
+mix sayfa.gen.block MyApp.Blocks.Hero # → lib/blocks/hero.ex (last segment used)
+```
+
+Or implement the `Sayfa.Behaviours.Block` behaviour manually:
 
 ```elixir
 defmodule MyApp.Blocks.Banner do
@@ -332,11 +349,7 @@ end
 Register custom blocks in your site config:
 
 ```elixir
-config :sayfa, :site,
-  blocks: [
-    Sayfa.Blocks.Hero,
-    MyApp.Blocks.Banner
-  ]
+config :sayfa, :blocks, [MyApp.Blocks.Banner | Sayfa.Block.default_blocks()]
 ```
 
 Then use it in templates:
@@ -529,6 +542,12 @@ config :sayfa, :site,
   # logo: "/images/logo.svg",
   # logo_dark: "/images/logo-dark.svg",  # shown in dark mode instead of logo
 
+  # Syntax highlighting theme for code blocks (uses MDEx/syntect themes)
+  # highlight_theme: "github_light",
+
+  # View Transitions API for smooth page navigation
+  # view_transitions: false,
+
   # Dev server
   port: 4000,
   verbose: false
@@ -555,6 +574,8 @@ config :sayfa, :site,
 | `logo` | String | `nil` | Path to logo image (replaces text title in header) |
 | `logo_dark` | String | `nil` | Path to dark-mode logo (shown instead of `logo` in dark mode) |
 | `social_links` | Map | `%{}` | Social media links (github, twitter, etc.) |
+| `highlight_theme` | String | `"github_light"` | Syntax highlighting theme for code blocks |
+| `view_transitions` | Boolean | `false` | Enable View Transitions API for smooth page navigation |
 | `port` | Integer | `4000` | Dev server port |
 | `verbose` | Boolean | `false` | Verbose build logging |
 
@@ -595,6 +616,28 @@ mix sayfa.gen.content --list                              # List content types
 ```
 
 Options: `--date`, `--tags`, `--categories`, `--draft`, `--lang`, `--slug`.
+
+### `mix sayfa.gen.block`
+
+Scaffold a custom block module:
+
+```bash
+mix sayfa.gen.block MyBanner          # → lib/blocks/my_banner.ex
+mix sayfa.gen.block MyApp.Blocks.Hero # → lib/blocks/hero.ex
+```
+
+Generates a module implementing `Sayfa.Behaviours.Block` and prints the registration snippet for `config/config.exs`.
+
+### `mix sayfa.gen.content_type`
+
+Scaffold a custom content type module:
+
+```bash
+mix sayfa.gen.content_type Recipe                    # → lib/content_types/recipe.ex
+mix sayfa.gen.content_type MyApp.ContentTypes.Video  # → lib/content_types/video.ex
+```
+
+Generates a module implementing `Sayfa.Behaviours.ContentType` and prints registration and `mkdir` instructions.
 
 ### `mix sayfa.serve`
 
@@ -726,8 +769,6 @@ Define how content is organized. See [Custom Content Types](#custom-content-type
 Future plans for Sayfa:
 
 - Search functionality (client-side search with indexing)
-- Image optimization (automatic resizing, WebP conversion)
-- Dark mode toggle in default theme
 - Plugin system for third-party extensions
 - Asset fingerprinting
 
