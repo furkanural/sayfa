@@ -23,23 +23,45 @@ process_with_vips() {
   local src="$1"
   local base="${src%.*}"
 
+  # Skip already-optimized files
+  if [[ "$src" == *_1200.* ]]; then
+    return
+  fi
+
+  # Skip if all outputs already exist
+  if [[ -f "${base}_1200.jpg" && -f "${base}.webp" ]]; then
+    echo "Skipping (already optimized): $src"
+    return
+  fi
+
   echo "Processing: $src"
 
   # Resize to max 1200px wide, keep aspect ratio
   vips thumbnail "$src" "${base}_1200.jpg" 1200
 
   # Generate WebP variant
-  vips thumbnail "$src" "${base}.webp" 1200 --format webp
+  vips thumbnail "$src" "${base}.webp" 1200
 
   # Generate AVIF variant (requires vips >= 8.11)
   if vips --version | grep -qE "8\.(1[1-9]|[2-9][0-9])"; then
-    vips thumbnail "$src" "${base}.avif" 1200 --format avif
+    vips thumbnail "$src" "${base}.avif" 1200
   fi
 }
 
 process_with_imagemagick() {
   local src="$1"
   local base="${src%.*}"
+
+  # Skip already-optimized files
+  if [[ "$src" == *_1200.* ]]; then
+    return
+  fi
+
+  # Skip if all outputs already exist
+  if [[ -f "${base}_1200.jpg" && -f "${base}.webp" ]]; then
+    echo "Skipping (already optimized): $src"
+    return
+  fi
 
   echo "Processing: $src"
 
