@@ -71,7 +71,7 @@ defmodule Sayfa.HookTest do
   setup do
     tmp_dir = Path.join(System.tmp_dir!(), "sayfa_hook_#{System.unique_integer([:positive])}")
     content_dir = Path.join(tmp_dir, "content")
-    output_dir = Path.join(tmp_dir, "output")
+    output_dir = Path.join(tmp_dir, "dist")
     posts_dir = Path.join(content_dir, "posts")
 
     File.mkdir_p!(posts_dir)

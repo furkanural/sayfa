@@ -10,7 +10,7 @@ defmodule Mix.Tasks.Sayfa.Serve do
 
   - `--port` — HTTP port (default: `4000`)
   - `--source` — content source directory (default: `content`)
-  - `--output` — output directory (default: `output`)
+  - `--output` — output directory (default: `dist`)
   - `--no-drafts` — exclude draft content (drafts are included by default in serve mode)
   - `--verbose` — print detailed build information
 
@@ -44,7 +44,7 @@ defmodule Mix.Tasks.Sayfa.Serve do
 
     port = Keyword.get(opts, :port, 4000)
     content_dir = Keyword.get(opts, :source, "content")
-    output_dir = Keyword.get(opts, :output, "output")
+    output_dir = Keyword.get(opts, :output, "dist")
     drafts = Keyword.get(opts, :drafts, true)
     verbose = Keyword.get(opts, :verbose, false)
 

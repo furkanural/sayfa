@@ -22,10 +22,10 @@ defmodule Sayfa.Builder do
       {:ok, result} = Sayfa.Builder.build()
 
       # Build with custom paths
-      {:ok, result} = Sayfa.Builder.build(content_dir: "my_content", output_dir: "dist")
+      {:ok, result} = Sayfa.Builder.build(content_dir: "my_content", output_dir: "custom_dist")
 
       # Clean output directory
-      :ok = Sayfa.Builder.clean(output_dir: "dist")
+      :ok = Sayfa.Builder.clean(output_dir: "custom_dist")
 
   """
 
@@ -66,7 +66,7 @@ defmodule Sayfa.Builder do
   All options from `Sayfa.Config.resolve/1` are accepted, plus:
 
   - `:content_dir` — source content directory (default: `"content"`)
-  - `:output_dir` — output directory (default: `"output"`)
+  - `:output_dir` — output directory (default: `"dist"`)
   - `:drafts` — include draft content (default: `false`)
 
   ## Examples
@@ -146,7 +146,7 @@ defmodule Sayfa.Builder do
 
   ## Examples
 
-      :ok = Sayfa.Builder.clean(output_dir: "output")
+      :ok = Sayfa.Builder.clean(output_dir: "dist")
 
   """
   @spec clean(keyword()) :: :ok

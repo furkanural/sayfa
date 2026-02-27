@@ -133,7 +133,7 @@ mix sayfa.build
 mix sayfa.serve
 ```
 
-Siteniz `output/` dizininde olusturulacaktir. Gelistirme sunucusu canli yeniden yukleme ile `http://localhost:4000` adresinde calisir.
+Siteniz `dist/` dizininde olusturulacaktir. Gelistirme sunucusu canli yeniden yukleme ile `http://localhost:4000` adresinde calisir.
 
 ---
 
@@ -472,7 +472,7 @@ Sayfa otomatik olarak Atom XML beslemeleri uretir:
 
 ### Sitemap
 
-Tum yayinlanmis sayfalari iceren bir `sitemap.xml` cikis dizininin kokunde uretilir.
+Tum yayinlanmis sayfalari iceren bir `sitemap.xml`, `dist/` dizininin kokunde uretilir.
 
 ### SEO Meta Etiketleri
 
@@ -496,7 +496,7 @@ config :sayfa, :site,
 
   # Icerik
   content_dir: "content",
-  output_dir: "output",
+  output_dir: "dist",
   posts_per_page: 10,
   drafts: false,
 
@@ -529,7 +529,7 @@ config :sayfa, :site,
 | `author` | String | `nil` | Site yazari |
 | `base_url` | String | `"http://localhost:4000"` | Uretim URL'si |
 | `content_dir` | String | `"content"` | Icerik kaynak dizini |
-| `output_dir` | String | `"output"` | Derleme cikis dizini |
+| `output_dir` | String | `"dist"` | Derleme cikis dizini |
 | `posts_per_page` | Integer | `10` | Sayfalama boyutu |
 | `drafts` | Boolean | `false` | Taslaklari derlemeye dahil et |
 | `default_lang` | Atom | `:en` | Varsayilan icerik dili |
@@ -621,13 +621,13 @@ sitem/
 │   └── benim_temam/            # Ozel tema (istege bagli)
 │       └── layouts/
 │
-├── static/                     # Cikisa oldugu gibi kopyalanir
+├── static/                     # dist/ dizinine oldugu gibi kopyalanir
 │   ├── images/
 │   └── favicon.ico
 │
 ├── lib/                        # Ozel bloklar, hook'lar, icerik turleri
 │
-├── output/                     # Olusturulan site (git-ignored)
+├── dist/                       # Olusturulan site (git-ignored)
 │
 └── mix.exs
 ```
@@ -646,7 +646,7 @@ Olusturulan projeniz `.github/workflows/deploy.yml` dosyasini icerir. Depo ayarl
 
 `nixpacks.toml` dosyasi dahildir ve sitenizi [Nixpacks](https://nixpacks.com/) ile derler. [Railway](https://railway.app/) ve [Coolify](https://coolify.io/) gibi platformlarla kutudan ciktiginda calisir.
 
-- **Railway**: Deponuzu baglayin; Railway `nixpacks.toml` dosyasini otomatik algilar. Statik site sunumu icin yayim dizinini `output/` olarak ayarlayin.
+- **Railway**: Deponuzu baglayin; Railway `nixpacks.toml` dosyasini otomatik algilar. Statik site sunumu icin yayim dizinini `dist/` olarak ayarlayin.
 - **Coolify**: **Nixpacks** derleme paketini secin ve deponuzu gosterin.
 
 ### VPS (rsync)
@@ -655,7 +655,7 @@ Yerel olarak derleyin ve sunucunuza senkronize edin:
 
 ```bash
 mix sayfa.build
-rsync -avz --delete output/ kullanici@sunucu:/var/www/sitem/
+rsync -avz --delete dist/ kullanici@sunucu:/var/www/sitem/
 ```
 
 ---

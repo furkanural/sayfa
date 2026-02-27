@@ -44,7 +44,7 @@ defmodule Sayfa.DevServer.Plug do
   end
 
   match _ do
-    output_dir = conn.private[:output_dir] || "output"
+    output_dir = conn.private[:output_dir] || "dist"
     serve_static(conn, output_dir)
   end
 
@@ -53,7 +53,7 @@ defmodule Sayfa.DevServer.Plug do
 
   @doc false
   def call(conn, opts) do
-    output_dir = Keyword.get(opts, :output_dir, "output")
+    output_dir = Keyword.get(opts, :output_dir, "dist")
 
     conn
     |> Plug.Conn.put_private(:output_dir, output_dir)

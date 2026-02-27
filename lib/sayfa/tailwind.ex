@@ -12,7 +12,7 @@ defmodule Sayfa.Tailwind do
   ## Examples
 
       config = Sayfa.Config.resolve()
-      Sayfa.Tailwind.compile(config, "output")
+      Sayfa.Tailwind.compile(config, "dist")
 
   """
 
@@ -36,10 +36,10 @@ defmodule Sayfa.Tailwind do
 
   ## Examples
 
-      Sayfa.Tailwind.compile(config, "output")
+      Sayfa.Tailwind.compile(config, "dist")
       #=> :ok
 
-      Sayfa.Tailwind.compile(config, "output", minify: false)
+      Sayfa.Tailwind.compile(config, "dist", minify: false)
       #=> :ok
 
   """

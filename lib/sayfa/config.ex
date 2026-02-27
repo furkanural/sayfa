@@ -30,7 +30,7 @@ defmodule Sayfa.Config do
     title: "My Site",
     base_url: "http://localhost:4000",
     content_dir: "content",
-    output_dir: "output",
+    output_dir: "dist",
     theme: "default",
     theme_parent: "default",
     default_lang: :en,
@@ -102,7 +102,7 @@ defmodule Sayfa.Config do
 
       iex> config = Sayfa.Config.resolve([])
       iex> config.output_dir
-      "output"
+      "dist"
 
   """
   @spec resolve(keyword()) :: map()

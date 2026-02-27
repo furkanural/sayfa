@@ -9,7 +9,7 @@ defmodule Sayfa.ConfigTest do
       assert defaults.title == "My Site"
       assert defaults.base_url == "http://localhost:4000"
       assert defaults.content_dir == "content"
-      assert defaults.output_dir == "output"
+      assert defaults.output_dir == "dist"
       assert defaults.theme == "default"
       assert defaults.default_lang == :en
       assert defaults.drafts == false
@@ -42,7 +42,7 @@ defmodule Sayfa.ConfigTest do
     test "returns defaults when no overrides" do
       config = Config.resolve([])
       assert config.title == "My Site"
-      assert config.output_dir == "output"
+      assert config.output_dir == "dist"
     end
 
     test "runtime opts override defaults" do

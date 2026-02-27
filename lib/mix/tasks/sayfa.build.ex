@@ -9,7 +9,7 @@ defmodule Mix.Tasks.Sayfa.Build do
   ## Options
 
   - `--source` — content source directory (default: `content`)
-  - `--output` — output directory (default: `output`)
+  - `--output` — output directory (default: `dist`)
   - `--drafts` — include draft content
   - `--verbose` — print detailed build information
 

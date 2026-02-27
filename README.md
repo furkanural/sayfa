@@ -134,7 +134,7 @@ mix sayfa.build
 mix sayfa.serve
 ```
 
-Your site will be generated in the `output/` directory. The dev server runs at `http://localhost:4000` with hot reload.
+Your site will be generated in the `dist/` directory. The dev server runs at `http://localhost:4000` with hot reload.
 
 ---
 
@@ -489,7 +489,7 @@ Sayfa generates Atom XML feeds automatically:
 
 ### Sitemap
 
-A `sitemap.xml` is generated at the root of the output directory containing all published pages.
+A `sitemap.xml` is generated at the root of the `dist/` directory containing all published pages.
 
 ### SEO Meta Tags
 
@@ -513,7 +513,7 @@ config :sayfa, :site,
 
   # Content
   content_dir: "content",
-  output_dir: "output",
+  output_dir: "dist",
   posts_per_page: 10,
   drafts: false,
 
@@ -543,7 +543,7 @@ config :sayfa, :site,
 | `author` | String | `nil` | Site author |
 | `base_url` | String | `"http://localhost:4000"` | Production URL |
 | `content_dir` | String | `"content"` | Content source directory |
-| `output_dir` | String | `"output"` | Build output directory |
+| `output_dir` | String | `"dist"` | Build output directory |
 | `posts_per_page` | Integer | `10` | Pagination size |
 | `drafts` | Boolean | `false` | Include drafts in build |
 | `default_lang` | Atom | `:en` | Default content language |
@@ -635,13 +635,13 @@ my_site/
 │   └── my_theme/               # Custom theme (optional)
 │       └── layouts/
 │
-├── static/                     # Copied as-is to output
+├── static/                     # Copied as-is to dist/
 │   ├── images/
 │   └── favicon.ico
 │
 ├── lib/                        # Custom blocks, hooks, content types
 │
-├── output/                     # Generated site (git-ignored)
+├── dist/                       # Generated site (git-ignored)
 │
 └── mix.exs
 ```
@@ -660,7 +660,7 @@ Your generated project includes `.github/workflows/deploy.yml`. Enable GitHub Pa
 
 A `nixpacks.toml` is included that builds your site using [Nixpacks](https://nixpacks.com/). This works out of the box with platforms like [Railway](https://railway.app/) and [Coolify](https://coolify.io/).
 
-- **Railway**: Connect your repo and Railway will detect `nixpacks.toml` automatically. Set the publish directory to `output/` for static site serving.
+- **Railway**: Connect your repo and Railway will detect `nixpacks.toml` automatically. Set the publish directory to `dist/` for static site serving.
 - **Coolify**: Select the **Nixpacks** build pack and point it at your repo.
 
 ### VPS (rsync)
@@ -669,7 +669,7 @@ Build locally and sync to your server:
 
 ```bash
 mix sayfa.build
-rsync -avz --delete output/ user@server:/var/www/my-site/
+rsync -avz --delete dist/ user@server:/var/www/my-site/
 ```
 
 ---

@@ -90,7 +90,7 @@ defmodule Sayfa.Theme do
 
   ## Examples
 
-      Sayfa.Theme.copy_assets(config, "output")
+      Sayfa.Theme.copy_assets(config, "dist")
 
   """
   @spec copy_assets(map(), String.t()) :: :ok

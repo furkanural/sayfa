@@ -15,7 +15,7 @@ defmodule Sayfa.DevServer.Supervisor do
 
   - `:config` — keyword list of build options
   - `:port` — HTTP port (default: 4000)
-  - `:output_dir` — directory to serve (default: "output")
+  - `:output_dir` — directory to serve (default: "dist")
   - `:content_dir` — content directory to watch (default: "content")
   """
   def start_link(opts) do
@@ -26,7 +26,7 @@ defmodule Sayfa.DevServer.Supervisor do
   def init(opts) do
     config = Keyword.get(opts, :config, [])
     port = Keyword.get(opts, :port, 4000)
-    output_dir = Keyword.get(opts, :output_dir, "output")
+    output_dir = Keyword.get(opts, :output_dir, "dist")
     content_dir = Keyword.get(opts, :content_dir, "content")
 
     watch_dirs =

@@ -191,7 +191,7 @@ Build locally and sync:
 
 ```bash
 mix sayfa.build
-rsync -avz --delete output/ user@server:/var/www/my-site/
+rsync -avz --delete dist/ user@server:/var/www/my-site/
 ```
 
 ## What's Next?

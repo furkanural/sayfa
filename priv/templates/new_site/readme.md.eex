@@ -31,7 +31,7 @@ Sayfa uses [TailwindCSS](https://tailwindcss.com/) for styling. The TailwindCSS 
 │   │   └── about.md         # About page
 │   └── posts/               # Blog posts
 │       └── welcome.md       # Your first post
-├── output/                  # Generated site (after build)
+├── dist/                    # Generated site (after build)
 └── mix.exs
 ```
 
@@ -109,7 +109,7 @@ Then set `theme: "custom"` in `config/config.exs`.
 
 ## Deployment
 
-The `output/` directory is gitignored because it's a build artifact — CI/CD builds the site fresh on every deploy. Before deploying, make sure to update `base_url` in `config/config.exs` to your production URL.
+The `dist/` directory is gitignored because it's a build artifact — CI/CD builds the site fresh on every deploy. Before deploying, make sure to update `base_url` in `config/config.exs` to your production URL.
 
 ### GitHub Pages
 
@@ -125,7 +125,7 @@ That's it — pushes to `main` will deploy automatically.
 
 A `nixpacks.toml` is included that builds your site using [Nixpacks](https://nixpacks.com/). This works out of the box with platforms like [Railway](https://railway.app/) and [Coolify](https://coolify.io/).
 
-- **Railway**: Connect your repo and Railway will detect `nixpacks.toml` automatically. Set the **publish directory** to `output/` for static site serving.
+- **Railway**: Connect your repo and Railway will detect `nixpacks.toml` automatically. Set the **publish directory** to `dist/` for static site serving.
 - **Coolify**: Select the **Nixpacks** build pack and point it at your repo.
 
 ### VPS (rsync)
@@ -134,7 +134,7 @@ Build locally and sync to your server:
 
 ```bash
 mix sayfa.build
-rsync -avz --delete output/ user@server:/var/www/my-site/
+rsync -avz --delete dist/ user@server:/var/www/my-site/
 ```
 
 ## Troubleshooting
@@ -160,7 +160,7 @@ TailwindCSS is compiled on build. If styles aren't updating:
 
 ```bash
 # Clear the output directory
-rm -rf output/
+rm -rf dist/
 mix sayfa.build
 ```
 
