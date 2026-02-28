@@ -11,6 +11,9 @@
   <%= Sayfa.SEO.hreflang_tags(assigns[:content], @site, assigns[:archive_alternates]) %>
   <link rel="alternate" type="application/atom+xml" title="<%= @site.title %>" href="<%= String.trim_trailing(@site.base_url, "/") %>/feed.xml">
   <link rel="alternate" type="application/feed+json" title="<%= @site.title %>" href="<%= String.trim_trailing(@site.base_url, "/") %>/feed.json">
+<%= for link <- Map.get(assigns, :feed_links, []) do %>
+  <link rel="alternate" type="<%= link.type %>" title="<%= link.title %>" href="<%= link.url %>">
+<% end %>
   <link rel="stylesheet" href="/assets/css/main.css">
 </head>
 <body class="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 font-sans antialiased">

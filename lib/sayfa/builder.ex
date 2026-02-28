@@ -416,6 +416,11 @@ defmodule Sayfa.Builder do
         archive_alternates =
           build_archive_alternates(tag, "tags", tag_lang_groups, config)
 
+        feed_links = [
+          %{url: "/feed/tags/#{slug}.xml", type: "application/atom+xml", title: page_title},
+          %{url: "/feed/tags/#{slug}.json", type: "application/feed+json", title: page_title}
+        ]
+
         case render_and_write_list(
                sorted,
                page_title,
@@ -424,7 +429,8 @@ defmodule Sayfa.Builder do
                config,
                lang: lang,
                page_url: "#{url_path}/",
-               archive_alternates: archive_alternates
+               archive_alternates: archive_alternates,
+               feed_links: feed_links
              ) do
           :ok -> {:cont, count + 1}
           {:error, _} = error -> {:halt, error}
@@ -457,6 +463,11 @@ defmodule Sayfa.Builder do
         archive_alternates =
           build_archive_alternates(category, "categories", cat_lang_groups, config)
 
+        feed_links = [
+          %{url: "/feed/categories/#{slug}.xml", type: "application/atom+xml", title: page_title},
+          %{url: "/feed/categories/#{slug}.json", type: "application/feed+json", title: page_title}
+        ]
+
         case render_and_write_list(
                sorted,
                page_title,
@@ -465,7 +476,8 @@ defmodule Sayfa.Builder do
                config,
                lang: lang,
                page_url: "#{url_path}/",
-               archive_alternates: archive_alternates
+               archive_alternates: archive_alternates,
+               feed_links: feed_links
              ) do
           :ok -> {:cont, count + 1}
           {:error, _} = error -> {:halt, error}
@@ -618,6 +630,11 @@ defmodule Sayfa.Builder do
     page_title = t_fn.("#{url_prefix}_title")
     archive_alternates = build_type_index_alternates(url_prefix, config)
 
+    feed_links = [
+      %{url: "/feed/#{url_prefix}.xml", type: "application/atom+xml", title: page_title},
+      %{url: "/feed/#{url_prefix}.json", type: "application/feed+json", title: page_title}
+    ]
+
     results =
       Enum.reduce_while(pages, 0, fn page, count ->
         output_path = index_output_path(output_base, page.page_number)
@@ -631,7 +648,8 @@ defmodule Sayfa.Builder do
                all_contents: all_contents,
                lang: lang,
                page_url: page_url,
-               archive_alternates: archive_alternates
+               archive_alternates: archive_alternates,
+               feed_links: feed_links
              ) do
           {:ok, html} ->
             dir = Path.dirname(output_path)
@@ -747,30 +765,9 @@ defmodule Sayfa.Builder do
     File.mkdir_p!(Path.dirname(root_path))
     File.write!(root_path, root_xml)
 
-    # 2. Per-language feeds (only for non-default languages that have content)
-    lang_groups =
-      contents
-      |> Enum.group_by(fn c -> c.meta["lang_prefix"] || "" end)
-      |> Enum.reject(fn {lp, _} -> lp == "" end)
-
-    lang_count =
-      Enum.reduce(lang_groups, 0, fn {lang_prefix, lang_contents}, count ->
-        xml = Feed.generate(lang_contents, config)
-
-        path =
-          [config.output_dir, lang_prefix, "feed.xml"]
-          |> Enum.reject(&(&1 == ""))
-          |> Path.join()
-
-        File.mkdir_p!(Path.dirname(path))
-        File.write!(path, xml)
-        count + 1
-      end)
-
-    # 3. Per-type feeds (across all content)
+    # 2. Per-type feeds (across all content)
     type_groups =
       contents
-      |> Enum.filter(& &1.date)
       |> Enum.group_by(fn c -> c.meta["content_type"] end)
       |> Enum.reject(fn {type, _} -> type == "pages" end)
 
@@ -812,6 +809,11 @@ defmodule Sayfa.Builder do
         path = Path.join([config.output_dir, "feed", "tags", "#{Slug.slugify(tag)}.xml"])
         File.mkdir_p!(Path.dirname(path))
         File.write!(path, xml)
+
+        json = Feed.generate_json_for_tag(contents, tag, config)
+        json_path = Path.join([config.output_dir, "feed", "tags", "#{Slug.slugify(tag)}.json"])
+        File.write!(json_path, json)
+
         count + 1
       end)
 
@@ -830,10 +832,18 @@ defmodule Sayfa.Builder do
 
         File.mkdir_p!(Path.dirname(path))
         File.write!(path, xml)
+
+        json = Feed.generate_json_for_category(contents, category, config)
+
+        json_path =
+          Path.join([config.output_dir, "feed", "categories", "#{Slug.slugify(category)}.json"])
+
+        File.write!(json_path, json)
+
         count + 1
       end)
 
-    {:ok, 1 + lang_count + type_count + json_type_count + 1 + tag_count + cat_count}
+    {:ok, 1 + type_count + json_type_count + 1 + tag_count + cat_count}
   end
 
   # --- Sitemap ---
@@ -1023,6 +1033,7 @@ defmodule Sayfa.Builder do
     lang = Keyword.get(opts, :lang, config.default_lang)
     page_url = Keyword.get(opts, :page_url, url_path <> "/")
     archive_alternates = Keyword.get(opts, :archive_alternates)
+    feed_links = Keyword.get(opts, :feed_links, [])
 
     output_path =
       Path.join([config.output_dir, String.trim_leading(url_path, "/"), "index.html"])
@@ -1036,7 +1047,8 @@ defmodule Sayfa.Builder do
            all_contents: all_contents,
            lang: lang,
            page_url: page_url,
-           archive_alternates: archive_alternates
+           archive_alternates: archive_alternates,
+           feed_links: feed_links
          ) do
       {:ok, html} ->
         dir = Path.dirname(output_path)

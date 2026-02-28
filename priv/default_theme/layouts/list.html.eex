@@ -1,5 +1,26 @@
 <section class="container-content page-wrapper">
   <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-50 mb-10"><%= @page_title %></h1>
+<%= if assigns[:feed_links] && assigns[:feed_links] != [] do %>
+<%   atom_link = Enum.find(@feed_links, fn l -> l.type == "application/atom+xml" end) %>
+<%   json_link = Enum.find(@feed_links, fn l -> l.type == "application/feed+json" end) %>
+  <div class="mb-6 flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500">
+    <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1" fill="currentColor" stroke="none"/></svg>
+    <span>Feeds:</span>
+<%= if atom_link do %>
+    <span class="relative group">
+      <a href="<%= atom_link.url %>" class="hover:text-primary dark:hover:text-primary-400 transition-colors">Atom</a>
+      <span class="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 rounded bg-slate-800 dark:bg-slate-700 px-2 py-0.5 text-xs text-white whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity z-10"><%= @t.("subscribe_via_atom") %></span>
+    </span>
+<% end %>
+<%= if atom_link && json_link do %><span class="opacity-50">·</span><% end %>
+<%= if json_link do %>
+    <span class="relative group">
+      <a href="<%= json_link.url %>" class="hover:text-primary dark:hover:text-primary-400 transition-colors">JSON</a>
+      <span class="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 rounded bg-slate-800 dark:bg-slate-700 px-2 py-0.5 text-xs text-white whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity z-10"><%= @t.("subscribe_via_json") %></span>
+    </span>
+<% end %>
+  </div>
+<% end %>
 <%= if @contents == [] do %>
   <p class="text-slate-400 dark:text-slate-500 text-sm py-8"><%= @t.("no_content_yet") %></p>
 <% else %>

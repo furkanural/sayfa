@@ -91,7 +91,7 @@ defmodule Sayfa.ContentTypeTest do
       assert mod.name() == :project
       assert mod.directory() == "projects"
       assert mod.url_prefix() == "projects"
-      assert mod.default_layout() == "page"
+      assert mod.default_layout() == "project"
       assert mod.required_fields() == [:title]
     end
 
@@ -100,7 +100,7 @@ defmodule Sayfa.ContentTypeTest do
       assert mod.name() == :talk
       assert mod.directory() == "talks"
       assert mod.url_prefix() == "talks"
-      assert mod.default_layout() == "page"
+      assert mod.default_layout() == "talk"
       assert mod.required_fields() == [:title]
     end
 

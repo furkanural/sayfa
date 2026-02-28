@@ -17,7 +17,7 @@ defmodule Sayfa.ContentTypes.Project do
   def url_prefix, do: "projects"
 
   @impl true
-  def default_layout, do: "page"
+  def default_layout, do: "project"
 
   @impl true
   def required_fields, do: [:title]

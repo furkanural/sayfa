@@ -101,8 +101,8 @@ defmodule Sayfa.BuilderTest do
 
       assert {:ok, result} = Builder.build(build_opts(ctx))
 
-      # 1 individual + 1 posts index + 1 feed.xml + 1 feed.json + 1 sitemap.xml = 5 (no per-type feed: no dated content)
-      assert result.files_written == 5
+      # 1 individual + 1 posts index + 1 feed.xml + 1 feed.json + 1 feed/posts.xml + 1 feed/posts.json + 1 sitemap.xml = 7
+      assert result.files_written == 7
       assert result.content_count == 1
     end
 
@@ -117,8 +117,8 @@ defmodule Sayfa.BuilderTest do
 
       assert {:ok, result} = Builder.build(build_opts(ctx, drafts: true))
 
-      # 1 individual + 1 posts index + 1 feed.xml + 1 feed.json + 1 sitemap.xml = 5 (no per-type feed: no dated content)
-      assert result.files_written == 5
+      # 1 individual + 1 posts index + 1 feed.xml + 1 feed.json + 1 feed/posts.xml + 1 feed/posts.json + 1 sitemap.xml = 7
+      assert result.files_written == 7
       assert result.content_count == 1
     end
 
@@ -420,10 +420,6 @@ defmodule Sayfa.BuilderTest do
       assert root_feed =~ "Hello World"
       assert root_feed =~ "Merhaba"
 
-      # Turkish-specific feed should only have Turkish content
-      tr_feed = File.read!(Path.join([ctx.output_dir, "tr", "feed.xml"]))
-      assert tr_feed =~ "Merhaba"
-      refute tr_feed =~ "Hello World"
     end
   end
 
@@ -644,10 +640,6 @@ defmodule Sayfa.BuilderTest do
       tr_path = Path.join([ctx.output_dir, "tr", "posts", "merhaba", "index.html"])
       assert File.exists?(tr_path)
       assert File.read!(tr_path) =~ "Merhaba"
-
-      # Turkish feed at /tr/feed.xml
-      tr_feed = Path.join([ctx.output_dir, "tr", "feed.xml"])
-      assert File.exists?(tr_feed)
 
       # Main feed at /feed.xml
       main_feed = Path.join(ctx.output_dir, "feed.xml")

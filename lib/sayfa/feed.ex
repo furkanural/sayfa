@@ -170,6 +170,56 @@ defmodule Sayfa.Feed do
     |> build_feed(config, "/feed/categories/#{slug}.xml")
   end
 
+  @doc """
+  Generates a JSON Feed 1.1 string for a specific tag.
+
+  Filters to content with the given tag, sorts by date descending.
+
+  ## Examples
+
+      iex> contents = [%Sayfa.Content{title: "Tagged", body: "<p>A</p>", date: ~D[2024-01-15], slug: "tagged", tags: ["elixir"], meta: %{"url_prefix" => "posts"}}]
+      iex> config = %{title: "My Site", base_url: "https://example.com", author: "Author"}
+      iex> json = Sayfa.Feed.generate_json_for_tag(contents, "elixir", config)
+      iex> json =~ "Tagged"
+      true
+
+  """
+  @spec generate_json_for_tag([Content.t()], String.t(), map()) :: String.t()
+  def generate_json_for_tag(contents, tag, config) do
+    slug = Slug.slugify(tag)
+
+    contents
+    |> Content.with_tag(tag)
+    |> Enum.filter(& &1.date)
+    |> Content.sort_by_date(:desc)
+    |> build_json_feed(config, "/feed/tags/#{slug}.json")
+  end
+
+  @doc """
+  Generates a JSON Feed 1.1 string for a specific category.
+
+  Filters to content with the given category, sorts by date descending.
+
+  ## Examples
+
+      iex> contents = [%Sayfa.Content{title: "Categorized", body: "<p>A</p>", date: ~D[2024-01-15], slug: "categorized", categories: ["news"], meta: %{"url_prefix" => "posts"}}]
+      iex> config = %{title: "My Site", base_url: "https://example.com", author: "Author"}
+      iex> json = Sayfa.Feed.generate_json_for_category(contents, "news", config)
+      iex> json =~ "Categorized"
+      true
+
+  """
+  @spec generate_json_for_category([Content.t()], String.t(), map()) :: String.t()
+  def generate_json_for_category(contents, category, config) do
+    slug = Slug.slugify(category)
+
+    contents
+    |> Content.with_category(category)
+    |> Enum.filter(& &1.date)
+    |> Content.sort_by_date(:desc)
+    |> build_json_feed(config, "/feed/categories/#{slug}.json")
+  end
+
   defp build_feed(contents, config, feed_path) do
     base_url = String.trim_trailing(config.base_url, "/")
     updated = latest_date(contents)

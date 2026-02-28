@@ -17,7 +17,7 @@ defmodule Sayfa.ContentTypes.Talk do
   def url_prefix, do: "talks"
 
   @impl true
-  def default_layout, do: "page"
+  def default_layout, do: "talk"
 
   @impl true
   def required_fields, do: [:title]

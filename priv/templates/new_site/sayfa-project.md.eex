@@ -1,5 +1,6 @@
 ---
 title: "Sayfa"
+date: <%= Date.utc_today() |> Date.to_iso8601() %>
 description: "An open-source static site generator built in Elixir."
 tags: [elixir, open-source, static-site-generator]
 repo: "https://github.com/furkanural/sayfa"

@@ -22,14 +22,48 @@ defmodule Sayfa.DateFormat do
   @doc """
   Formats a date using locale-aware month names.
 
+  Returns `""` when `date` is `nil`.
+
+  Accepts `%Date{}`, `%DateTime{}`, `%NaiveDateTime{}`, or an ISO 8601 string.
+  `DateTime` and `NaiveDateTime` values are converted to their date component.
+  String values are parsed via `Date.from_iso8601/1`; if unparseable, the
+  original string is returned as-is.
+
   ## Examples
 
       iex> Sayfa.DateFormat.format(~D[2024-01-15], :en)
       "Jan 15, 2024"
 
+      iex> Sayfa.DateFormat.format(nil, :en)
+      ""
+
+      iex> Sayfa.DateFormat.format(~U[2024-01-15 10:00:00Z], :en)
+      "Jan 15, 2024"
+
+      iex> Sayfa.DateFormat.format(~N[2024-01-15 10:00:00], :en)
+      "Jan 15, 2024"
+
+      iex> Sayfa.DateFormat.format("2024-01-15", :en)
+      "Jan 15, 2024"
+
   """
-  @spec format(Date.t(), atom(), map()) :: String.t()
-  def format(%Date{} = date, lang, config \\ %{}) do
+  @spec format(Date.t() | DateTime.t() | NaiveDateTime.t() | String.t() | nil, atom(), map()) ::
+          String.t()
+  def format(date, lang, config \\ %{})
+  def format(nil, _lang, _config), do: ""
+  def format(%DateTime{} = dt, lang, config), do: format(DateTime.to_date(dt), lang, config)
+
+  def format(%NaiveDateTime{} = ndt, lang, config),
+    do: format(NaiveDateTime.to_date(ndt), lang, config)
+
+  def format(date, lang, config) when is_binary(date) do
+    case Date.from_iso8601(date) do
+      {:ok, parsed} -> format(parsed, lang, config)
+      {:error, _} -> date
+    end
+  end
+
+  def format(%Date{} = date, lang, config) do
     fmt = resolve_format(lang, config)
     translations = Sayfa.I18n.load_translations(lang)
 

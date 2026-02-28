@@ -173,6 +173,7 @@ defmodule Sayfa.Template do
 
     page_url = Keyword.get(opts, :page_url)
     archive_alternates = Keyword.get(opts, :archive_alternates)
+    feed_links = Keyword.get(opts, :feed_links, [])
 
     block_ctx =
       [
@@ -215,7 +216,8 @@ defmodule Sayfa.Template do
       t: t_fn,
       page_url: page_url,
       format_date: format_date_fn,
-      archive_alternates: archive_alternates
+      archive_alternates: archive_alternates,
+      feed_links: feed_links
     ]
 
     with {:ok, list_html} <- render_file(list_path, list_assigns) do
