@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.3] - 2026-02-28
+
+### Added
+
+- **Dedicated project and talk layouts**: Projects and talks now render with full-featured layouts (`project.html.eex`, `talk.html.eex`) instead of the bare page layout — displaying date, updated date, categories and tags as clickable archive links, copy link button, reading time, table of contents, cover image, and related content. The talk layout additionally surfaces `event`, `video`, and `slides` front matter fields with dedicated UI.
+- **Feed subscription links on list pages**: Type index pages, tag archives, and category archives now display inline Atom/JSON feed links below the heading, with tooltip labels. Corresponding `<link rel="alternate">` tags are also emitted in `<head>`.
+- **JSON feeds for tag and category archives**: `Feed.generate_json_for_tag/3` and `Feed.generate_json_for_category/3` added; the builder now writes `.json` feed files alongside the existing `.xml` files for every tag and category archive.
+- **`subscribe_via_atom` and `subscribe_via_json` translation keys**: Added to all 14 built-in language files (en, tr, de, es, fr, it, pt, ja, ko, zh, ar, ru, nl, pl).
+- **Footer feed links**: The footer block now renders inline Atom and JSON feed subscription links next to the copyright line.
+
+### Changed
+
+- **Project default layout**: `Sayfa.ContentTypes.Project` now uses `"project"` as its default layout (was `"page"`).
+- **Talk default layout**: `Sayfa.ContentTypes.Talk` now uses `"talk"` as its default layout (was `"page"`).
+- **Per-language feeds removed**: The builder no longer generates separate `/tr/feed.xml` (and similar) files per language — the root `/feed.xml` already includes all languages.
+- **`DateFormat.format/3`**: Now accepts `nil` (returns `""`), `DateTime`, `NaiveDateTime`, and ISO 8601 strings in addition to `Date` structs.
+- **Scaffold templates**: `mix sayfa.new` project and talk example files updated — projects gain a `date:` field; talks rename `slides_url:` to `slides:` to match the new layout.
+
 ## [0.3.2] - 2026-02-28
 
 ### Fixed
@@ -142,6 +160,7 @@ Initial release of Sayfa — a static site generator built in Elixir.
 - Build caching for incremental rebuilds
 - Verbose logging with per-stage timing
 
+[0.3.3]: https://github.com/furkanural/sayfa/compare/v0.3.2...v0.3.3
 [0.3.2]: https://github.com/furkanural/sayfa/compare/v0.3.1...v0.3.2
 [0.3.1]: https://github.com/furkanural/sayfa/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/furkanural/sayfa/compare/v0.2.0...v0.3.0
