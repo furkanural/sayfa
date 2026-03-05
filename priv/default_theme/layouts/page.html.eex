@@ -1,9 +1,9 @@
 <article class="container-content page-wrapper">
   <%= @block.(:breadcrumb, []) %>
-  <header class="mb-8">
-    <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-50"><%= @content.title %></h1>
+  <header class="content-header-sm">
+    <h1 class="page-title-lg"><%= @content.title %></h1>
   </header>
-  <div class="prose-content prose-code">
+  <div class="prose-page">
     <%= @inner_content %>
   </div>
 </article>

@@ -20,7 +20,7 @@ defmodule Sayfa.Blocks.CategoryCloud do
   alias Sayfa.Block
   alias Sayfa.Content
 
-  @folder_icon ~s(<svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>)
+  @folder_icon ~s(<svg class="icon-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>)
 
   @impl true
   def name, do: :category_cloud
@@ -56,7 +56,7 @@ defmodule Sayfa.Blocks.CategoryCloud do
         |> Enum.sort_by(fn {cat, _} -> cat end)
         |> Enum.map_join("\n  ", &render_category_item(&1, max_count, lang, lang_prefix, site))
 
-      "<section class=\"flex flex-wrap gap-2\">\n  #{items}\n</section>"
+      "<section class=\"tag-cloud-wrap\">\n  #{items}\n</section>"
     end
   end
 
@@ -67,7 +67,7 @@ defmodule Sayfa.Blocks.CategoryCloud do
     posts_label = Sayfa.I18n.t("posts_count", lang, site, count: count)
     cat_url = category_url(slug, lang_prefix)
 
-    "<a href=\"#{cat_url}\" class=\"inline-flex items-center gap-1 h-7 px-2.5 rounded-md #{classes}\" title=\"#{Block.escape_html(posts_label)}\">#{@folder_icon} #{Block.escape_html(category)} <span class=\"ml-0.5 text-xs opacity-60\">#{count}</span></a>"
+    "<a href=\"#{cat_url}\" class=\"inline-flex items-center gap-1 h-7 px-2.5 rounded-md #{classes}\" title=\"#{Block.escape_html(posts_label)}\">#{@folder_icon} #{Block.escape_html(category)} <span class=\"cloud-count\">#{count}</span></a>"
   end
 
   defp category_url(slug, ""), do: "/categories/#{Block.escape_html(slug)}/"
@@ -77,13 +77,12 @@ defmodule Sayfa.Blocks.CategoryCloud do
     ratio = count / max_count
 
     if ratio > 0.6 do
-      "text-sm font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/20 dark:text-amber-300 hover:bg-amber-200 dark:hover:bg-amber-900/40"
+      "cloud-category-lg"
     else
-      "text-xs font-medium bg-amber-100 text-amber-700 dark:bg-amber-900/10 dark:text-amber-300/80 hover:bg-amber-100 hover:text-amber-800 dark:hover:bg-amber-900/20 dark:hover:text-amber-300"
+      "cloud-category-sm"
     end
   end
 
   defp size_classes(_, _),
-    do:
-      "text-xs font-medium bg-amber-100 text-amber-700 dark:bg-amber-900/10 dark:text-amber-300/80 hover:bg-amber-100 hover:text-amber-800 dark:hover:bg-amber-900/20 dark:hover:text-amber-300"
+    do: "cloud-category-sm"
 end

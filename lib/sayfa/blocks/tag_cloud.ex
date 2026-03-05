@@ -20,7 +20,7 @@ defmodule Sayfa.Blocks.TagCloud do
   alias Sayfa.Block
   alias Sayfa.Content
 
-  @hash_icon ~s(<svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><line x1="4" x2="20" y1="9" y2="9"/><line x1="4" x2="20" y1="15" y2="15"/><line x1="10" x2="8" y1="3" y2="21"/><line x1="16" x2="14" y1="3" y2="21"/></svg>)
+  @hash_icon ~s(<svg class="icon-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><line x1="4" x2="20" y1="9" y2="9"/><line x1="4" x2="20" y1="15" y2="15"/><line x1="10" x2="8" y1="3" y2="21"/><line x1="16" x2="14" y1="3" y2="21"/></svg>)
 
   @impl true
   def name, do: :tag_cloud
@@ -56,7 +56,7 @@ defmodule Sayfa.Blocks.TagCloud do
         |> Enum.sort_by(fn {tag, _} -> tag end)
         |> Enum.map_join("\n  ", &render_tag_item(&1, max_count, lang, lang_prefix, site))
 
-      "<section class=\"flex flex-wrap gap-2\">\n  #{items}\n</section>"
+      "<section class=\"tag-cloud-wrap\">\n  #{items}\n</section>"
     end
   end
 
@@ -67,7 +67,7 @@ defmodule Sayfa.Blocks.TagCloud do
     posts_label = Sayfa.I18n.t("posts_count", lang, site, count: count)
     tag_url = tag_url(slug, lang_prefix)
 
-    "<a href=\"#{tag_url}\" class=\"inline-flex items-center gap-1 h-7 px-2.5 rounded-md #{classes}\" title=\"#{Block.escape_html(posts_label)}\">#{@hash_icon} #{Block.escape_html(tag)} <span class=\"ml-0.5 text-xs opacity-60\">#{count}</span></a>"
+    "<a href=\"#{tag_url}\" class=\"inline-flex items-center gap-1 h-7 px-2.5 rounded-md #{classes}\" title=\"#{Block.escape_html(posts_label)}\">#{@hash_icon} #{Block.escape_html(tag)} <span class=\"cloud-count\">#{count}</span></a>"
   end
 
   defp tag_url(slug, ""), do: "/tags/#{Block.escape_html(slug)}/"
@@ -77,13 +77,12 @@ defmodule Sayfa.Blocks.TagCloud do
     ratio = count / max_count
 
     if ratio > 0.6 do
-      "text-sm font-medium bg-primary-50 text-primary dark:bg-primary-900/30 dark:text-primary-400 hover:bg-primary-100 dark:hover:bg-primary-900/50"
+      "cloud-tag-lg"
     else
-      "text-xs font-medium bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 hover:bg-primary-50 hover:text-primary dark:hover:bg-primary-900/30 dark:hover:text-primary-400"
+      "cloud-tag-sm"
     end
   end
 
   defp size_classes(_, _),
-    do:
-      "text-xs font-medium bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 hover:bg-primary-50 hover:text-primary dark:hover:bg-primary-900/30 dark:hover:text-primary-400"
+    do: "cloud-tag-sm"
 end

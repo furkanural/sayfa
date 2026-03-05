@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="<%= Map.get(assigns, :lang, "en") %>" dir="<%= Map.get(assigns, :dir, "ltr") %>" class="scroll-smooth">
+<html lang="<%= Map.get(assigns, :lang, "en") %>" dir="<%= Map.get(assigns, :dir, "ltr") %>" class="site-root">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -18,7 +18,7 @@
   <link rel="preload" href="/assets/fonts/noto-sans-arabic-600.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/assets/css/main.css">
 </head>
-<body class="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 font-sans antialiased">
+<body class="site-body">
   <%= @block.(:header, nav: Map.get(@site, :nav, []), page_url: assigns[:page_url]) %>
   <%= @inner_content %>
   <%= @block.(:footer, author: Map.get(@site, :author, @site.title)) %>

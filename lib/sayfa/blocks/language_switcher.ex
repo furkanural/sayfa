@@ -139,29 +139,29 @@ defmodule Sayfa.Blocks.LanguageSwitcher do
     menu_id = "lang-menu#{id_suffix}"
 
     globe_svg =
-      ~s(<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>)
+      ~s(<svg class="icon-3_5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>)
 
     chevron_svg =
-      ~s(<svg class="w-3 h-3 transition-transform" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>)
+      ~s(<svg class="icon-chevron" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>)
 
-    ~s(<div class="relative" id="#{switcher_id}">) <>
-      ~s(<button id="#{toggle_id}" class="flex items-center gap-1.5 p-2 text-sm text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors" aria-expanded="false" aria-haspopup="listbox" aria-label="Language">) <>
+    ~s(<div class="lang-switcher" id="#{switcher_id}">) <>
+      ~s(<button id="#{toggle_id}" class="lang-toggle" aria-expanded="false" aria-haspopup="listbox" aria-label="Language">) <>
       globe_svg <>
-      ~s(<span class="text-xs font-medium">#{current_code}</span>) <>
+      ~s(<span class="lang-current-code">#{current_code}</span>) <>
       chevron_svg <>
       ~s(</button>) <>
-      ~s(<div id="#{menu_id}" class="hidden absolute right-0 mt-1 min-w-[8rem] py-1 rounded-lg border border-slate-200/80 dark:border-slate-700 bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg shadow-lg" role="listbox" aria-label="Language">) <>
+      ~s(<div id="#{menu_id}" class="lang-menu is-hidden" role="listbox" aria-label="Language">) <>
       dropdown_items <>
       ~s(</div>) <>
       ~s(</div>)
   end
 
   defp render_dropdown_item({lang, lang_name, _url}, lang) do
-    ~s(<span class="block px-3 py-2 text-sm font-medium text-slate-900 dark:text-slate-100">#{Block.escape_html(lang_name)}</span>)
+    ~s(<span class="lang-item-current">#{Block.escape_html(lang_name)}</span>)
   end
 
   defp render_dropdown_item({_lang, lang_name, url}, _current_lang) do
-    ~s(<a href="#{Block.escape_html(url)}" class="block px-3 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary-400 hover:bg-slate-50 dark:hover:bg-slate-800/50">#{Block.escape_html(lang_name)}</a>)
+    ~s(<a href="#{Block.escape_html(url)}" class="lang-item-link">#{Block.escape_html(lang_name)}</a>)
   end
 
   defp get_language_name(lang, languages) do

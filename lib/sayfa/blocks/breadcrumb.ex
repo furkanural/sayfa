@@ -71,7 +71,7 @@ defmodule Sayfa.Blocks.Breadcrumb do
 
   defp render_html(crumbs, home_label, home_url) do
     chevron =
-      ~s(<svg class="w-3.5 h-3.5 text-slate-300 dark:text-slate-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>)
+      ~s(<svg class="breadcrumb-chevron" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>)
 
     items =
       Enum.map(crumbs, fn {name, url} ->
@@ -79,20 +79,20 @@ defmodule Sayfa.Blocks.Breadcrumb do
 
         content =
           if url do
-            ~s(<a href="#{url}" class="text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-primary-400">#{escaped}</a>)
+            ~s(<a href="#{url}" class="breadcrumb-link">#{escaped}</a>)
           else
             escaped
           end
 
-        ~s(#{chevron}<li class="text-slate-900 dark:text-slate-100">#{content}</li>)
+        ~s(#{chevron}<li class="breadcrumb-current">#{content}</li>)
       end)
 
     escaped_home = Sayfa.Block.escape_html(home_label)
 
     home_link =
-      ~s(<li><a href="#{home_url}" class="text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-primary-400">#{escaped_home}</a></li>)
+      ~s(<li><a href="#{home_url}" class="breadcrumb-link">#{escaped_home}</a></li>)
 
-    ~s(<nav aria-label="Breadcrumb" class="mb-6"><ol class="flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-400">#{home_link}#{Enum.join(items)}</ol></nav>)
+    ~s(<nav aria-label="Breadcrumb" class="breadcrumb-nav"><ol class="breadcrumb-list">#{home_link}#{Enum.join(items)}</ol></nav>)
   end
 
   defp render_json_ld(crumbs, base_url, home_label, home_url) do

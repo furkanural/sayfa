@@ -30,13 +30,13 @@ defmodule Sayfa.Blocks.Hero do
 
     subtitle_html =
       if subtitle && subtitle != "" do
-        "<p class=\"mt-4 text-base sm:text-lg text-slate-500 dark:text-slate-400 leading-relaxed max-w-xl\">#{Block.escape_html(subtitle)}</p>"
+        "<p class=\"hero-subtitle\">#{Block.escape_html(subtitle)}</p>"
       else
         ""
       end
 
     """
-    <h1 class="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-slate-50">#{title}</h1>\
+    <h1 class="page-title-xl">#{title}</h1>\
     #{subtitle_html}\
     """
   end

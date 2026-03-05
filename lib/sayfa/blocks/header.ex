@@ -60,16 +60,15 @@ defmodule Sayfa.Blocks.Header do
     {brand_html, link_class} =
       if logo do
         img = render_logo_img(logo, logo_dark, site_title)
-        {img, "flex items-center hover:opacity-80 transition-opacity"}
+        {img, "header-brand-logo"}
       else
-        {site_title,
-         "text-lg font-bold text-slate-900 dark:text-slate-100 hover:text-primary dark:hover:text-primary-400"}
+        {site_title, "header-brand-text"}
       end
 
     """
-    <header class="sticky top-0 z-50 border-b border-slate-200/80 dark:border-slate-800 bg-white/85 dark:bg-slate-900/85 backdrop-blur-lg">\
-      <div class="max-w-3xl mx-auto px-5 sm:px-6">\
-        <div class="flex items-center justify-between h-14">\
+    <header class="header-shell">\
+      <div class="header-container">\
+        <div class="header-row">\
           <a href="#{home_url}" class="#{link_class}">#{brand_html}</a>\
     #{nav_html}\
         </div>\
@@ -79,15 +78,15 @@ defmodule Sayfa.Blocks.Header do
   end
 
   defp render_logo_img(logo, nil, alt) do
-    ~s(<img src="#{Block.escape_html(logo)}" alt="#{alt}" class="max-h-8 w-auto" loading="eager">)
+    ~s(<img src="#{Block.escape_html(logo)}" alt="#{alt}" class="header-logo" loading="eager">)
   end
 
   defp render_logo_img(logo, logo_dark, alt) do
     light =
-      ~s(<img src="#{Block.escape_html(logo)}" alt="#{alt}" class="max-h-8 w-auto dark:hidden" loading="eager">)
+      ~s(<img src="#{Block.escape_html(logo)}" alt="#{alt}" class="header-logo-light" loading="eager">)
 
     dark =
-      ~s(<img src="#{Block.escape_html(logo_dark)}" alt="#{alt}" class="max-h-8 w-auto hidden dark:block" loading="eager">)
+      ~s(<img src="#{Block.escape_html(logo_dark)}" alt="#{alt}" class="header-logo-dark" loading="eager">)
 
     light <> dark
   end
@@ -108,7 +107,7 @@ defmodule Sayfa.Blocks.Header do
 
   defp render_nav([], lang_switcher_desktop, _lang_switcher_mobile, _page_url) do
     """
-          <div class="flex items-center">#{lang_switcher_desktop}</div>\
+          <div class="header-nav-only">#{lang_switcher_desktop}</div>\
     """
   end
 
@@ -117,9 +116,9 @@ defmodule Sayfa.Blocks.Header do
       Enum.map_join(nav, "", fn {label, url} ->
         classes =
           if active?(url, page_url) do
-            "text-sm font-medium text-slate-900 dark:text-slate-100"
+            "header-nav-link-active"
           else
-            "text-sm text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100"
+            "header-nav-link"
           end
 
         "<a href=\"#{Block.escape_html(url)}\" class=\"#{classes}\">#{Block.escape_html(label)}</a>"
@@ -129,26 +128,26 @@ defmodule Sayfa.Blocks.Header do
       Enum.map_join(nav, "", fn {label, url} ->
         classes =
           if active?(url, page_url) do
-            "flex items-center gap-3 py-2.5 text-sm font-medium text-primary dark:text-primary-400"
+            "header-mobile-link-active"
           else
-            "flex items-center gap-3 py-2.5 text-sm text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary-400"
+            "header-mobile-link"
           end
 
         "<a href=\"#{Block.escape_html(url)}\" class=\"#{classes}\">#{Block.escape_html(label)}</a>"
       end)
 
     """
-          <div class="flex items-center gap-2">\
-            <nav class="hidden md:flex items-center gap-7">#{desktop_items}#{lang_switcher_desktop}</nav>\
-    #{if lang_switcher_mobile != "", do: "<div class=\"md:hidden\">#{lang_switcher_mobile}</div>", else: ""}\
-            <button id="menu-toggle" class="md:hidden p-2 -mr-2 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100" aria-label="Toggle menu" aria-expanded="false" aria-controls="mobile-menu">\
-              <svg class="w-5 h-5 menu-open" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true"><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/></svg>\
-              <svg class="w-5 h-5 menu-close hidden" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>\
+          <div class="header-nav-wrap">\
+            <nav class="header-desktop-nav">#{desktop_items}#{lang_switcher_desktop}</nav>\
+    #{if lang_switcher_mobile != "", do: "<div class=\"header-mobile-switcher\">#{lang_switcher_mobile}</div>", else: ""}\
+            <button id="menu-toggle" class="header-menu-toggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="mobile-menu">\
+              <svg class="icon-menu menu-open" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true"><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/></svg>\
+              <svg class="icon-menu menu-close hidden" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>\
             </button>\
           </div>\
         </div>\
-        <nav id="mobile-menu" class="hidden pb-4 md:hidden">\
-          <div class="flex flex-col gap-1 pt-2 border-t border-slate-200/80 dark:border-slate-800">#{mobile_items}</div>\
+        <nav id="mobile-menu" class="header-mobile-menu hidden">\
+          <div class="header-mobile-list">#{mobile_items}</div>\
         </nav>\
     """
   end

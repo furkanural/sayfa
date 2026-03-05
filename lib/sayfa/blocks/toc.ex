@@ -47,9 +47,9 @@ defmodule Sayfa.Blocks.TOC do
     heading = Block.escape_html(t.("on_this_page"))
 
     """
-    <nav class="sticky top-20">\
-      <h2 class="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-4">#{heading}</h2>\
-      <ul class="space-y-2.5 text-sm border-l border-slate-200 dark:border-slate-800">\
+    <nav class="toc-nav">\
+      <h2 class="toc-heading">#{heading}</h2>\
+      <ul class="toc-list">\
     #{items}\
       </ul>\
     </nav>\
@@ -61,12 +61,12 @@ defmodule Sayfa.Blocks.TOC do
     heading = Block.escape_html(t.("on_this_page"))
 
     """
-    <details class="rounded-lg border border-slate-200/70 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50">\
-      <summary class="flex items-center gap-2 cursor-pointer p-4 text-sm font-medium text-slate-700 dark:text-slate-300 select-none">\
-        <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="10" x2="20" y1="18" y2="18"/></svg>\
+    <details class="toc-mobile-box">\
+      <summary class="toc-mobile-summary">\
+        <svg class="toc-summary-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="10" x2="20" y1="18" y2="18"/></svg>\
         #{heading}\
       </summary>\
-      <ul class="px-4 pb-4 space-y-2 text-sm">\
+      <ul class="toc-mobile-list">\
     #{items}\
       </ul>\
     </details>\
@@ -79,9 +79,9 @@ defmodule Sayfa.Blocks.TOC do
     escaped_text = Block.escape_html(text)
 
     if level > 2 do
-      "    <li><a href=\"##{escaped_id}\" class=\"block pl-8 -ml-px border-l border-transparent hover:border-primary text-slate-400 dark:text-slate-500 hover:text-primary dark:hover:text-primary-400\">#{escaped_text}</a></li>"
+      "    <li><a href=\"##{escaped_id}\" class=\"toc-link-l3\">#{escaped_text}</a></li>"
     else
-      "    <li><a href=\"##{escaped_id}\" class=\"block pl-4 -ml-px border-l border-transparent hover:border-primary text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-primary-400\">#{escaped_text}</a></li>"
+      "    <li><a href=\"##{escaped_id}\" class=\"toc-link-l2\">#{escaped_text}</a></li>"
     end
   end
 
@@ -91,9 +91,9 @@ defmodule Sayfa.Blocks.TOC do
     escaped_text = Block.escape_html(text)
 
     if level > 2 do
-      "    <li class=\"ml-4\"><a href=\"##{escaped_id}\" class=\"text-slate-400 dark:text-slate-500 hover:text-primary dark:hover:text-primary-400\">#{escaped_text}</a></li>"
+      "    <li class=\"toc-mobile-item-l3\"><a href=\"##{escaped_id}\" class=\"toc-mobile-link-l3\">#{escaped_text}</a></li>"
     else
-      "    <li><a href=\"##{escaped_id}\" class=\"text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-primary-400\">#{escaped_text}</a></li>"
+      "    <li><a href=\"##{escaped_id}\" class=\"toc-mobile-link-l2\">#{escaped_text}</a></li>"
     end
   end
 

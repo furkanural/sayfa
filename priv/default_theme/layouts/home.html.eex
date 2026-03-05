@@ -1,5 +1,5 @@
 <main>
-  <section class="container-content pt-14 sm:pt-20 section-spacing-lg">
+  <section class="container-content home-hero-section section-spacing-lg">
     <%= @block.(:hero, title: @site.title, subtitle: Map.get(@site, :description, "")) %>
   </section>
 
@@ -13,7 +13,7 @@
 
   <%= if Map.get(@site, :social_links, []) != [] do %>
   <section class="container-content section-spacing">
-    <h2 class="text-lg sm:text-xl font-semibold text-slate-900 dark:text-slate-50 mb-5"><%= @t.("connect") %></h2>
+    <h2 class="home-connect-title"><%= @t.("connect") %></h2>
     <%= @block.(:social_links, links: @site.social_links) %>
   </section>
   <% end %>

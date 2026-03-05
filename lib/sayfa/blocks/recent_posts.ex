@@ -50,18 +50,18 @@ defmodule Sayfa.Blocks.RecentPosts do
 
       view_all_html =
         if show_view_all do
-          "<a href=\"#{lang_prefix}/posts/\" class=\"inline-flex items-center gap-1 text-sm text-primary dark:text-primary-400 hover:text-primary-dark dark:hover:text-primary-300\">#{Block.escape_html(t.("view_all"))} <svg class=\"w-3.5 h-3.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"m9 18 6-6-6-6\"/></svg></a>"
+          "<a href=\"#{lang_prefix}/posts/\" class=\"section-link\">#{Block.escape_html(t.("view_all"))} <svg class=\"icon-3_5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"m9 18 6-6-6-6\"/></svg></a>"
         else
           ""
         end
 
       """
       <section class="container-content section-spacing">\
-        <div class="flex items-center justify-between mb-6">\
-          <h2 class="text-lg sm:text-xl font-semibold text-slate-900 dark:text-slate-50">#{Block.escape_html(t.("recent_posts"))}</h2>\
+        <div class="recent-section-header">\
+          <h2 class="section-title">#{Block.escape_html(t.("recent_posts"))}</h2>\
           #{view_all_html}\
         </div>\
-        <div class="space-y-0 divide-y divide-slate-200/70 dark:divide-slate-800">\
+        <div class="recent-post-list">\
       #{items}\
         </div>\
       </section>\
@@ -75,15 +75,15 @@ defmodule Sayfa.Blocks.RecentPosts do
 
     date_html =
       if post.date do
-        "<time class=\"shrink-0 text-sm tabular-nums text-slate-500 dark:text-slate-400 w-[5.5rem]\">#{Sayfa.DateFormat.format(post.date, lang || :en, site)}</time>"
+        "<time class=\"recent-post-date\">#{Sayfa.DateFormat.format(post.date, lang || :en, site)}</time>"
       else
         ""
       end
 
     """
-        <a href="#{url}" class="group flex items-baseline gap-4 py-4">\
+        <a href="#{url}" class="recent-post-link">\
           #{date_html}\
-          <span class="text-slate-800 dark:text-slate-200 group-hover:text-primary dark:group-hover:text-primary-400">#{title}</span>\
+          <span class="recent-post-title">#{title}</span>\
         </a>\
     """
   end
