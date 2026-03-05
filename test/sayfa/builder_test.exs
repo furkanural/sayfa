@@ -419,7 +419,6 @@ defmodule Sayfa.BuilderTest do
       root_feed = File.read!(Path.join(ctx.output_dir, "feed.xml"))
       assert root_feed =~ "Hello World"
       assert root_feed =~ "Merhaba"
-
     end
   end
 
@@ -1046,6 +1045,33 @@ defmodule Sayfa.BuilderTest do
 
       assert {:ok, _result} =
                Builder.build(build_opts(ctx, static_dir: Path.join(ctx.tmp_dir, "nonexistent")))
+    end
+  end
+
+  describe "asset digesting" do
+    test "fingerprints asset URLs and writes manifest", ctx do
+      File.write!(Path.join(ctx.posts_dir, "2024-01-15-hello.md"), """
+      ---
+      title: "Hello"
+      date: 2024-01-15
+      ---
+      Hello content.
+      """)
+
+      assert {:ok, _result} = Builder.build(build_opts(ctx))
+
+      html = File.read!(Path.join([ctx.output_dir, "posts", "hello", "index.html"]))
+
+      assert html =~ ~r|/assets/css/main\.[0-9a-f]{12}\.css|
+      assert html =~ ~r|/assets/js/enhancements\.[0-9a-f]{12}\.js|
+      refute html =~ ~s(/assets/css/main.css)
+      refute html =~ ~s(/assets/js/enhancements.js)
+
+      manifest_path = Path.join([ctx.output_dir, "assets", "manifest.json"])
+      assert File.exists?(manifest_path)
+      manifest = File.read!(manifest_path)
+      assert manifest =~ ~s("/assets/css/main.css")
+      assert manifest =~ ~s("/assets/js/enhancements.js")
     end
   end
 

@@ -131,6 +131,8 @@ defmodule Sayfa.Builder do
         Tailwind.compile(config, config.output_dir)
       end)
 
+      timed_sync("Digest assets", verbose, fn -> digest_assets(config) end)
+
       elapsed = System.monotonic_time(:millisecond) - start_time
 
       verbose_log(verbose, "Build complete in #{elapsed}ms")
@@ -212,6 +214,97 @@ defmodule Sayfa.Builder do
       end
     end)
   end
+
+  defp digest_assets(config) do
+    output_dir = Map.get(config, :output_dir, "dist")
+    assets_dir = Path.join(output_dir, "assets")
+
+    if File.dir?(assets_dir) do
+      mapping =
+        assets_dir
+        |> Path.join("**/*")
+        |> Path.wildcard()
+        |> Enum.filter(&File.regular?/1)
+        |> Enum.reject(&(Path.basename(&1) == "manifest.json"))
+        |> Enum.reduce(%{}, fn path, acc ->
+          old_rel = Path.relative_to(path, output_dir)
+          digest = path_digest(path)
+          new_rel = digested_relative_path(old_rel, digest)
+          new_path = Path.join(output_dir, new_rel)
+
+          File.mkdir_p!(Path.dirname(new_path))
+          File.rename!(path, new_path)
+
+          old_url = "/" <> normalize_path(old_rel)
+          new_url = "/" <> normalize_path(new_rel)
+          Map.put(acc, old_url, new_url)
+        end)
+
+      rewrite_asset_references(output_dir, mapping)
+      write_asset_manifest(output_dir, mapping)
+    end
+
+    :ok
+  end
+
+  defp path_digest(path) do
+    path
+    |> File.read!()
+    |> then(&:crypto.hash(:sha256, &1))
+    |> Base.encode16(case: :lower)
+    |> binary_part(0, 12)
+  end
+
+  defp digested_relative_path(relative_path, digest) do
+    ext = Path.extname(relative_path)
+    base = String.trim_trailing(relative_path, ext)
+    "#{base}.#{digest}#{ext}"
+  end
+
+  defp rewrite_asset_references(output_dir, mapping) do
+    output_dir
+    |> Path.join("**/*.{html,css,js}")
+    |> Path.wildcard()
+    |> Enum.filter(&File.regular?/1)
+    |> Enum.each(fn path ->
+      original = File.read!(path)
+      updated = replace_asset_urls(original, mapping)
+
+      if updated != original do
+        File.write!(path, updated)
+      end
+    end)
+  end
+
+  defp replace_asset_urls(content, mapping) do
+    mapping
+    |> Map.to_list()
+    |> Enum.sort_by(fn {from, _to} -> byte_size(from) end, :desc)
+    |> Enum.reduce(content, fn {from, to}, acc -> String.replace(acc, from, to) end)
+  end
+
+  defp write_asset_manifest(output_dir, mapping) do
+    manifest_path = Path.join([output_dir, "assets", "manifest.json"])
+    File.mkdir_p!(Path.dirname(manifest_path))
+
+    entries =
+      mapping
+      |> Enum.sort_by(fn {key, _} -> key end)
+      |> Enum.map_join(",\n", fn {old_path, new_path} ->
+        ~s(  "#{json_escape(old_path)}": "#{json_escape(new_path)}")
+      end)
+
+    json = "{\n#{entries}\n}\n"
+    File.write!(manifest_path, json)
+  end
+
+  defp json_escape(str) do
+    str
+    |> String.replace("\\", "\\\\")
+    |> String.replace("\"", "\\\"")
+  end
+
+  defp normalize_path(path), do: String.replace(path, "\\", "/")
 
   # --- Private Functions ---
 
@@ -465,7 +558,11 @@ defmodule Sayfa.Builder do
 
         feed_links = [
           %{url: "/feed/categories/#{slug}.xml", type: "application/atom+xml", title: page_title},
-          %{url: "/feed/categories/#{slug}.json", type: "application/feed+json", title: page_title}
+          %{
+            url: "/feed/categories/#{slug}.json",
+            type: "application/feed+json",
+            title: page_title
+          }
         ]
 
         case render_and_write_list(
