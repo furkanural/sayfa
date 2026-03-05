@@ -40,7 +40,7 @@ defmodule Sayfa.Blocks.HeaderTest do
       assigns = %{site: site, nav: [], lang: :en}
       html = Header.render(assigns)
 
-      assert html =~ ~s(class="max-h-8 w-auto")
+      assert html =~ ~s(class="header-logo")
       refute html =~ "dark:hidden"
       refute html =~ "hidden dark:block"
     end
@@ -56,8 +56,8 @@ defmodule Sayfa.Blocks.HeaderTest do
 
       assert html =~ ~s(src="/images/logo.svg")
       assert html =~ ~s(src="/images/logo-dark.svg")
-      assert html =~ "dark:hidden"
-      assert html =~ "hidden dark:block"
+      assert html =~ "header-logo-light"
+      assert html =~ "header-logo-dark"
     end
 
     test "falls back to text when logo is nil" do
@@ -74,7 +74,7 @@ defmodule Sayfa.Blocks.HeaderTest do
       assigns = %{site: site, nav: [], lang: :en}
       html = Header.render(assigns)
 
-      assert html =~ "hover:opacity-80"
+      assert html =~ "header-brand-logo"
       refute html =~ "font-bold"
     end
 
@@ -82,7 +82,7 @@ defmodule Sayfa.Blocks.HeaderTest do
       assigns = %{site: @base_site, nav: [], lang: :en}
       html = Header.render(assigns)
 
-      assert html =~ "font-bold"
+      assert html =~ "header-brand-text"
     end
   end
 end

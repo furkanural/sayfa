@@ -87,7 +87,7 @@ defmodule Sayfa.Blocks.LanguageSwitcherTest do
       assigns = %{site: @multi_lang_site, content: content, lang: :en}
       html = LanguageSwitcher.render(assigns)
 
-      assert html =~ ~s(<span class="block px-3 py-2 text-sm font-medium)
+      assert html =~ ~s(<span class="lang-item-current)
       assert html =~ "English</span>"
       assert html =~ ~s(<a href="/tr/posts/hello/")
     end
@@ -189,7 +189,7 @@ defmodule Sayfa.Blocks.LanguageSwitcherTest do
       assigns = %{site: @multi_lang_site, content: content, lang: :en}
       html = LanguageSwitcher.render(assigns)
 
-      assert html =~ ~s(id="lang-menu" class="hidden)
+      assert html =~ ~s(id="lang-menu" class="lang-menu is-hidden)
       assert html =~ ~s(aria-expanded="false")
     end
 

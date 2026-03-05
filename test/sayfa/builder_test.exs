@@ -593,7 +593,7 @@ defmodule Sayfa.BuilderTest do
           all_contents: []
         )
 
-      assert html =~ "text-3xl"
+      assert html =~ "page-title-xl"
       assert html =~ "Welcome"
       assert html =~ "Test Site"
     end

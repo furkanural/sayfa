@@ -75,7 +75,7 @@ defmodule Sayfa.BlockTest do
       helper = Block.build_helper(site: %{title: "Test"}, content: nil, contents: [], lang: :en)
       result = helper.(:hero, title: "Welcome")
       assert result =~ "Welcome"
-      assert result =~ "text-3xl"
+      assert result =~ "page-title-xl"
     end
 
     test "returns empty string for unknown block" do
@@ -204,7 +204,7 @@ defmodule Sayfa.BlockTest do
   describe "Hero" do
     test "renders with title and subtitle" do
       html = Hero.render(%{title: "Hello", subtitle: "World"})
-      assert html =~ "text-3xl"
+      assert html =~ "page-title-xl"
       assert html =~ "Hello"
       assert html =~ "World"
     end
@@ -225,7 +225,7 @@ defmodule Sayfa.BlockTest do
   describe "Header" do
     test "renders with site title" do
       html = Header.render(%{site: %{title: "My Blog"}})
-      assert html =~ "<header class=\"sticky"
+      assert html =~ "<header class=\"header-shell"
       assert html =~ "My Blog"
     end
 
@@ -236,7 +236,7 @@ defmodule Sayfa.BlockTest do
           nav: [{"Home", "/"}, {"About", "/about/"}]
         })
 
-      assert html =~ "<nav class=\"hidden md:flex"
+      assert html =~ "<nav class=\"header-desktop-nav"
       assert html =~ "Home"
       assert html =~ "/about/"
     end
@@ -317,11 +317,11 @@ defmodule Sayfa.BlockTest do
           page_url: "/posts/hello-world/"
         })
 
-      # "Posts" link should have active styling (font-medium text-slate-900)
-      assert html =~ ~r/href="\/posts\/"[^>]*font-medium text-slate-900/
+      # "Posts" link should have active styling
+      assert html =~ ~r/href="\/posts\/"[^>]*header-nav-link-active/
       # "Home" and "About" should not have active styling
-      assert html =~ ~r/href="\/"[^>]*text-slate-500/
-      assert html =~ ~r/href="\/about\/"[^>]*text-slate-500/
+      assert html =~ ~r/href="\/"[^>]*header-nav-link"/
+      assert html =~ ~r/href="\/about\/"[^>]*header-nav-link"/
     end
 
     test "applies active class to home only for exact /" do
@@ -334,9 +334,9 @@ defmodule Sayfa.BlockTest do
         })
 
       # Home should be active
-      assert html =~ ~r/href="\/"[^>]*font-medium text-slate-900/
+      assert html =~ ~r/href="\/"[^>]*header-nav-link-active/
       # Posts should not be active
-      assert html =~ ~r/href="\/posts\/"[^>]*text-slate-500/
+      assert html =~ ~r/href="\/posts\/"[^>]*header-nav-link"/
     end
 
     test "no active class when page_url is nil" do
@@ -349,7 +349,7 @@ defmodule Sayfa.BlockTest do
         })
 
       # All items should have default styling
-      refute html =~ "font-medium text-slate-900"
+      refute html =~ "header-nav-link-active"
     end
 
     test "active state works with language-prefixed URLs" do
@@ -362,7 +362,7 @@ defmodule Sayfa.BlockTest do
         })
 
       # Yazılar should be active (its URL becomes /tr/posts/ which matches /tr/posts/merhaba/)
-      assert html =~ ~r/href="\/tr\/posts\/"[^>]*font-medium text-slate-900/
+      assert html =~ ~r/href="\/tr\/posts\/"[^>]*header-nav-link-active/
     end
 
     test "localized homepage is not active on subpages" do
@@ -375,9 +375,9 @@ defmodule Sayfa.BlockTest do
         })
 
       # Ana Sayfa (/tr/) should NOT be active when on /tr/posts/
-      assert html =~ ~r/href="\/tr\/"[^>]*text-slate-500/
+      assert html =~ ~r/href="\/tr\/"[^>]*header-nav-link"/
       # Yazılar should be active
-      assert html =~ ~r/href="\/tr\/posts\/"[^>]*font-medium text-slate-900/
+      assert html =~ ~r/href="\/tr\/posts\/"[^>]*header-nav-link-active/
     end
 
     test "localized homepage is active on exact match" do
@@ -390,9 +390,9 @@ defmodule Sayfa.BlockTest do
         })
 
       # Ana Sayfa should be active on /tr/
-      assert html =~ ~r/href="\/tr\/"[^>]*font-medium text-slate-900/
+      assert html =~ ~r/href="\/tr\/"[^>]*header-nav-link-active/
       # Yazılar should NOT be active
-      assert html =~ ~r/href="\/tr\/posts\/"[^>]*text-slate-500/
+      assert html =~ ~r/href="\/tr\/posts\/"[^>]*header-nav-link"/
     end
 
     test "nav URLs are unchanged for default language" do
@@ -412,7 +412,7 @@ defmodule Sayfa.BlockTest do
   describe "Footer" do
     test "renders with year and author" do
       html = Footer.render(%{year: 2024, author: "Jane"})
-      assert html =~ "<footer class=\"border-t"
+      assert html =~ "<footer class=\"footer-shell"
       assert html =~ "2024"
       assert html =~ "Jane"
     end
@@ -462,7 +462,7 @@ defmodule Sayfa.BlockTest do
           links: [{"GitHub", "https://github.com"}, {"Twitter", "https://twitter.com"}]
         })
 
-      assert html =~ "<div class=\"flex flex-wrap"
+      assert html =~ "<div class=\"social-links-wrap"
       assert html =~ "GitHub"
       assert html =~ "https://github.com"
       assert html =~ "rel=\"noopener\""
@@ -500,11 +500,11 @@ defmodule Sayfa.BlockTest do
       }
 
       html = TOCBlock.render(%{content: content})
-      assert html =~ "<nav class=\"sticky top-20\""
+      assert html =~ "<nav class=\"toc-nav\""
       assert html =~ "#intro"
       assert html =~ "Introduction"
       assert html =~ "Details"
-      assert html =~ "border-l"
+      assert html =~ "toc-list"
     end
 
     test "renders mobile table of contents" do
@@ -668,7 +668,7 @@ defmodule Sayfa.BlockTest do
       ]
 
       html = TagCloud.render(%{contents: contents})
-      assert html =~ "<section class=\"flex flex-wrap"
+      assert html =~ "<section class=\"tag-cloud-wrap"
       assert html =~ "elixir"
       assert html =~ "otp"
       assert html =~ "/tags/"
@@ -684,7 +684,7 @@ defmodule Sayfa.BlockTest do
     test "renders reading time with clock icon" do
       content = %Content{title: "Test", body: "", meta: %{"reading_time" => 5}}
       html = ReadingTimeBlock.render(%{content: content, lang: :en, site: %{default_lang: :en}})
-      assert html =~ "inline-flex items-center"
+      assert html =~ "content-meta-item"
       assert html =~ "5 min read"
       assert html =~ "<svg"
     end
@@ -726,7 +726,7 @@ defmodule Sayfa.BlockTest do
       assert html =~ "Copy link"
       assert html =~ "data-action=\"copy-link\""
       assert html =~ "<button"
-      assert html =~ "cursor-pointer"
+      assert html =~ "copy-link-btn"
     end
   end
 
