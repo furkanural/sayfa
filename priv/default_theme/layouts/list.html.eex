@@ -28,7 +28,7 @@
 <% @content_type == "notes" -> %>
   <div class="notes-grid">
 <%= for item <- @contents do %>
-    <a href="<%= Sayfa.Content.url(item) %>" class="content-card">
+    <a href="<%= Sayfa.Content.url(item) %>" class="content-card content-card-note">
       <h2 class="content-card-title"><%= item.title %></h2>
 <%= if item.date do %>
       <div class="content-card-date-wrap"><time datetime="<%= item.date %>" class="content-card-date"><%= @format_date.(item.date) %></time></div>
@@ -39,7 +39,7 @@
 <% @content_type == "projects" -> %>
   <div class="cards-stack">
 <%= for item <- @contents do %>
-    <a href="<%= Sayfa.Content.url(item) %>" class="content-card">
+    <a href="<%= Sayfa.Content.url(item) %>" class="content-card content-card-project">
       <div class="content-card-header">
         <h2 class="content-card-title"><%= item.title %></h2>
 <%= if Map.get(item.meta, "status") do %>

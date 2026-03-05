@@ -158,7 +158,7 @@ defmodule Sayfa.Blocks.RecentContent do
       end
 
     """
-            <a href="#{url}" class="content-card">
+            <a href="#{url}" class="content-card content-card-note">
               <h3 class="content-card-title">#{title}</h3>
               <div class="content-card-date-wrap">#{date_html}</div>
             </a>\
@@ -194,7 +194,7 @@ defmodule Sayfa.Blocks.RecentContent do
       end
 
     """
-            <a href="#{url}" class="content-card">
+            <a href="#{url}" class="content-card content-card-project">
               <div class="content-card-header">
                 <h3 class="content-card-title">#{title}</h3>
                 #{status_html}
