@@ -85,7 +85,7 @@ defmodule Mix.Tasks.Sayfa.Gen.Content do
   end
 
   defp do_generate(type_mod, title, opts) do
-    slug = Keyword.get(opts, :slug) || Slug.slugify(title)
+    slug = Keyword.get(opts, :slug) || generate_slug(title)
     date = parse_date_option(Keyword.get(opts, :date))
     tags = parse_list_option(Keyword.get(opts, :tags))
     categories = parse_list_option(Keyword.get(opts, :categories))
@@ -230,5 +230,25 @@ defmodule Mix.Tasks.Sayfa.Gen.Content do
       dir = mod.directory()
       Mix.shell().info("  #{name}\t(content/#{dir}/)")
     end)
+  end
+
+  defp generate_slug(title) do
+    if slugify_available?() do
+      Slug.slugify(title)
+    else
+      fallback_slugify(title)
+    end
+  end
+
+  defp slugify_available? do
+    Code.ensure_loaded?(Slug) and function_exported?(Slug, :slugify, 1)
+  end
+
+  defp fallback_slugify(title) do
+    title
+    |> String.downcase()
+    |> String.replace(~r/[^\w\s-]/u, "")
+    |> String.replace(~r/\s+/u, "-")
+    |> String.trim("-")
   end
 end
