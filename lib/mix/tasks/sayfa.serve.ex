@@ -52,7 +52,8 @@ defmodule Mix.Tasks.Sayfa.Serve do
       content_dir: content_dir,
       output_dir: output_dir,
       drafts: drafts,
-      verbose: verbose
+      verbose: verbose,
+      fingerprint: false
     ]
 
     Mix.shell().info("Starting Sayfa dev server on http://localhost:#{port}")

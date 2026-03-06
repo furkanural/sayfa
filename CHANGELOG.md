@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.1] - 2026-03-06
+
+### Fixed
+
+- **Hot reload CSS loss**: Asset fingerprinting is now skipped during `mix sayfa.serve`. Every hot reload previously accumulated old fingerprinted files in `dist/assets/` (e.g. `main.abc.abc.css`), causing the browser to request a URL that no longer existed after the next rename. Dev mode uses `location.reload()` for cache freshness so fingerprinting is unnecessary there.
+- **Fingerprinted file accumulation on repeated `mix sayfa.build` runs**: `digest_assets` now reads the previous `manifest.json` and deletes all previously fingerprinted files before rescanning `dist/assets/`. This prevents old `*.hash.css` / `*.hash.js` files from accumulating across repeated production builds.
+
+### Added
+
+- **`:fingerprint` build option**: Pass `fingerprint: false` to `Sayfa.Builder.build/1` to skip asset digesting (e.g. for custom dev tooling). Defaults to `true` so `mix sayfa.build` behaviour is unchanged.
+
 ## [0.4.0] - 2026-03-06
 
 ### Breaking Changes
@@ -180,6 +191,7 @@ Initial release of Sayfa — a static site generator built in Elixir.
 - Build caching for incremental rebuilds
 - Verbose logging with per-stage timing
 
+[0.4.1]: https://github.com/furkanural/sayfa/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/furkanural/sayfa/compare/v0.3.3...v0.4.0
 [0.3.3]: https://github.com/furkanural/sayfa/compare/v0.3.2...v0.3.3
 [0.3.2]: https://github.com/furkanural/sayfa/compare/v0.3.1...v0.3.2

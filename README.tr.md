@@ -576,6 +576,7 @@ config :sayfa, :site,
 | `view_transitions` | Boolean | `false` | Sayfa gecisleri icin View Transitions API'yi etkinlestir |
 | `port` | Integer | `4000` | Gelistirme sunucusu portu |
 | `verbose` | Boolean | `false` | Ayrintili derleme loglama |
+| `fingerprint` | Boolean | `true` | Varlik parmak izi olusturmayi etkinlestir (gelistirme sunucusunda otomatik olarak `false`) |
 
 ---
 

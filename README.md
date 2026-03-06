@@ -580,6 +580,7 @@ config :sayfa, :site,
 | `view_transitions` | Boolean | `false` | Enable View Transitions API for smooth page navigation |
 | `port` | Integer | `4000` | Dev server port |
 | `verbose` | Boolean | `false` | Verbose build logging |
+| `fingerprint` | Boolean | `true` | Enable asset fingerprinting (automatically `false` in dev server) |
 
 ---
 

@@ -70,6 +70,7 @@ defmodule Sayfa.Builder do
   - `:content_dir` — source content directory (default: `"content"`)
   - `:output_dir` — output directory (default: `"dist"`)
   - `:drafts` — include draft content (default: `false`)
+  - `:fingerprint` — enable asset fingerprinting (default: `true`; set to `false` in dev)
 
   ## Examples
 
@@ -131,7 +132,7 @@ defmodule Sayfa.Builder do
         Tailwind.compile(config, config.output_dir)
       end)
 
-      timed_sync("Digest assets", verbose, fn -> digest_assets(config) end)
+      maybe_digest_assets(config, verbose)
 
       elapsed = System.monotonic_time(:millisecond) - start_time
 
@@ -215,11 +216,19 @@ defmodule Sayfa.Builder do
     end)
   end
 
+  defp maybe_digest_assets(config, verbose) do
+    if Map.get(config, :fingerprint, true) do
+      timed_sync("Digest assets", verbose, fn -> digest_assets(config) end)
+    end
+  end
+
   defp digest_assets(config) do
     output_dir = Map.get(config, :output_dir, "dist")
     assets_dir = Path.join(output_dir, "assets")
 
     if File.dir?(assets_dir) do
+      clean_old_fingerprinted_files(output_dir)
+
       mapping =
         assets_dir
         |> Path.join("**/*")
@@ -245,6 +254,23 @@ defmodule Sayfa.Builder do
     end
 
     :ok
+  end
+
+  defp clean_old_fingerprinted_files(output_dir) do
+    manifest_path = Path.join([output_dir, "assets", "manifest.json"])
+
+    with {:ok, json} <- File.read(manifest_path),
+         {:ok, manifest} <- JSON.decode(json),
+         true <- is_map(manifest) do
+      manifest
+      |> Map.values()
+      |> Enum.each(fn fingerprinted_url ->
+        path = Path.join(output_dir, String.trim_leading(fingerprinted_url, "/"))
+        File.rm(path)
+      end)
+    else
+      _ -> :ok
+    end
   end
 
   defp path_digest(path) do
