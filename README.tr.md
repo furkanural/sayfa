@@ -768,7 +768,6 @@ Sayfa icin gelecek planlari:
 
 - Arama islevselligi (istemci tarafli arama ve dizinleme)
 - Ucuncu parti uzantilar icin eklenti sistemi
-- Varlik parmak izi
 
 ---
 

@@ -772,7 +772,6 @@ Future plans for Sayfa:
 
 - Search functionality (client-side search with indexing)
 - Plugin system for third-party extensions
-- Asset fingerprinting
 
 ---
 
