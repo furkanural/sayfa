@@ -77,7 +77,7 @@ Sayfa **iki katmanli bir mimari** kullanir:
 
 ### Sablonlar ve Tema
 - Uc katmanli sablon bilesimi (icerik -> duzen -> temel)
-- 17 yerlesik blok (hero, baslik, altbilgi, sosyal baglantilar, icerik tablosu, son makaleler, etiket bulutu, kategori bulutu, okuma suresi, kod kopyalama, baglanti kopyalama, breadcrumb, son icerikler, dil degistirici, ilgili makaleler, ilgili icerikler, analitik) ve 24 platform ikonu (GitHub, X/Twitter, Mastodon, LinkedIn, Bluesky, YouTube, Instagram ve daha fazlasi)
+- 16 yerlesik blok (baslik, altbilgi, sosyal baglantilar, icerik tablosu, son makaleler, etiket bulutu, kategori bulutu, okuma suresi, kod kopyalama, baglanti kopyalama, breadcrumb, son icerikler, dil degistirici, ilgili makaleler, ilgili icerikler, analitik) ve 24 platform ikonu (GitHub, X/Twitter, Mastodon, LinkedIn, Bluesky, YouTube, Instagram ve daha fazlasi)
 - Tema mirasi (ozel -> ust -> varsayilan)
 - `@block` yardimcisi ile EEx sablonlari
 - Yapilandirilabilir sozdizimi vurgulama temasi (`highlight_theme`)
@@ -264,7 +264,7 @@ Cozumleme sirasi:
 
 | Duzen | Kullanim | Tipik Bloklar |
 |-------|----------|---------------|
-| `home.html.eex` | Ana sayfa | hero, recent_articles, tag_cloud |
+| `home.html.eex` | Ana sayfa | recent_content |
 | `article.html.eex` | Tekil makale | reading_time, toc, social_links |
 | `note.html.eex` | Tekil not | reading_time, copy_link |
 | `page.html.eex` | Statik sayfalar | yalnizca icerik |
@@ -293,7 +293,6 @@ Tum sablonlar su degiskenleri alir:
 Bloklar, `@block` yardimcisi ile cagirilan yeniden kullanilabilir EEx bilesenleridir:
 
 ```eex
-<%= @block.(:hero, title: "Hos Geldiniz", subtitle: "Elixir Blogum") %>
 <%= @block.(:recent_articles, limit: 5) %>
 <%= @block.(:tag_cloud) %>
 <%= @block.(:language_switcher, variant: :desktop) %>
@@ -304,7 +303,6 @@ Bloklar, `@block` yardimcisi ile cagirilan yeniden kullanilabilir EEx bilesenler
 
 | Blok | Atom | Aciklama |
 |------|------|----------|
-| Hero | `:hero` | Baslik ve alt baslikli hero bolumu |
 | Baslik | `:header` | Navigasyonlu site basligi; yapilandirmada `logo:` ayarlandiginda logo gorseli render eder |
 | Altbilgi | `:footer` | Site altbilgisi |
 | Sosyal Baglantilar | `:social_links` | Sosyal medya baglanti ikonlari |
@@ -327,7 +325,7 @@ Yeni bir blok iskelet olusturmak icin:
 
 ```bash
 mix sayfa.gen.block AfisBlok          # → lib/blocks/afis_blok.ex
-mix sayfa.gen.block Uygulamam.Blocks.Hero # → lib/blocks/hero.ex
+mix sayfa.gen.block Uygulamam.Blocks.Afiş # → lib/blocks/afis.ex
 ```
 
 Ya da `Sayfa.Behaviours.Block` behaviour'unu elle uygulayabilirsiniz:
@@ -622,7 +620,7 @@ Ozel bir blok modulu iskelet olusturun:
 
 ```bash
 mix sayfa.gen.block AfisBlok          # → lib/blocks/afis_blok.ex
-mix sayfa.gen.block Uygulamam.Blocks.Hero # → lib/blocks/hero.ex
+mix sayfa.gen.block Uygulamam.Blocks.Afiş # → lib/blocks/afis.ex
 ```
 
 `Sayfa.Behaviours.Block` davranisini uygulayan bir modul olusturur ve `config/config.exs` icin kayit satirini yazdirir.

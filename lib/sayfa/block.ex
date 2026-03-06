@@ -2,7 +2,7 @@ defmodule Sayfa.Block do
   @moduledoc """
   Registry and lookup functions for blocks.
 
-  Maps block names to block modules. By default, seventeen built-in blocks
+  Maps block names to block modules. By default, sixteen built-in blocks
   are registered. Custom blocks can be added via application config:
 
       config :sayfa, :blocks, [MyApp.Blocks.Banner | Sayfa.Block.default_blocks()]
@@ -12,16 +12,16 @@ defmodule Sayfa.Block do
   The `build_helper/1` function creates a closure that templates use as `@block`:
 
       block_fn = Sayfa.Block.build_helper(site: config, content: content, contents: all_contents, lang: :en)
-      block_fn.(:hero, title: "Welcome")
-      #=> "<section class=\\"hero\\">..."
+      block_fn.(:recent_content, limit: 5)
+      #=> "<section>..."
 
   ## Examples
 
       iex> length(Sayfa.Block.default_blocks())
-      17
+      16
 
-      iex> Sayfa.Block.find_by_name(:hero)
-      Sayfa.Blocks.Hero
+      iex> Sayfa.Block.find_by_name(:header)
+      Sayfa.Blocks.Header
 
       iex> Sayfa.Block.find_by_name(:nonexistent)
       nil
@@ -34,13 +34,12 @@ defmodule Sayfa.Block do
   ## Examples
 
       iex> length(Sayfa.Block.default_blocks())
-      17
+      16
 
   """
   @spec default_blocks() :: [module()]
   def default_blocks do
     [
-      Sayfa.Blocks.Hero,
       Sayfa.Blocks.Header,
       Sayfa.Blocks.Footer,
       Sayfa.Blocks.SocialLinks,
@@ -82,8 +81,8 @@ defmodule Sayfa.Block do
 
   ## Examples
 
-      iex> Sayfa.Block.find_by_name(:hero)
-      Sayfa.Blocks.Hero
+      iex> Sayfa.Block.find_by_name(:header)
+      Sayfa.Blocks.Header
 
       iex> Sayfa.Block.find_by_name(:nonexistent)
       nil
@@ -111,8 +110,8 @@ defmodule Sayfa.Block do
   ## Examples
 
       block_fn = Sayfa.Block.build_helper(site: config, content: content, contents: [], lang: :en)
-      block_fn.(:hero, title: "Welcome")
-      #=> "<section class=\\"hero\\">..."
+      block_fn.(:recent_content, limit: 5)
+      #=> "<section>..."
 
       block_fn.(:nonexistent, [])
       #=> ""

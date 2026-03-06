@@ -1,7 +1,7 @@
 defmodule Sayfa.MixProject do
   use Mix.Project
 
-  @version "0.4.1"
+  @version "0.4.2"
   @source_url "https://github.com/furkanural/sayfa"
 
   def project do
@@ -60,7 +60,6 @@ defmodule Sayfa.MixProject do
         ],
         "Templates & Blocks": [Sayfa.Template, Sayfa.Theme, Sayfa.Block],
         Blocks: [
-          Sayfa.Blocks.Hero,
           Sayfa.Blocks.Header,
           Sayfa.Blocks.Footer,
           Sayfa.Blocks.SocialLinks,

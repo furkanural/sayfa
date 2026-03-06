@@ -78,7 +78,7 @@ Sayfa follows a **two-layer architecture**:
 
 ### Templates & Theming
 - Three-layer template composition (content -> layout -> base)
-- 17 built-in blocks (hero, header, footer, social links, TOC, recent articles, tag cloud, category cloud, reading time, code copy, copy link, breadcrumb, recent content, language switcher, related articles, related content, analytics) with 24 platform icons including GitHub, X/Twitter, Mastodon, LinkedIn, Bluesky, YouTube, Instagram, and more
+- 16 built-in blocks (header, footer, social links, TOC, recent articles, tag cloud, category cloud, reading time, code copy, copy link, breadcrumb, recent content, language switcher, related articles, related content, analytics) with 24 platform icons including GitHub, X/Twitter, Mastodon, LinkedIn, Bluesky, YouTube, Instagram, and more
 - Theme inheritance (custom -> parent -> default)
 - EEx templates with `@block` helper
 - Configurable syntax highlighting theme (`highlight_theme`)
@@ -265,7 +265,7 @@ Resolution order:
 
 | Layout | Used For | Typical Blocks |
 |--------|----------|----------------|
-| `home.html.eex` | Homepage | hero, recent_articles, tag_cloud |
+| `home.html.eex` | Homepage | recent_content |
 | `article.html.eex` | Single article | reading_time, toc, social_links |
 | `note.html.eex` | Single note | reading_time, copy_link |
 | `page.html.eex` | Static pages | content only |
@@ -294,7 +294,6 @@ All templates receive these assigns:
 Blocks are reusable EEx components invoked via the `@block` helper:
 
 ```eex
-<%= @block.(:hero, title: "Welcome", subtitle: "My Elixir Blog") %>
 <%= @block.(:recent_articles, limit: 5) %>
 <%= @block.(:tag_cloud) %>
 <%= @block.(:language_switcher, variant: :desktop) %>
@@ -305,7 +304,6 @@ Blocks are reusable EEx components invoked via the `@block` helper:
 
 | Block | Atom | Description |
 |-------|------|-------------|
-| Hero | `:hero` | Hero section with title and subtitle |
 | Header | `:header` | Site header with navigation; renders a logo image when `logo:` is set in config |
 | Footer | `:footer` | Site footer |
 | Social Links | `:social_links` | Social media link icons |
@@ -327,8 +325,8 @@ Blocks are reusable EEx components invoked via the `@block` helper:
 Scaffold a new block with:
 
 ```bash
-mix sayfa.gen.block MyBanner          # → lib/blocks/my_banner.ex
-mix sayfa.gen.block MyApp.Blocks.Hero # → lib/blocks/hero.ex (last segment used)
+mix sayfa.gen.block MyBanner            # → lib/blocks/my_banner.ex
+mix sayfa.gen.block MyApp.Blocks.Banner # → lib/blocks/banner.ex (last segment used)
 ```
 
 Or implement the `Sayfa.Behaviours.Block` behaviour manually:
@@ -625,8 +623,8 @@ Options: `--date`, `--tags`, `--categories`, `--draft`, `--lang`, `--slug`.
 Scaffold a custom block module:
 
 ```bash
-mix sayfa.gen.block MyBanner          # → lib/blocks/my_banner.ex
-mix sayfa.gen.block MyApp.Blocks.Hero # → lib/blocks/hero.ex
+mix sayfa.gen.block MyBanner            # → lib/blocks/my_banner.ex
+mix sayfa.gen.block MyApp.Blocks.Banner # → lib/blocks/banner.ex
 ```
 
 Generates a module implementing `Sayfa.Behaviours.Block` and prints the registration snippet for `config/config.exs`.

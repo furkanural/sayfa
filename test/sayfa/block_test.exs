@@ -7,7 +7,6 @@ defmodule Sayfa.BlockTest do
   alias Sayfa.Blocks.CopyLink
   alias Sayfa.Blocks.Footer
   alias Sayfa.Blocks.Header
-  alias Sayfa.Blocks.Hero
   alias Sayfa.Blocks.ReadingTime, as: ReadingTimeBlock
   alias Sayfa.Blocks.RecentArticles
   alias Sayfa.Blocks.RecentContent
@@ -17,8 +16,8 @@ defmodule Sayfa.BlockTest do
   alias Sayfa.Content
 
   describe "default_blocks/0" do
-    test "returns 17 built-in blocks" do
-      assert length(Block.default_blocks()) == 17
+    test "returns 16 built-in blocks" do
+      assert length(Block.default_blocks()) == 16
     end
 
     test "all modules implement the block behaviour" do
@@ -36,13 +35,8 @@ defmodule Sayfa.BlockTest do
   end
 
   describe "find_by_name/1" do
-    test "finds hero block" do
-      assert Block.find_by_name(:hero) == Hero
-    end
-
     test "finds all built-in blocks by name" do
       expected_names = [
-        :hero,
         :header,
         :footer,
         :social_links,
@@ -73,9 +67,8 @@ defmodule Sayfa.BlockTest do
 
     test "renders known block" do
       helper = Block.build_helper(site: %{title: "Test"}, content: nil, contents: [], lang: :en)
-      result = helper.(:hero, title: "Welcome")
-      assert result =~ "Welcome"
-      assert result =~ "page-title-xl"
+      result = helper.(:footer, [])
+      assert result =~ "footer-shell"
     end
 
     test "returns empty string for unknown block" do
@@ -200,27 +193,6 @@ defmodule Sayfa.BlockTest do
   end
 
   # --- Individual Block Tests ---
-
-  describe "Hero" do
-    test "renders with title and subtitle" do
-      html = Hero.render(%{title: "Hello", subtitle: "World"})
-      assert html =~ "page-title-xl"
-      assert html =~ "Hello"
-      assert html =~ "World"
-    end
-
-    test "renders without subtitle" do
-      html = Hero.render(%{title: "Hello"})
-      assert html =~ "Hello"
-      refute html =~ "World"
-    end
-
-    test "escapes HTML in title" do
-      html = Hero.render(%{title: "<script>xss</script>"})
-      assert html =~ "&lt;script&gt;"
-      refute html =~ "<script>xss"
-    end
-  end
 
   describe "Header" do
     test "renders with site title" do

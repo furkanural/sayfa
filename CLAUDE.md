@@ -61,8 +61,7 @@ sayfa/
 │   │   │   ├── hook.ex             # Hook behaviour
 │   │   │   └── content_type.ex     # Content type behaviour
 │   │   │
-│   │   ├── blocks/                 # Built-in blocks (17 total)
-│   │   │   ├── hero.ex
+│   │   ├── blocks/                 # Built-in blocks (16 total)
 │   │   │   ├── header.ex
 │   │   │   ├── footer.ex
 │   │   │   ├── social_links.ex
@@ -167,8 +166,8 @@ This separation allows hooks to modify content before markdown rendering.
 
 ```elixir
 # In templates:
-<%= @block.(:hero, title: "Welcome") %>
 <%= @block.(:recent_articles, limit: 5) %>
+<%= @block.(:toc) %>
 ```
 
 Blocks implement `Sayfa.Behaviours.Block` with `name/0` and `render/1` callbacks.

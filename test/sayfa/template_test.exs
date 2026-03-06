@@ -158,7 +158,7 @@ defmodule Sayfa.TemplateTest do
     test "block stub returns empty string", %{layouts_dir: layouts_dir, config: config} do
       # Add a layout that uses the block function
       File.write!(Path.join(layouts_dir, "with_block.html.eex"), """
-      <div><%= @block.(:hero, []) %><%= @inner_content %></div>
+      <div><%= @block.(:footer, []) %><%= @inner_content %></div>
       """)
 
       content = %Content{

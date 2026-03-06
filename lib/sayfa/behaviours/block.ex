@@ -5,8 +5,8 @@ defmodule Sayfa.Behaviours.Block do
   A block is a reusable EEx component that renders HTML. Blocks are invoked
   in templates via the `@block` helper function:
 
-      <%= @block.(:hero, title: "Welcome", subtitle: "My blog") %>
       <%= @block.(:recent_articles, limit: 5) %>
+      <%= @block.(:toc) %>
 
   ## Assigns
 

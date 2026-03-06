@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.2] - 2026-03-06
+
+### Breaking Changes
+
+- **`hero` block removed**: `Sayfa.Blocks.Hero` has been removed from the built-in block registry. The default home layout no longer renders a hero section — site title and description are already visible in the header, so the hero was redundant. Users who relied on `@block.(:hero, ...)` in custom layouts should replace it with content from their `index.md` body or a custom block. The `.home-hero-section` and `.hero-subtitle` CSS classes are also removed from the default theme.
+
 ## [0.4.1] - 2026-03-06
 
 ### Fixed
@@ -191,6 +197,7 @@ Initial release of Sayfa — a static site generator built in Elixir.
 - Build caching for incremental rebuilds
 - Verbose logging with per-stage timing
 
+[0.4.2]: https://github.com/furkanural/sayfa/compare/v0.4.1...v0.4.2
 [0.4.1]: https://github.com/furkanural/sayfa/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/furkanural/sayfa/compare/v0.3.3...v0.4.0
 [0.3.3]: https://github.com/furkanural/sayfa/compare/v0.3.2...v0.3.3

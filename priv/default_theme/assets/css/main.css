@@ -221,10 +221,6 @@
     color: var(--color-ctp-text);
   }
 
-  .home-hero-section {
-    @apply pt-14 sm:pt-20;
-  }
-
   .page-list-title {
     @apply text-2xl sm:text-3xl font-bold mb-10;
     color: var(--color-ctp-text);
@@ -835,11 +831,6 @@
 
   .code-block-pre {
     @apply p-4 overflow-x-auto m-0 border-0 rounded-none shadow-none;
-  }
-
-  .hero-subtitle {
-    @apply mt-4 text-base sm:text-lg leading-relaxed max-w-xl;
-    color: var(--color-ctp-subtext0);
   }
 
   .social-links-wrap {

@@ -1,9 +1,5 @@
 <main>
-  <section class="container-content home-hero-section section-spacing-lg">
-    <%= @block.(:hero, title: @site.title, subtitle: Map.get(@site, :description, "")) %>
-  </section>
-
-  <section class="container-content section-spacing-sm">
+  <section class="container-content section-spacing-lg">
     <div class="prose-content">
       <%= @inner_content %>
     </div>

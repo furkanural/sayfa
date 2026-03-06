@@ -77,14 +77,13 @@ Blocks are reusable components you can use in your templates:
 
 ```elixir
 # In your EEx templates:
-<%%= @block.(:hero, title: "Welcome") %>
 <%%= @block.(:recent_articles, limit: 5) %>
 <%%= @block.(:tag_cloud) %>
 ```
 
 ## Block System
 
-Sayfa includes 15 built-in blocks you can use in your layouts:
+Sayfa includes 16 built-in blocks you can use in your layouts:
 
 ### Navigation Blocks
 - `:header` — Site header with navigation
@@ -93,7 +92,6 @@ Sayfa includes 15 built-in blocks you can use in your layouts:
 - `:language_switcher` — Switch between translations
 
 ### Content Blocks
-- `:hero` — Hero section for homepage
 - `:recent_articles` — Recent articles list
 - `:recent_content` — Recent items from any content type
 - `:related_articles` — Related articles by tags/categories

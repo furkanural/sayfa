@@ -9,10 +9,10 @@ defmodule Mix.Tasks.Sayfa.Gen.Block do
   ## Examples
 
       mix sayfa.gen.block MyBanner
-      mix sayfa.gen.block MyApp.Blocks.Hero
+      mix sayfa.gen.block MyApp.Blocks.Banner
 
   The last segment of the module name is used to derive the block name and file name.
-  For example, `MyApp.Blocks.Hero` produces `lib/blocks/hero.ex` with block name `:hero`.
+  For example, `MyApp.Blocks.Banner` produces `lib/blocks/banner.ex` with block name `:banner`.
 
   ## After generation
 

@@ -564,9 +564,8 @@ defmodule Sayfa.BuilderTest do
       default_base = Sayfa.Config.default_theme_path("layouts/base.html.eex")
       File.cp!(default_base, Path.join(layouts_dir, "base.html.eex"))
 
-      # Create a home layout that uses the hero block
+      # Create a home layout
       File.write!(Path.join(layouts_dir, "home.html.eex"), """
-      <%= @block.(:hero, title: "Welcome", subtitle: "Test Site") %>
       <div class="content">
         <%= @inner_content %>
       </div>
@@ -596,9 +595,8 @@ defmodule Sayfa.BuilderTest do
           all_contents: []
         )
 
-      assert html =~ "page-title-xl"
-      assert html =~ "Welcome"
-      assert html =~ "Test Site"
+      assert html =~ ~s(class="content")
+      assert html =~ "Welcome to my site."
     end
   end
 
