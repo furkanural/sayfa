@@ -5,7 +5,8 @@ defmodule Sayfa.Blocks.LanguageSwitcher do
   Renders links to translations of the current page. Returns `""` if only
   one language is configured. Uses `hreflang_alternates` from content metadata
   for content pages, and constructs alternate URLs from language config for
-  list/index pages.
+  list/index pages. Falls back to each language's home path (`/` for the
+  default language, `/lang/` for others) when no translation links are available.
 
   ## Assigns
 
@@ -47,15 +48,14 @@ defmodule Sayfa.Blocks.LanguageSwitcher do
     end
   end
 
-  defp build_alternates(content, _assigns, _languages, current_lang, _site)
+  defp build_alternates(content, _assigns, languages, _current_lang, site)
        when not is_nil(content) do
     case content.meta["hreflang_alternates"] do
       alternates when is_list(alternates) and alternates != [] ->
         Map.new(alternates, fn {lang_str, url} -> {String.to_atom(lang_str), url} end)
 
       _ ->
-        # No verified translations — only include current language so switcher hides
-        %{current_lang => Sayfa.Content.url(content)}
+        build_home_alternates(languages, site)
     end
   end
 
@@ -70,9 +70,18 @@ defmodule Sayfa.Blocks.LanguageSwitcher do
         if page_url do
           construct_url_alternates(page_url, languages, current_lang, site)
         else
-          %{}
+          build_home_alternates(languages, site)
         end
     end
+  end
+
+  defp build_home_alternates(languages, site) do
+    default_lang = Map.get(site, :default_lang, :en)
+
+    Map.new(Keyword.keys(languages), fn lang ->
+      url = if lang == default_lang, do: "/", else: "/#{lang}/"
+      {lang, url}
+    end)
   end
 
   defp construct_url_alternates(page_url, languages, current_lang, site) do

@@ -29,8 +29,8 @@ defmodule Sayfa.Blocks.LanguageSwitcherTest do
         lang: :en,
         meta: %{
           "hreflang_alternates" => [
-            {"en", "/posts/hello/"},
-            {"tr", "/tr/posts/hello/"}
+            {"en", "/articles/hello/"},
+            {"tr", "/tr/articles/hello/"}
           ]
         }
       }
@@ -40,7 +40,7 @@ defmodule Sayfa.Blocks.LanguageSwitcherTest do
 
       assert html =~ "English"
       assert html =~ "Türkçe"
-      assert html =~ "/tr/posts/hello/"
+      assert html =~ "/tr/articles/hello/"
       assert html =~ ~s(id="lang-switcher")
       assert html =~ ~s(id="lang-toggle")
       assert html =~ ~s(id="lang-menu")
@@ -56,8 +56,8 @@ defmodule Sayfa.Blocks.LanguageSwitcherTest do
         lang: :en,
         meta: %{
           "hreflang_alternates" => [
-            {"en", "/posts/hello/"},
-            {"tr", "/tr/posts/hello/"}
+            {"en", "/articles/hello/"},
+            {"tr", "/tr/articles/hello/"}
           ]
         }
       }
@@ -78,8 +78,8 @@ defmodule Sayfa.Blocks.LanguageSwitcherTest do
         lang: :en,
         meta: %{
           "hreflang_alternates" => [
-            {"en", "/posts/hello/"},
-            {"tr", "/tr/posts/hello/"}
+            {"en", "/articles/hello/"},
+            {"tr", "/tr/articles/hello/"}
           ]
         }
       }
@@ -89,7 +89,7 @@ defmodule Sayfa.Blocks.LanguageSwitcherTest do
 
       assert html =~ ~s(<span class="lang-item-current)
       assert html =~ "English</span>"
-      assert html =~ ~s(<a href="/tr/posts/hello/")
+      assert html =~ ~s(<a href="/tr/articles/hello/")
     end
 
     test "shows uppercase current language code on trigger button" do
@@ -100,8 +100,8 @@ defmodule Sayfa.Blocks.LanguageSwitcherTest do
         lang: :en,
         meta: %{
           "hreflang_alternates" => [
-            {"en", "/posts/hello/"},
-            {"tr", "/tr/posts/hello/"}
+            {"en", "/articles/hello/"},
+            {"tr", "/tr/articles/hello/"}
           ]
         }
       }
@@ -117,17 +117,17 @@ defmodule Sayfa.Blocks.LanguageSwitcherTest do
         site: @multi_lang_site,
         content: nil,
         lang: :en,
-        page_url: "/posts/"
+        page_url: "/articles/"
       }
 
       html = LanguageSwitcher.render(assigns)
 
       assert html =~ "English"
       assert html =~ "Türkçe"
-      assert html =~ "/tr/posts/"
+      assert html =~ "/tr/articles/"
     end
 
-    test "hides switcher for content without hreflang (no translation exists)" do
+    test "falls back to home paths for content without hreflang" do
       content = %Content{
         title: "About",
         body: "<p>About</p>",
@@ -143,10 +143,15 @@ defmodule Sayfa.Blocks.LanguageSwitcherTest do
         page_url: "/about/"
       }
 
-      assert "" == LanguageSwitcher.render(assigns)
+      html = LanguageSwitcher.render(assigns)
+
+      # Current lang (EN) rendered as non-clickable span; other lang gets home link
+      assert html =~ ~s(lang-item-current)
+      assert html =~ "English"
+      assert html =~ ~s(href="/tr/")
     end
 
-    test "hides switcher for non-default language content without hreflang" do
+    test "falls back to home paths for non-default lang content without hreflang" do
       content = %Content{
         title: "Hakkımda",
         body: "<p>Hakkımda</p>",
@@ -162,14 +167,22 @@ defmodule Sayfa.Blocks.LanguageSwitcherTest do
         page_url: "/tr/about/"
       }
 
-      assert "" == LanguageSwitcher.render(assigns)
+      html = LanguageSwitcher.render(assigns)
+
+      # Current lang (TR) rendered as non-clickable span; default lang gets home link
+      assert html =~ ~s(href="/")
+      assert html =~ ~s(lang-item-current)
+      assert html =~ "Türkçe"
     end
 
-    test "returns empty for list pages without page_url" do
+    test "falls back to home paths for list pages without page_url" do
       assigns = %{site: @multi_lang_site, content: nil, lang: :en}
       html = LanguageSwitcher.render(assigns)
 
-      assert "" == html
+      # Current lang (EN) rendered as non-clickable span; other lang gets home link
+      assert html =~ ~s(lang-item-current)
+      assert html =~ "English"
+      assert html =~ ~s(href="/tr/")
     end
 
     test "dropdown panel is hidden by default" do
@@ -180,8 +193,8 @@ defmodule Sayfa.Blocks.LanguageSwitcherTest do
         lang: :en,
         meta: %{
           "hreflang_alternates" => [
-            {"en", "/posts/hello/"},
-            {"tr", "/tr/posts/hello/"}
+            {"en", "/articles/hello/"},
+            {"tr", "/tr/articles/hello/"}
           ]
         }
       }
@@ -201,8 +214,8 @@ defmodule Sayfa.Blocks.LanguageSwitcherTest do
         lang: :en,
         meta: %{
           "hreflang_alternates" => [
-            {"en", "/posts/hello/"},
-            {"tr", "/tr/posts/hello/"}
+            {"en", "/articles/hello/"},
+            {"tr", "/tr/articles/hello/"}
           ]
         }
       }
@@ -223,8 +236,8 @@ defmodule Sayfa.Blocks.LanguageSwitcherTest do
         lang: :en,
         meta: %{
           "hreflang_alternates" => [
-            {"en", "/posts/hello/"},
-            {"tr", "/tr/posts/hello/"}
+            {"en", "/articles/hello/"},
+            {"tr", "/tr/articles/hello/"}
           ]
         }
       }
@@ -246,8 +259,8 @@ defmodule Sayfa.Blocks.LanguageSwitcherTest do
         lang: :en,
         meta: %{
           "hreflang_alternates" => [
-            {"en", "/posts/hello/"},
-            {"tr", "/tr/posts/hello/"}
+            {"en", "/articles/hello/"},
+            {"tr", "/tr/articles/hello/"}
           ]
         }
       }
