@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-03-06
+
+### Breaking Changes
+
+- **`Post` content type renamed to `Article`**: `Sayfa.ContentTypes.Post` is now `Sayfa.ContentTypes.Article`. Content files in `posts/` directories should move to `articles/`, URLs change from `/posts/{slug}/` to `/articles/{slug}/`, and the `layout: "post"` front matter key should be updated to `layout: "article"`. The `recent_posts` and `related_posts` blocks are renamed to `recent_articles` and `related_articles` respectively.
+
+### Added
+
+- **Asset digesting**: The builder now computes content hashes for compiled CSS and JS files and rewrites references in the base layout to cache-busted URLs (e.g. `app-a1b2c3d4.css`), enabling long-lived caching in production.
+- **Language switcher `variant:` assign**: Render multiple language switcher instances on the same page with unique element IDs by passing `variant: :desktop` or `variant: :mobile`. The generated element ID becomes `lang-switcher-desktop` / `lang-switcher-mobile` instead of the default `lang-switcher`.
+- **Language switcher home fallback**: The language switcher no longer hides when a page has no verified translation — it falls back to the target language's home path (`/` or `/lang/`) so the switcher is always visible.
+- **`AGENTS.md`**: Guidance file for AI coding agents working on the Sayfa codebase.
+
+### Changed
+
+- **Default theme rewritten with Catppuccin Latte/Mocha palette**: The entire default theme CSS has been rewritten using the [Catppuccin](https://github.com/catppuccin/catppuccin) color system. Latte (light) and Mocha (dark) palettes auto-switch via `prefers-color-scheme`. All palette tokens are registered as `--color-ctp-*` Tailwind utilities via `@theme inline`. Feed tooltip contrast meets WCAG AA in both modes.
+- **Semantic CSS component classes**: All block modules now emit semantic component class names (e.g. `.header-shell`, `.content-card`, `.toc-nav`) instead of raw Tailwind utilities. Styles are centralized in `main.css` and reference `--color-ctp-*` / `--site-*` CSS variables for theming.
+- **Breadcrumb block redesigned as a back-link**: The full `<nav>` breadcrumb trail is replaced with a minimal `← Section` back link for section content. Bare pages (no `url_prefix`) emit only the JSON-LD `BreadcrumbList` structured data without a visible link. List and home pages produce no output.
+- **Arabic font loading stabilized**: `@font-face` declarations for Arabic fonts now load reliably across builds.
+
 ## [0.3.3] - 2026-02-28
 
 ### Added
@@ -160,6 +180,7 @@ Initial release of Sayfa — a static site generator built in Elixir.
 - Build caching for incremental rebuilds
 - Verbose logging with per-stage timing
 
+[0.4.0]: https://github.com/furkanural/sayfa/compare/v0.3.3...v0.4.0
 [0.3.3]: https://github.com/furkanural/sayfa/compare/v0.3.2...v0.3.3
 [0.3.2]: https://github.com/furkanural/sayfa/compare/v0.3.1...v0.3.2
 [0.3.1]: https://github.com/furkanural/sayfa/compare/v0.3.0...v0.3.1
