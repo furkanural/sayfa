@@ -34,7 +34,7 @@ defmodule Mix.Tasks.Sayfa.Gen.LangTest do
       Lang.run(["tr"])
 
       assert File.dir?(Path.join([ctx.tmp_dir, "content", "tr", "pages"]))
-      assert File.dir?(Path.join([ctx.tmp_dir, "content", "tr", "posts"]))
+      assert File.dir?(Path.join([ctx.tmp_dir, "content", "tr", "articles"]))
     end
 
     test "generates content files for known language", ctx do
@@ -42,11 +42,13 @@ defmodule Mix.Tasks.Sayfa.Gen.LangTest do
 
       index_path = Path.join([ctx.tmp_dir, "content", "tr", "pages", "index.md"])
       about_path = Path.join([ctx.tmp_dir, "content", "tr", "pages", "about.md"])
-      post_path = Path.join([ctx.tmp_dir, "content", "tr", "posts", "building-with-sayfa.md"])
+
+      article_path =
+        Path.join([ctx.tmp_dir, "content", "tr", "articles", "building-with-sayfa.md"])
 
       assert File.exists?(index_path)
       assert File.exists?(about_path)
-      assert File.exists?(post_path)
+      assert File.exists?(article_path)
 
       index_content = File.read!(index_path)
       assert index_content =~ "lang: tr"
@@ -60,7 +62,7 @@ defmodule Mix.Tasks.Sayfa.Gen.LangTest do
       assert File.exists?(Path.join([ctx.tmp_dir, "content", "xx", "pages", "about.md"]))
 
       assert File.exists?(
-               Path.join([ctx.tmp_dir, "content", "xx", "posts", "building-with-sayfa.md"])
+               Path.join([ctx.tmp_dir, "content", "xx", "articles", "building-with-sayfa.md"])
              )
     end
 

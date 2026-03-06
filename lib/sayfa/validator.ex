@@ -7,11 +7,11 @@ defmodule Sayfa.Validator do
 
   ## Validations
 
-  - Posts and notes without a `date` field get a warning.
+  - Articles and notes without a `date` field get a warning.
 
   ## Examples
 
-      contents = [%Sayfa.Content{title: "T", body: "", meta: %{"content_type" => "posts"}}]
+      contents = [%Sayfa.Content{title: "T", body: "", meta: %{"content_type" => "articles"}}]
       Sayfa.Validator.validate_all(contents)
       #=> [%Sayfa.Content{...}]  (unchanged, warnings logged)
 
@@ -19,7 +19,7 @@ defmodule Sayfa.Validator do
 
   require Logger
 
-  @dated_content_types ~w(posts notes)
+  @dated_content_types ~w(articles notes)
 
   @doc """
   Validates all content items, logging warnings for any issues found.
@@ -28,7 +28,7 @@ defmodule Sayfa.Validator do
 
   ## Examples
 
-      iex> content = %Sayfa.Content{title: "T", body: "", meta: %{"content_type" => "posts"}}
+      iex> content = %Sayfa.Content{title: "T", body: "", meta: %{"content_type" => "articles"}}
       iex> Sayfa.Validator.validate_all([content]) |> length()
       1
 

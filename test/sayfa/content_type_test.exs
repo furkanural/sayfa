@@ -28,8 +28,8 @@ defmodule Sayfa.ContentTypeTest do
   end
 
   describe "find_by_directory/1" do
-    test "finds post type" do
-      assert ContentType.find_by_directory("posts") == Sayfa.ContentTypes.Post
+    test "finds article type" do
+      assert ContentType.find_by_directory("articles") == Sayfa.ContentTypes.Article
     end
 
     test "finds note type" do
@@ -54,8 +54,8 @@ defmodule Sayfa.ContentTypeTest do
   end
 
   describe "find_by_name/1" do
-    test "finds post type" do
-      assert ContentType.find_by_name(:post) == Sayfa.ContentTypes.Post
+    test "finds article type" do
+      assert ContentType.find_by_name(:article) == Sayfa.ContentTypes.Article
     end
 
     test "finds page type" do
@@ -68,12 +68,12 @@ defmodule Sayfa.ContentTypeTest do
   end
 
   describe "built-in type metadata" do
-    test "post type" do
-      mod = Sayfa.ContentTypes.Post
-      assert mod.name() == :post
-      assert mod.directory() == "posts"
-      assert mod.url_prefix() == "posts"
-      assert mod.default_layout() == "post"
+    test "article type" do
+      mod = Sayfa.ContentTypes.Article
+      assert mod.name() == :article
+      assert mod.directory() == "articles"
+      assert mod.url_prefix() == "articles"
+      assert mod.default_layout() == "article"
       assert mod.required_fields() == [:title, :date]
     end
 

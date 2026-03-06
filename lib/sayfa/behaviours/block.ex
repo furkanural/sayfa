@@ -6,7 +6,7 @@ defmodule Sayfa.Behaviours.Block do
   in templates via the `@block` helper function:
 
       <%= @block.(:hero, title: "Welcome", subtitle: "My blog") %>
-      <%= @block.(:recent_posts, limit: 5) %>
+      <%= @block.(:recent_articles, limit: 5) %>
 
   ## Assigns
 
@@ -14,7 +14,7 @@ defmodule Sayfa.Behaviours.Block do
 
   - `:site` — the resolved site config map
   - `:content` — the current `Sayfa.Content` struct (may be `nil` for list pages)
-  - `:contents` — list of all site contents (for blocks like `recent_posts`)
+  - `:contents` — list of all site contents (for blocks like `recent_articles`)
   - `:lang` — the current language atom
 
   Plus any additional options passed by the template caller.

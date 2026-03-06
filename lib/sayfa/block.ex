@@ -45,7 +45,7 @@ defmodule Sayfa.Block do
       Sayfa.Blocks.Footer,
       Sayfa.Blocks.SocialLinks,
       Sayfa.Blocks.TOC,
-      Sayfa.Blocks.RecentPosts,
+      Sayfa.Blocks.RecentArticles,
       Sayfa.Blocks.TagCloud,
       Sayfa.Blocks.CategoryCloud,
       Sayfa.Blocks.ReadingTime,
@@ -54,7 +54,7 @@ defmodule Sayfa.Block do
       Sayfa.Blocks.CopyLink,
       Sayfa.Blocks.Breadcrumb,
       Sayfa.Blocks.LanguageSwitcher,
-      Sayfa.Blocks.RelatedPosts,
+      Sayfa.Blocks.RelatedArticles,
       Sayfa.Blocks.RelatedContent,
       Sayfa.Blocks.Analytics
     ]

@@ -13,7 +13,7 @@ defmodule Sayfa.FeedTest do
       tags: [],
       categories: [],
       draft: false,
-      meta: %{"url_prefix" => "posts"}
+      meta: %{"url_prefix" => "articles"}
     }
 
     struct!(Content, Map.merge(defaults, attrs))
@@ -22,8 +22,8 @@ defmodule Sayfa.FeedTest do
   describe "generate/2" do
     test "generates valid Atom XML" do
       contents = [
-        make_content(%{title: "First Post", date: ~D[2024-01-15], slug: "first-post"}),
-        make_content(%{title: "Second Post", date: ~D[2024-01-20], slug: "second-post"})
+        make_content(%{title: "First Article", date: ~D[2024-01-15], slug: "first-article"}),
+        make_content(%{title: "Second Article", date: ~D[2024-01-20], slug: "second-article"})
       ]
 
       xml = Feed.generate(contents, @config)
@@ -67,17 +67,17 @@ defmodule Sayfa.FeedTest do
     end
 
     test "includes entry URLs" do
-      contents = [make_content(%{title: "Post", date: ~D[2024-01-15], slug: "post"})]
+      contents = [make_content(%{title: "Article", date: ~D[2024-01-15], slug: "article"})]
       xml = Feed.generate(contents, @config)
-      assert xml =~ "https://example.com/posts/post"
+      assert xml =~ "https://example.com/articles/article"
     end
 
     test "includes entry content" do
       contents = [
         make_content(%{
-          title: "Post",
+          title: "Article",
           date: ~D[2024-01-15],
-          slug: "post",
+          slug: "article",
           body: "<p>Hello world</p>"
         })
       ]
@@ -97,10 +97,10 @@ defmodule Sayfa.FeedTest do
     test "filters by content type" do
       contents = [
         make_content(%{
-          title: "Post",
+          title: "Article",
           date: ~D[2024-01-15],
-          slug: "post",
-          meta: %{"content_type" => "posts", "url_prefix" => "posts"}
+          slug: "article",
+          meta: %{"content_type" => "articles", "url_prefix" => "articles"}
         }),
         make_content(%{
           title: "Note",
@@ -110,15 +110,15 @@ defmodule Sayfa.FeedTest do
         })
       ]
 
-      xml = Feed.generate_for_type(contents, "posts", @config)
+      xml = Feed.generate_for_type(contents, "articles", @config)
 
-      assert xml =~ "Post"
+      assert xml =~ "Article"
       refute xml =~ "Note"
     end
 
     test "uses type-specific feed path" do
-      xml = Feed.generate_for_type([], "posts", @config)
-      assert xml =~ ~s(href="https://example.com/feed/posts.xml")
+      xml = Feed.generate_for_type([], "articles", @config)
+      assert xml =~ ~s(href="https://example.com/feed/articles.xml")
     end
   end
 
@@ -132,23 +132,23 @@ defmodule Sayfa.FeedTest do
     test "filters content by tag" do
       contents = [
         make_content(%{
-          title: "Elixir Post",
+          title: "Elixir Article",
           date: ~D[2024-01-15],
-          slug: "elixir-post",
+          slug: "elixir-article",
           tags: ["elixir"]
         }),
         make_content(%{
-          title: "Other Post",
+          title: "Other Article",
           date: ~D[2024-01-10],
-          slug: "other-post",
+          slug: "other-article",
           tags: ["ruby"]
         })
       ]
 
       xml = Feed.generate_for_tag(contents, "elixir", @config)
 
-      assert xml =~ "Elixir Post"
-      refute xml =~ "Other Post"
+      assert xml =~ "Elixir Article"
+      refute xml =~ "Other Article"
     end
 
     test "uses tag-specific feed path" do
@@ -175,12 +175,12 @@ defmodule Sayfa.FeedTest do
 
     test "returns empty feed when no content has tag" do
       contents = [
-        make_content(%{title: "Post", date: ~D[2024-01-15], slug: "post", tags: ["ruby"]})
+        make_content(%{title: "Article", date: ~D[2024-01-15], slug: "article", tags: ["ruby"]})
       ]
 
       xml = Feed.generate_for_tag(contents, "elixir", @config)
 
-      refute xml =~ "Post"
+      refute xml =~ "Article"
       assert xml =~ "<feed"
     end
   end
@@ -279,9 +279,9 @@ defmodule Sayfa.FeedTest do
     test "includes content_html and summary in items" do
       contents = [
         make_content(%{
-          title: "Post",
+          title: "Article",
           date: ~D[2024-01-15],
-          slug: "post",
+          slug: "article",
           body: "<p>Hello world</p>"
         })
       ]
@@ -316,10 +316,10 @@ defmodule Sayfa.FeedTest do
     test "filters by content type" do
       contents = [
         make_content(%{
-          title: "Post",
+          title: "Article",
           date: ~D[2024-01-15],
-          slug: "post",
-          meta: %{"content_type" => "posts", "url_prefix" => "posts"}
+          slug: "article",
+          meta: %{"content_type" => "articles", "url_prefix" => "articles"}
         }),
         make_content(%{
           title: "Note",
@@ -329,19 +329,19 @@ defmodule Sayfa.FeedTest do
         })
       ]
 
-      json = Feed.generate_json_for_type(contents, "posts", @config)
+      json = Feed.generate_json_for_type(contents, "articles", @config)
       decoded = JSON.decode!(json)
       titles = Enum.map(decoded["items"], & &1["title"])
 
-      assert "Post" in titles
+      assert "Article" in titles
       refute "Note" in titles
     end
 
     test "uses type-specific feed url" do
-      json = Feed.generate_json_for_type([], "posts", @config)
+      json = Feed.generate_json_for_type([], "articles", @config)
       decoded = JSON.decode!(json)
 
-      assert decoded["feed_url"] == "https://example.com/feed/posts.json"
+      assert decoded["feed_url"] == "https://example.com/feed/articles.json"
     end
   end
 end

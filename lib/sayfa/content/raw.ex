@@ -9,7 +9,7 @@ defmodule Sayfa.Content.Raw do
   ## Examples
 
       %Sayfa.Content.Raw{
-        path: "content/posts/2024-01-15-hello.md",
+        path: "content/articles/2024-01-15-hello.md",
         front_matter: %{"title" => "Hello", "date" => ~D[2024-01-15]},
         body_markdown: "# Hello World\\n\\nContent here.",
         filename: "2024-01-15-hello.md"

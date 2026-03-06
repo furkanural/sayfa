@@ -9,7 +9,7 @@ defmodule Mix.Tasks.Sayfa.Gen.Layout do
 
   ## Examples
 
-      mix sayfa.gen.layout post     # Copy post layout for customization
+      mix sayfa.gen.layout article     # Copy article layout for customization
       mix sayfa.gen.layout home     # Copy home layout for customization
       mix sayfa.gen.layout --list   # Show available layouts
 

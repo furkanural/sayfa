@@ -7,7 +7,7 @@ defmodule Sayfa.Feed do
 
   ## Examples
 
-      contents = [%Sayfa.Content{title: "Hello", body: "<p>World</p>", date: ~D[2024-01-15], slug: "hello", meta: %{"url_prefix" => "posts"}}]
+      contents = [%Sayfa.Content{title: "Hello", body: "<p>World</p>", date: ~D[2024-01-15], slug: "hello", meta: %{"url_prefix" => "articles"}}]
       config = %{title: "My Site", base_url: "https://example.com", author: "Author"}
       xml = Sayfa.Feed.generate(contents, config)
 
@@ -24,7 +24,7 @@ defmodule Sayfa.Feed do
 
   ## Examples
 
-      iex> contents = [%Sayfa.Content{title: "Hello", body: "<p>World</p>", date: ~D[2024-01-15], slug: "hello", meta: %{"url_prefix" => "posts"}}]
+      iex> contents = [%Sayfa.Content{title: "Hello", body: "<p>World</p>", date: ~D[2024-01-15], slug: "hello", meta: %{"url_prefix" => "articles"}}]
       iex> config = %{title: "My Site", base_url: "https://example.com", author: "Author"}
       iex> xml = Sayfa.Feed.generate(contents, config)
       iex> xml =~ "<feed"
@@ -49,12 +49,12 @@ defmodule Sayfa.Feed do
   ## Examples
 
       iex> contents = [
-      ...>   %Sayfa.Content{title: "Post", body: "<p>A</p>", date: ~D[2024-01-15], slug: "post", meta: %{"content_type" => "posts", "url_prefix" => "posts"}},
+      ...>   %Sayfa.Content{title: "Article", body: "<p>A</p>", date: ~D[2024-01-15], slug: "Article", meta: %{"content_type" => "articles", "url_prefix" => "articles"}},
       ...>   %Sayfa.Content{title: "Note", body: "<p>B</p>", date: ~D[2024-01-10], slug: "note", meta: %{"content_type" => "notes", "url_prefix" => "notes"}}
       ...> ]
       iex> config = %{title: "My Site", base_url: "https://example.com", author: "Author"}
-      iex> xml = Sayfa.Feed.generate_for_type(contents, "posts", config)
-      iex> xml =~ "Post"
+      iex> xml = Sayfa.Feed.generate_for_type(contents, "articles", config)
+      iex> xml =~ "Article"
       true
       iex> xml =~ "Note"
       false
@@ -77,7 +77,7 @@ defmodule Sayfa.Feed do
 
   ## Examples
 
-      iex> contents = [%Sayfa.Content{title: "Hello", body: "<p>World</p>", date: ~D[2024-01-15], slug: "hello", meta: %{"url_prefix" => "posts"}}]
+      iex> contents = [%Sayfa.Content{title: "Hello", body: "<p>World</p>", date: ~D[2024-01-15], slug: "hello", meta: %{"url_prefix" => "articles"}}]
       iex> config = %{title: "My Site", base_url: "https://example.com", author: "Author"}
       iex> json = Sayfa.Feed.generate_json(contents, config)
       iex> json =~ "jsonfeed.org"
@@ -100,12 +100,12 @@ defmodule Sayfa.Feed do
   ## Examples
 
       iex> contents = [
-      ...>   %Sayfa.Content{title: "Post", body: "<p>A</p>", date: ~D[2024-01-15], slug: "post", meta: %{"content_type" => "posts", "url_prefix" => "posts"}},
+      ...>   %Sayfa.Content{title: "Article", body: "<p>A</p>", date: ~D[2024-01-15], slug: "Article", meta: %{"content_type" => "articles", "url_prefix" => "articles"}},
       ...>   %Sayfa.Content{title: "Note", body: "<p>B</p>", date: ~D[2024-01-10], slug: "note", meta: %{"content_type" => "notes", "url_prefix" => "notes"}}
       ...> ]
       iex> config = %{title: "My Site", base_url: "https://example.com", author: "Author"}
-      iex> json = Sayfa.Feed.generate_json_for_type(contents, "posts", config)
-      iex> json =~ "Post"
+      iex> json = Sayfa.Feed.generate_json_for_type(contents, "articles", config)
+      iex> json =~ "Article"
       true
       iex> json =~ "Note"
       false
@@ -127,7 +127,7 @@ defmodule Sayfa.Feed do
 
   ## Examples
 
-      iex> contents = [%Sayfa.Content{title: "Tagged", body: "<p>A</p>", date: ~D[2024-01-15], slug: "tagged", tags: ["elixir"], meta: %{"url_prefix" => "posts"}}]
+      iex> contents = [%Sayfa.Content{title: "Tagged", body: "<p>A</p>", date: ~D[2024-01-15], slug: "tagged", tags: ["elixir"], meta: %{"url_prefix" => "articles"}}]
       iex> config = %{title: "My Site", base_url: "https://example.com", author: "Author"}
       iex> xml = Sayfa.Feed.generate_for_tag(contents, "elixir", config)
       iex> xml =~ "Tagged"
@@ -152,7 +152,7 @@ defmodule Sayfa.Feed do
 
   ## Examples
 
-      iex> contents = [%Sayfa.Content{title: "Categorized", body: "<p>A</p>", date: ~D[2024-01-15], slug: "categorized", categories: ["news"], meta: %{"url_prefix" => "posts"}}]
+      iex> contents = [%Sayfa.Content{title: "Categorized", body: "<p>A</p>", date: ~D[2024-01-15], slug: "categorized", categories: ["news"], meta: %{"url_prefix" => "articles"}}]
       iex> config = %{title: "My Site", base_url: "https://example.com", author: "Author"}
       iex> xml = Sayfa.Feed.generate_for_category(contents, "news", config)
       iex> xml =~ "Categorized"
@@ -177,7 +177,7 @@ defmodule Sayfa.Feed do
 
   ## Examples
 
-      iex> contents = [%Sayfa.Content{title: "Tagged", body: "<p>A</p>", date: ~D[2024-01-15], slug: "tagged", tags: ["elixir"], meta: %{"url_prefix" => "posts"}}]
+      iex> contents = [%Sayfa.Content{title: "Tagged", body: "<p>A</p>", date: ~D[2024-01-15], slug: "tagged", tags: ["elixir"], meta: %{"url_prefix" => "articles"}}]
       iex> config = %{title: "My Site", base_url: "https://example.com", author: "Author"}
       iex> json = Sayfa.Feed.generate_json_for_tag(contents, "elixir", config)
       iex> json =~ "Tagged"
@@ -202,7 +202,7 @@ defmodule Sayfa.Feed do
 
   ## Examples
 
-      iex> contents = [%Sayfa.Content{title: "Categorized", body: "<p>A</p>", date: ~D[2024-01-15], slug: "categorized", categories: ["news"], meta: %{"url_prefix" => "posts"}}]
+      iex> contents = [%Sayfa.Content{title: "Categorized", body: "<p>A</p>", date: ~D[2024-01-15], slug: "categorized", categories: ["news"], meta: %{"url_prefix" => "articles"}}]
       iex> config = %{title: "My Site", base_url: "https://example.com", author: "Author"}
       iex> json = Sayfa.Feed.generate_json_for_category(contents, "news", config)
       iex> json =~ "Categorized"

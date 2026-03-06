@@ -1,20 +1,20 @@
-defmodule Sayfa.Blocks.RelatedPosts do
+defmodule Sayfa.Blocks.RelatedArticles do
   @moduledoc """
-  Related posts block.
+  Related articles block.
 
-  Finds posts sharing the most tags/categories with the current post and
-  renders up to 3 related posts with title, date, and first category.
+  Finds articles sharing the most tags/categories with the current article and
+  renders up to 3 related articles with title, date, and first category.
 
   ## Assigns
 
   - `:content` — current `Sayfa.Content` struct
   - `:contents` — list of all site contents (injected by block helper)
-  - `:limit` — number of related posts to show (default: 3)
+  - `:limit` — number of related articles to show (default: 3)
 
   ## Examples
 
-      <%= @block.(:related_posts) %>
-      <%= @block.(:related_posts, limit: 5) %>
+      <%= @block.(:related_articles) %>
+      <%= @block.(:related_articles, limit: 5) %>
 
   """
 
@@ -24,7 +24,7 @@ defmodule Sayfa.Blocks.RelatedPosts do
   alias Sayfa.Content
 
   @impl true
-  def name, do: :related_posts
+  def name, do: :related_articles
 
   @impl true
   def render(assigns) do
@@ -41,7 +41,7 @@ defmodule Sayfa.Blocks.RelatedPosts do
       if related == [] do
         ""
       else
-        heading = Block.escape_html(t.("related_posts"))
+        heading = Block.escape_html(t.("related_articles"))
         items = Enum.map_join(related, "\n", &render_item(&1, lang, site))
 
         """
@@ -64,7 +64,7 @@ defmodule Sayfa.Blocks.RelatedPosts do
     current_slug = content.slug
 
     contents
-    |> Content.all_of_type("posts")
+    |> Content.all_of_type("articles")
     |> Enum.filter(fn c ->
       c.slug != current_slug and (is_nil(lang) or c.lang == lang)
     end)
@@ -82,14 +82,14 @@ defmodule Sayfa.Blocks.RelatedPosts do
     |> Enum.map(fn {c, _} -> c end)
   end
 
-  defp render_item(post, lang, site) do
-    url = Content.url(post)
-    title = Block.escape_html(post.title)
-    first_cat = List.first(post.categories || [])
+  defp render_item(article, lang, site) do
+    url = Content.url(article)
+    title = Block.escape_html(article.title)
+    first_cat = List.first(article.categories || [])
 
     date_html =
-      if post.date do
-        "<time class=\"content-card-date\">#{Sayfa.DateFormat.format(post.date, lang || :en, site)}</time>"
+      if article.date do
+        "<time class=\"content-card-date\">#{Sayfa.DateFormat.format(article.date, lang || :en, site)}</time>"
       else
         ""
       end

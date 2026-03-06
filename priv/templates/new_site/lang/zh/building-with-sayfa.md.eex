@@ -18,7 +18,7 @@ Sayfa 是一个用 Elixir 构建的静态站点生成器。本文涵盖了入门
 mix deps.get          # 安装依赖
 mix sayfa.serve       # 启动带热重载的开发服务器
 mix sayfa.build       # 将静态网站构建到 _site/
-mix sayfa.gen.content post "我的文章"  # 生成新文章
+mix sayfa.gen.content article "我的文章"  # 生成新文章
 ```
 
-完整指南请参阅[英文版本](/posts/building-with-sayfa/)。
+完整指南请参阅[英文版本](/articles/building-with-sayfa/)。

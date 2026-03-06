@@ -15,11 +15,12 @@ defmodule Sayfa.I18nTest do
 
   describe "detect_language/2" do
     test "detects non-default language from path" do
-      assert {:tr, "posts/merhaba.md"} = I18n.detect_language("tr/posts/merhaba.md", @config)
+      assert {:tr, "articles/merhaba.md"} =
+               I18n.detect_language("tr/articles/merhaba.md", @config)
     end
 
     test "returns default language for default-language content" do
-      assert {:en, "posts/hello.md"} = I18n.detect_language("posts/hello.md", @config)
+      assert {:en, "articles/hello.md"} = I18n.detect_language("articles/hello.md", @config)
     end
 
     test "returns default language for root-level files" do
@@ -27,16 +28,17 @@ defmodule Sayfa.I18nTest do
     end
 
     test "does not detect unconfigured language" do
-      assert {:en, "fr/posts/bonjour.md"} = I18n.detect_language("fr/posts/bonjour.md", @config)
+      assert {:en, "fr/articles/bonjour.md"} =
+               I18n.detect_language("fr/articles/bonjour.md", @config)
     end
 
     test "does not treat default language subdirectory as language prefix" do
-      assert {:en, "en/posts/hello.md"} = I18n.detect_language("en/posts/hello.md", @config)
+      assert {:en, "en/articles/hello.md"} = I18n.detect_language("en/articles/hello.md", @config)
     end
 
     test "handles deeply nested paths" do
-      assert {:tr, "posts/2024/merhaba.md"} =
-               I18n.detect_language("tr/posts/2024/merhaba.md", @config)
+      assert {:tr, "articles/2024/merhaba.md"} =
+               I18n.detect_language("tr/articles/2024/merhaba.md", @config)
     end
   end
 
@@ -142,13 +144,13 @@ defmodule Sayfa.I18nTest do
     test "selects singular form when count is 1" do
       config = %{default_lang: :en, languages: [en: [name: "English"]]}
 
-      assert "1 post" == I18n.t("posts_count", :en, config, count: 1)
+      assert "1 article" == I18n.t("articles_count", :en, config, count: 1)
     end
 
     test "selects plural form when count is not 1" do
       config = %{default_lang: :en, languages: [en: [name: "English"]]}
 
-      assert "5 posts" == I18n.t("posts_count", :en, config, count: 5)
+      assert "5 articles" == I18n.t("articles_count", :en, config, count: 5)
     end
 
     test "interpolates count into Turkish translations" do
@@ -352,19 +354,19 @@ defmodule Sayfa.I18nTest do
       config = %{
         title: "My Blog",
         default_lang: :en,
-        nav: [{"Home", "/"}, {"Posts", "/posts/"}],
+        nav: [{"Home", "/"}, {"Articles", "/articles/"}],
         languages: [
           en: [name: "English"],
           tr: [
             name: "Türkçe",
-            nav: [{"Ana Sayfa", "/"}, {"Yazılar", "/tr/posts/"}]
+            nav: [{"Ana Sayfa", "/"}, {"Yazılar", "/tr/articles/"}]
           ]
         ]
       }
 
       resolved = I18n.resolve_site_config(config, :tr, config)
 
-      assert [{"Ana Sayfa", "/"}, {"Yazılar", "/tr/posts/"}] == resolved.nav
+      assert [{"Ana Sayfa", "/"}, {"Yazılar", "/tr/articles/"}] == resolved.nav
     end
   end
 end

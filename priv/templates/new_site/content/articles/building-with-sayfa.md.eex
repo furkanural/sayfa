@@ -18,7 +18,7 @@ What sets it apart:
 - **No Node.js required** — TailwindCSS is handled via a standalone binary
 - **Block system** — Reusable components without a JS framework
 - **Built-in i18n** — 14 languages supported out of the box
-- **5 content types** — Posts, notes, projects, talks, and pages
+- **5 content types** — Articles, notes, projects, talks, and pages
 
 ## Content Types
 
@@ -26,7 +26,7 @@ Sayfa organizes your content into types, each with its own directory and URL pat
 
 | Type | Directory | URL | Best for |
 |------|-----------|-----|----------|
-| Posts | `content/posts/` | `/posts/slug/` | Blog articles, tutorials |
+| Articles | `content/articles/` | `/articles/slug/` | Blog articles, tutorials |
 | Notes | `content/notes/` | `/notes/slug/` | Quick thoughts, TILs |
 | Projects | `content/projects/` | `/projects/slug/` | Portfolio, showcases |
 | Talks | `content/talks/` | `/talks/slug/` | Presentations, events |
@@ -35,7 +35,7 @@ Sayfa organizes your content into types, each with its own directory and URL pat
 Generate new content with the CLI:
 
 ```bash
-mix sayfa.gen.content post "My New Post"
+mix sayfa.gen.content article "My New Article"
 mix sayfa.gen.content note "Quick Tip"
 mix sayfa.gen.content project "My App"
 ```
@@ -46,7 +46,7 @@ Every content file starts with YAML front matter. Here's a complete example:
 
 ```yaml
 ---
-title: "My Post Title"
+title: "My Article Title"
 date: 2024-01-15
 updated: 2024-01-20
 description: "A short description for SEO and social sharing"
@@ -55,7 +55,7 @@ tags: [tutorial, beginner]
 featured: true
 draft: false
 image: /images/cover.jpg
-layout: post
+layout: article
 translations:
   tr: yazimin-basligi
 ---
@@ -96,7 +96,7 @@ Standard Markdown tables work:
 ### Task Lists
 
 - [x] Install Sayfa
-- [x] Create first post
+- [x] Create first article
 - [ ] Deploy to production
 
 ## The Block System
@@ -106,7 +106,7 @@ Blocks are reusable components you can use in your EEx templates:
 ```elixir
 # In your templates:
 <%%= @block.(:hero, title: "Welcome") %>
-<%%= @block.(:recent_posts, limit: 5) %>
+<%%= @block.(:recent_articles, limit: 5) %>
 <%%= @block.(:tag_cloud) %>
 ```
 
@@ -127,7 +127,7 @@ To customize a layout, copy it for editing:
 mix sayfa.gen.layout --list
 
 # Copy one to customize
-mix sayfa.gen.layout post
+mix sayfa.gen.layout article
 ```
 
 This copies the layout to `themes/custom/layouts/` where you can edit it freely.
@@ -156,23 +156,23 @@ Sayfa supports directory-based multilingual sites. Place translations in languag
 
 ```
 content/
-  posts/
+  articles/
     hello-world.md          # Default language
   tr/
-    posts/
+    articles/
       hello-world.md        # Turkish translation
 ```
 
 Generate multilingual content:
 
 ```bash
-mix sayfa.gen.content post "Hello World" --lang=en,tr
+mix sayfa.gen.content article "Hello World" --lang=en,tr
 ```
 
 In templates, use the translation function:
 
 ```elixir
-<%%= @t.("recent_posts") %>
+<%%= @t.("recent_articles") %>
 ```
 
 ## Deployment

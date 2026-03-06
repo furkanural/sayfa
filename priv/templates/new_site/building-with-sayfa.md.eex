@@ -11,13 +11,13 @@ image: /images/placeholder.svg
 
 ## Why Sayfa?
 
-Sayfa is a static site generator built in Elixir. It's designed to be simple, fast, and extensible. This post walks through the key features you can use to build your site.
+Sayfa is a static site generator built in Elixir. It's designed to be simple, fast, and extensible. This article walks through the key features you can use to build your site.
 
 ## Content Types
 
 Sayfa supports multiple content types out of the box:
 
-- **Posts** — Blog posts with dates, tags, and categories
+- **Articles** — Blog articles with dates, tags, and categories
 - **Notes** — Short-form content for quick thoughts
 - **Projects** — Showcase your work with project pages
 - **Talks** — Share your presentations and speaking engagements
@@ -40,7 +40,7 @@ tags: [sayfa, elixir]            # Creates tag archive pages
 featured: true                    # Highlight in featured section
 image: /images/cover.jpg         # Cover image + social sharing
 excerpt: "Short custom excerpt"  # Override auto-generated excerpt
-layout: post                      # Use specific layout
+layout: article                      # Use specific layout
 draft: false                      # Hide from production builds
 ---
 ```
@@ -78,7 +78,7 @@ Blocks are reusable components you can use in your templates:
 ```elixir
 # In your EEx templates:
 <%%= @block.(:hero, title: "Welcome") %>
-<%%= @block.(:recent_posts, limit: 5) %>
+<%%= @block.(:recent_articles, limit: 5) %>
 <%%= @block.(:tag_cloud) %>
 ```
 
@@ -94,9 +94,9 @@ Sayfa includes 15 built-in blocks you can use in your layouts:
 
 ### Content Blocks
 - `:hero` — Hero section for homepage
-- `:recent_posts` — Recent posts list
+- `:recent_articles` — Recent articles list
 - `:recent_content` — Recent items from any content type
-- `:related_posts` — Related posts by tags/categories
+- `:related_articles` — Related articles by tags/categories
 
 ### Utility Blocks
 - `:toc` — Table of contents
@@ -111,15 +111,15 @@ Use blocks in your custom layouts:
 
 ```elixir
 <%%= @block.(:breadcrumb, []) %>
-<%%= @block.(:recent_posts, limit: 5) %>
-<%%= @block.(:related_posts, limit: 3) %>
+<%%= @block.(:recent_articles, limit: 5) %>
+<%%= @block.(:related_articles, limit: 3) %>
 ```
 
 ## Images
 
 Sayfa supports images through the `static/` directory. Any file in `static/` is copied to your site's root during build.
 
-**Featured image** — Add `image:` to your front matter to display a cover image above the post and set the OpenGraph image for social sharing:
+**Featured image** — Add `image:` to your front matter to display a cover image above the article and set the OpenGraph image for social sharing:
 
 ```yaml
 ---
@@ -137,16 +137,16 @@ Place your image files in `static/images/` and reference them with `/images/` pa
 
 ## Multilingual Support
 
-Sayfa has built-in i18n with 14 language translations. To add a Turkish version of a post:
+Sayfa has built-in i18n with 14 language translations. To add a Turkish version of a article:
 
 1. Create the directory structure:
    ```bash
-   mkdir -p content/tr/posts
+   mkdir -p content/tr/articles
    ```
 
 2. Create the translated content:
    ```bash
-   mix sayfa.gen.content post "Building with Sayfa" --lang=en,tr
+   mix sayfa.gen.content article "Building with Sayfa" --lang=en,tr
    ```
 
 3. The language switcher block will automatically detect and link translations

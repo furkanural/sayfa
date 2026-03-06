@@ -5,14 +5,14 @@ defmodule Sayfa.Blocks.RelatedContent do
   Finds content items sharing the most tags/categories with the current item and
   renders up to 3 related items with title, date, and first category.
 
-  Unlike `RelatedPosts` which is hardcoded to posts, this block auto-detects the
+  Unlike `RelatedArticles` which is hardcoded to articles, this block auto-detects the
   current content's type or accepts an explicit `type:` assign.
 
   ## Assigns
 
   - `:content` — current `Sayfa.Content` struct
   - `:contents` — list of all site contents (injected by block helper)
-  - `:type` — content type to search (e.g. `"notes"`, `"posts"`); defaults to current content's type
+  - `:type` — content type to search (e.g. `"notes"`, `"articles"`); defaults to current content's type
   - `:limit` — number of related items to show (default: 3)
 
   ## Examples
@@ -46,7 +46,7 @@ defmodule Sayfa.Blocks.RelatedContent do
       if related == [] do
         ""
       else
-        heading = Block.escape_html(t.("related_posts"))
+        heading = Block.escape_html(t.("related_articles"))
         items = Enum.map_join(related, "\n", &render_item(&1, lang, site))
 
         """
@@ -64,7 +64,7 @@ defmodule Sayfa.Blocks.RelatedContent do
   end
 
   defp content_type(content) do
-    content.meta["url_prefix"] || "posts"
+    content.meta["url_prefix"] || "articles"
   end
 
   defp find_related(content, contents, type, lang, limit) do

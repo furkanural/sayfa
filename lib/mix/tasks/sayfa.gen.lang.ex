@@ -11,7 +11,7 @@ defmodule Mix.Tasks.Sayfa.Gen.Lang do
       mix sayfa.gen.lang tr
       mix sayfa.gen.lang de
 
-  Creates `content/{lang}/pages/` and `content/{lang}/posts/` directories,
+  Creates `content/{lang}/pages/` and `content/{lang}/articles/` directories,
   generates starter content files, and updates `config/config.exs` with the
   new language entry.
   """
@@ -75,7 +75,7 @@ defmodule Mix.Tasks.Sayfa.Gen.Lang do
     lang_path = Path.join("content", lang)
 
     File.mkdir_p!(Path.join(lang_path, "pages"))
-    File.mkdir_p!(Path.join(lang_path, "posts"))
+    File.mkdir_p!(Path.join(lang_path, "articles"))
 
     assigns = [title: title, lang: lang, default_lang: default_lang]
 
@@ -96,7 +96,7 @@ defmodule Mix.Tasks.Sayfa.Gen.Lang do
     generate_file(
       templates_dir,
       lang_template_name(templates_dir, lang, "building-with-sayfa.md.eex"),
-      Path.join([lang_path, "posts", "building-with-sayfa.md"]),
+      Path.join([lang_path, "articles", "building-with-sayfa.md"]),
       assigns
     )
 

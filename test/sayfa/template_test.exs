@@ -64,7 +64,7 @@ defmodule Sayfa.TemplateTest do
       </html>
       """)
 
-      File.write!(Path.join(layouts_dir, "post.html.eex"), """
+      File.write!(Path.join(layouts_dir, "article.html.eex"), """
       <article><h1><%= @content.title %></h1><%= @inner_content %></article>
       """)
 
@@ -88,22 +88,22 @@ defmodule Sayfa.TemplateTest do
       {:ok, layouts_dir: layouts_dir, config: config}
     end
 
-    test "renders content with post layout", %{layouts_dir: layouts_dir, config: config} do
+    test "renders content with article layout", %{layouts_dir: layouts_dir, config: config} do
       content = %Content{
-        title: "My Post",
-        body: "<p>Post body</p>",
+        title: "My Article",
+        body: "<p>Article body</p>",
         tags: [],
-        meta: %{"content_type" => "posts"}
+        meta: %{"content_type" => "articles"}
       }
 
       assert {:ok, html} =
                Template.render_content(content, config: config, layouts_dir: layouts_dir)
 
       assert html =~ "<!DOCTYPE html>"
-      assert html =~ "<title>My Post</title>"
+      assert html =~ "<title>My Article</title>"
       assert html =~ "<article>"
-      assert html =~ "My Post"
-      assert html =~ "Post body"
+      assert html =~ "My Article"
+      assert html =~ "Article body"
     end
 
     test "renders content with page layout by default", %{
@@ -180,10 +180,10 @@ defmodule Sayfa.TemplateTest do
       config: config
     } do
       content = %Content{
-        title: "My Post",
-        body: "<p>Post body</p>",
+        title: "My Article",
+        body: "<p>Article body</p>",
         tags: [],
-        meta: %{"content_type" => "custom", "default_layout" => "post"}
+        meta: %{"content_type" => "custom", "default_layout" => "article"}
       }
 
       assert {:ok, html} =
@@ -197,10 +197,10 @@ defmodule Sayfa.TemplateTest do
       config: config
     } do
       content = %Content{
-        title: "My Post",
-        body: "<p>Post body</p>",
+        title: "My Article",
+        body: "<p>Article body</p>",
         tags: [],
-        meta: %{"layout" => "home", "default_layout" => "post"}
+        meta: %{"layout" => "home", "default_layout" => "article"}
       }
 
       assert {:ok, html} =
@@ -255,8 +255,8 @@ defmodule Sayfa.TemplateTest do
 
     test "renders list page with contents", %{layouts_dir: layouts_dir, config: config} do
       contents = [
-        %Content{title: "Post A", body: "", tags: [], meta: %{}},
-        %Content{title: "Post B", body: "", tags: [], meta: %{}}
+        %Content{title: "Article A", body: "", tags: [], meta: %{}},
+        %Content{title: "Article B", body: "", tags: [], meta: %{}}
       ]
 
       assert {:ok, html} =
@@ -264,14 +264,14 @@ defmodule Sayfa.TemplateTest do
                  config: config,
                  layouts_dir: layouts_dir,
                  contents: contents,
-                 page_title: "All Posts",
+                 page_title: "All Articles",
                  pagination: nil
                )
 
       assert html =~ "<!DOCTYPE html>"
-      assert html =~ "All Posts"
-      assert html =~ "Post A"
-      assert html =~ "Post B"
+      assert html =~ "All Articles"
+      assert html =~ "Article A"
+      assert html =~ "Article B"
     end
 
     test "renders list page with pagination", %{layouts_dir: layouts_dir, config: config} do
@@ -283,9 +283,9 @@ defmodule Sayfa.TemplateTest do
         total_pages: 3,
         has_prev: true,
         has_next: true,
-        prev_url: "/posts/",
-        next_url: "/posts/page/3/",
-        url: "/posts/page/2/"
+        prev_url: "/articles/",
+        next_url: "/articles/page/3/",
+        url: "/articles/page/2/"
       }
 
       assert {:ok, html} =
@@ -293,7 +293,7 @@ defmodule Sayfa.TemplateTest do
                  config: config,
                  layouts_dir: layouts_dir,
                  contents: [],
-                 page_title: "Posts",
+                 page_title: "Articles",
                  pagination: pagination
                )
 

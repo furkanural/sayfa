@@ -64,10 +64,10 @@ defmodule Sayfa.Blocks.TagCloud do
     count = length(items)
     slug = Slug.slugify(tag)
     classes = size_classes(count, max_count)
-    posts_label = Sayfa.I18n.t("posts_count", lang, site, count: count)
+    articles_label = Sayfa.I18n.t("articles_count", lang, site, count: count)
     tag_url = tag_url(slug, lang_prefix)
 
-    "<a href=\"#{tag_url}\" class=\"inline-flex items-center gap-1 h-7 px-2.5 rounded-md #{classes}\" title=\"#{Block.escape_html(posts_label)}\">#{@hash_icon} #{Block.escape_html(tag)} <span class=\"cloud-count\">#{count}</span></a>"
+    "<a href=\"#{tag_url}\" class=\"inline-flex items-center gap-1 h-7 px-2.5 rounded-md #{classes}\" title=\"#{Block.escape_html(articles_label)}\">#{@hash_icon} #{Block.escape_html(tag)} <span class=\"cloud-count\">#{count}</span></a>"
   end
 
   defp tag_url(slug, ""), do: "/tags/#{Block.escape_html(slug)}/"

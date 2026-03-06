@@ -3,7 +3,7 @@ defmodule Sayfa.Blocks.RecentContent do
   Dynamic recent content block.
 
   Groups all content by `content_type`, excludes "pages", and renders a section
-  for each type that has content (posts, notes, projects, talks, etc.).
+  for each type that has content (articles, notes, projects, talks, etc.).
 
   ## Assigns
 
@@ -130,7 +130,7 @@ defmodule Sayfa.Blocks.RecentContent do
       case type do
         "notes" -> "notes-grid"
         "projects" -> "cards-stack"
-        _ -> "recent-post-list"
+        _ -> "recent-article-list"
       end
 
     """

@@ -7,11 +7,11 @@ defmodule Sayfa.Pagination do
 
   ## Examples
 
-      pages = Sayfa.Pagination.paginate(posts, page_size: 5, base_path: "/posts")
+      pages = Sayfa.Pagination.paginate(articles, page_size: 5, base_path: "/articles")
       first_page = hd(pages)
       first_page.page_number  #=> 1
       first_page.has_next     #=> true
-      first_page.next_url     #=> "/posts/page/2/"
+      first_page.next_url     #=> "/articles/page/2/"
 
   """
 
@@ -58,13 +58,13 @@ defmodule Sayfa.Pagination do
 
   ## Examples
 
-      iex> pages = Sayfa.Pagination.paginate(Enum.to_list(1..25), page_size: 10, base_path: "/posts")
+      iex> pages = Sayfa.Pagination.paginate(Enum.to_list(1..25), page_size: 10, base_path: "/articles")
       iex> length(pages)
       3
       iex> hd(pages).page_number
       1
       iex> hd(pages).url
-      "/posts/"
+      "/articles/"
 
   """
   @spec paginate([term()], keyword()) :: [Page.t()]

@@ -7,7 +7,7 @@ defmodule Sayfa.Sitemap do
 
   ## Examples
 
-      urls = [%{loc: "/posts/hello/", lastmod: ~D[2024-01-15]}, %{loc: "/about/", lastmod: nil}]
+      urls = [%{loc: "/articles/hello/", lastmod: ~D[2024-01-15]}, %{loc: "/about/", lastmod: nil}]
       config = %{base_url: "https://example.com"}
       xml = Sayfa.Sitemap.generate(urls, config)
 
@@ -17,15 +17,15 @@ defmodule Sayfa.Sitemap do
   Generates a sitemap XML string.
 
   Takes a list of URL maps and site config. Each URL map should have:
-  - `:loc` — the path (e.g., `"/posts/hello/"`)
+  - `:loc` — the path (e.g., `"/articles/hello/"`)
   - `:lastmod` — a `Date` or `nil`
 
   ## Examples
 
-      iex> urls = [%{loc: "/posts/hello/", lastmod: ~D[2024-01-15]}, %{loc: "/about/", lastmod: nil}]
+      iex> urls = [%{loc: "/articles/hello/", lastmod: ~D[2024-01-15]}, %{loc: "/about/", lastmod: nil}]
       iex> config = %{base_url: "https://example.com"}
       iex> xml = Sayfa.Sitemap.generate(urls, config)
-      iex> xml =~ "https://example.com/posts/hello/"
+      iex> xml =~ "https://example.com/articles/hello/"
       true
       iex> xml =~ "<lastmod>2024-01-15</lastmod>"
       true

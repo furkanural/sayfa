@@ -11,15 +11,15 @@ defmodule Sayfa.SEOTest do
     test "generates Open Graph tags" do
       content = %Content{
         title: "Hello World",
-        body: "<p>Post body text</p>",
+        body: "<p>Article body text</p>",
         slug: "hello-world",
-        meta: %{"url_prefix" => "posts"}
+        meta: %{"url_prefix" => "articles"}
       }
 
       html = SEO.meta_tags(content, @config)
       assert html =~ ~s(property="og:title" content="Hello World")
       assert html =~ ~s(property="og:type" content="article")
-      assert html =~ ~s(property="og:url" content="https://example.com/posts/hello-world")
+      assert html =~ ~s(property="og:url" content="https://example.com/articles/hello-world")
       assert html =~ ~s(property="og:site_name" content="My Site")
     end
 
@@ -28,7 +28,7 @@ defmodule Sayfa.SEOTest do
         title: "Hello",
         body: "<p>Body</p>",
         slug: "hello",
-        meta: %{"url_prefix" => "posts"}
+        meta: %{"url_prefix" => "articles"}
       }
 
       html = SEO.meta_tags(content, @config)
@@ -41,7 +41,7 @@ defmodule Sayfa.SEOTest do
         title: "Hello",
         body: "<p>Long body text</p>",
         slug: "hello",
-        meta: %{"url_prefix" => "posts", "description" => "Custom SEO description"}
+        meta: %{"url_prefix" => "articles", "description" => "Custom SEO description"}
       }
 
       html = SEO.meta_tags(content, @config)
@@ -53,7 +53,7 @@ defmodule Sayfa.SEOTest do
         title: "Hello",
         body: "<p>This is the body text that will be used as description</p>",
         slug: "hello",
-        meta: %{"url_prefix" => "posts"}
+        meta: %{"url_prefix" => "articles"}
       }
 
       html = SEO.meta_tags(content, @config)
@@ -65,11 +65,11 @@ defmodule Sayfa.SEOTest do
         title: "Hello",
         body: "<p>Body</p>",
         slug: "hello",
-        meta: %{"url_prefix" => "posts"}
+        meta: %{"url_prefix" => "articles"}
       }
 
       html = SEO.meta_tags(content, @config)
-      assert html =~ ~s(rel="canonical" href="https://example.com/posts/hello")
+      assert html =~ ~s(rel="canonical" href="https://example.com/articles/hello")
     end
 
     test "includes image tags when image is in meta" do
@@ -77,7 +77,7 @@ defmodule Sayfa.SEOTest do
         title: "Hello",
         body: "<p>Body</p>",
         slug: "hello",
-        meta: %{"url_prefix" => "posts", "image" => "/images/cover.jpg"}
+        meta: %{"url_prefix" => "articles", "image" => "/images/cover.jpg"}
       }
 
       html = SEO.meta_tags(content, @config)
@@ -90,7 +90,7 @@ defmodule Sayfa.SEOTest do
         title: ~s(Hello "World" & <Friends>),
         body: "<p>Body</p>",
         slug: "hello",
-        meta: %{"url_prefix" => "posts"}
+        meta: %{"url_prefix" => "articles"}
       }
 
       html = SEO.meta_tags(content, @config)
@@ -110,13 +110,13 @@ defmodule Sayfa.SEOTest do
   end
 
   describe "meta_tags/2 article OG tags" do
-    test "adds article:published_time for posts" do
+    test "adds article:published_time for articles" do
       content = %Content{
         title: "Hello",
         body: "<p>Body</p>",
         slug: "hello",
         date: ~D[2024-01-15],
-        meta: %{"url_prefix" => "posts", "content_type" => "posts"}
+        meta: %{"url_prefix" => "articles", "content_type" => "articles"}
       }
 
       html = SEO.meta_tags(content, @config)
@@ -130,8 +130,8 @@ defmodule Sayfa.SEOTest do
         slug: "hello",
         date: ~D[2024-01-15],
         meta: %{
-          "url_prefix" => "posts",
-          "content_type" => "posts",
+          "url_prefix" => "articles",
+          "content_type" => "articles",
           "updated" => ~D[2024-02-01]
         }
       }
@@ -145,7 +145,7 @@ defmodule Sayfa.SEOTest do
         title: "Hello",
         body: "<p>Body</p>",
         slug: "hello",
-        meta: %{"url_prefix" => "posts", "content_type" => "posts"}
+        meta: %{"url_prefix" => "articles", "content_type" => "articles"}
       }
 
       config = Map.put(@config, :author, "Jane Doe")
@@ -159,7 +159,7 @@ defmodule Sayfa.SEOTest do
         body: "<p>Body</p>",
         slug: "hello",
         tags: ["elixir", "phoenix"],
-        meta: %{"url_prefix" => "posts", "content_type" => "posts"}
+        meta: %{"url_prefix" => "articles", "content_type" => "articles"}
       }
 
       html = SEO.meta_tags(content, @config)
@@ -200,7 +200,7 @@ defmodule Sayfa.SEOTest do
         title: "Hello",
         body: "<p>Body</p>",
         slug: "hello",
-        meta: %{"url_prefix" => "posts"}
+        meta: %{"url_prefix" => "articles"}
       }
 
       html = SEO.meta_tags(content, @config)
@@ -212,7 +212,7 @@ defmodule Sayfa.SEOTest do
         title: "Hello",
         body: "<p>Body</p>",
         slug: "hello",
-        meta: %{"url_prefix" => "posts", "image" => "/images/cover.jpg"}
+        meta: %{"url_prefix" => "articles", "image" => "/images/cover.jpg"}
       }
 
       html = SEO.meta_tags(content, @config)
@@ -221,7 +221,7 @@ defmodule Sayfa.SEOTest do
   end
 
   describe "json_ld/2" do
-    test "generates BlogPosting for posts" do
+    test "generates BlogArticling for articles" do
       content = %Content{
         title: "Hello World",
         body: "<p>Body text</p>",
@@ -229,8 +229,8 @@ defmodule Sayfa.SEOTest do
         date: ~D[2024-01-15],
         tags: ["elixir"],
         meta: %{
-          "content_type" => "posts",
-          "url_prefix" => "posts",
+          "content_type" => "articles",
+          "url_prefix" => "articles",
           "lang_prefix" => ""
         }
       }
@@ -239,7 +239,7 @@ defmodule Sayfa.SEOTest do
       html = SEO.json_ld(content, config)
 
       assert html =~ ~s(application/ld+json)
-      assert html =~ ~s("BlogPosting")
+      assert html =~ ~s("BlogArticling")
       assert html =~ ~s("Hello World")
       assert html =~ ~s("2024-01-15")
       assert html =~ ~s("Jane")
@@ -276,8 +276,8 @@ defmodule Sayfa.SEOTest do
         slug: "hello",
         date: ~D[2024-01-15],
         meta: %{
-          "content_type" => "posts",
-          "url_prefix" => "posts",
+          "content_type" => "articles",
+          "url_prefix" => "articles",
           "lang_prefix" => "",
           "updated" => ~D[2024-02-01]
         }
@@ -295,11 +295,11 @@ defmodule Sayfa.SEOTest do
         body: "",
         slug: "hello",
         meta: %{
-          "url_prefix" => "posts",
+          "url_prefix" => "articles",
           "lang_prefix" => "",
           "hreflang_alternates" => [
-            {"en", "/posts/hello"},
-            {"tr", "/tr/posts/merhaba"}
+            {"en", "/articles/hello"},
+            {"tr", "/tr/articles/merhaba"}
           ]
         }
       }
@@ -307,8 +307,8 @@ defmodule Sayfa.SEOTest do
       html = SEO.hreflang_tags(content, @config)
       assert html =~ ~s(hreflang="en")
       assert html =~ ~s(hreflang="tr")
-      assert html =~ ~s(href="https://example.com/posts/hello")
-      assert html =~ ~s(href="https://example.com/tr/posts/merhaba")
+      assert html =~ ~s(href="https://example.com/articles/hello")
+      assert html =~ ~s(href="https://example.com/tr/articles/merhaba")
     end
 
     test "adds x-default when multiple alternates exist" do
@@ -317,11 +317,11 @@ defmodule Sayfa.SEOTest do
         body: "",
         slug: "hello",
         meta: %{
-          "url_prefix" => "posts",
+          "url_prefix" => "articles",
           "lang_prefix" => "",
           "hreflang_alternates" => [
-            {"en", "/posts/hello"},
-            {"tr", "/tr/posts/merhaba"}
+            {"en", "/articles/hello"},
+            {"tr", "/tr/articles/merhaba"}
           ]
         }
       }
@@ -329,7 +329,7 @@ defmodule Sayfa.SEOTest do
       html = SEO.hreflang_tags(content, @config)
       assert html =~ ~s(hreflang="x-default")
       # x-default points to the first (self) entry
-      assert html =~ ~s(hreflang="x-default" href="https://example.com/posts/hello")
+      assert html =~ ~s(hreflang="x-default" href="https://example.com/articles/hello")
     end
 
     test "does not add x-default for single alternate" do
@@ -338,9 +338,9 @@ defmodule Sayfa.SEOTest do
         body: "",
         slug: "hello",
         meta: %{
-          "url_prefix" => "posts",
+          "url_prefix" => "articles",
           "lang_prefix" => "",
-          "hreflang_alternates" => [{"en", "/posts/hello"}]
+          "hreflang_alternates" => [{"en", "/articles/hello"}]
         }
       }
 
@@ -358,7 +358,7 @@ defmodule Sayfa.SEOTest do
         title: "Hello",
         body: "",
         slug: "hello",
-        meta: %{"url_prefix" => "posts"}
+        meta: %{"url_prefix" => "articles"}
       }
 
       assert SEO.hreflang_tags(content, @config) == ""
@@ -367,25 +367,25 @@ defmodule Sayfa.SEOTest do
 
   describe "hreflang_tags/3 with archive_alternates" do
     test "renders hreflang links for list pages" do
-      archive_alternates = %{en: "/posts/", tr: "/tr/posts/"}
+      archive_alternates = %{en: "/articles/", tr: "/tr/articles/"}
 
       html = SEO.hreflang_tags(nil, @config, archive_alternates)
       assert html =~ ~s(hreflang="en")
       assert html =~ ~s(hreflang="tr")
-      assert html =~ ~s(href="https://example.com/posts/")
-      assert html =~ ~s(href="https://example.com/tr/posts/")
+      assert html =~ ~s(href="https://example.com/articles/")
+      assert html =~ ~s(href="https://example.com/tr/articles/")
     end
 
     test "adds x-default pointing to default language for list pages" do
       config = Map.put(@config, :default_lang, :en)
-      archive_alternates = %{en: "/posts/", tr: "/tr/posts/"}
+      archive_alternates = %{en: "/articles/", tr: "/tr/articles/"}
 
       html = SEO.hreflang_tags(nil, config, archive_alternates)
-      assert html =~ ~s(hreflang="x-default" href="https://example.com/posts/")
+      assert html =~ ~s(hreflang="x-default" href="https://example.com/articles/")
     end
 
     test "does not add x-default for single language" do
-      archive_alternates = %{en: "/posts/"}
+      archive_alternates = %{en: "/articles/"}
 
       html = SEO.hreflang_tags(nil, @config, archive_alternates)
       assert html =~ ~s(hreflang="en")
@@ -406,21 +406,21 @@ defmodule Sayfa.SEOTest do
         body: "",
         slug: "hello",
         meta: %{
-          "url_prefix" => "posts",
+          "url_prefix" => "articles",
           "lang_prefix" => "",
           "hreflang_alternates" => [
-            {"en", "/posts/hello"},
-            {"tr", "/tr/posts/merhaba"}
+            {"en", "/articles/hello"},
+            {"tr", "/tr/articles/merhaba"}
           ]
         }
       }
 
-      archive_alternates = %{en: "/posts/", tr: "/tr/posts/"}
+      archive_alternates = %{en: "/articles/", tr: "/tr/articles/"}
 
       html = SEO.hreflang_tags(content, @config, archive_alternates)
       # Should use content alternates, not archive alternates
-      assert html =~ ~s(href="https://example.com/posts/hello")
-      refute html =~ ~s(href="https://example.com/posts/")
+      assert html =~ ~s(href="https://example.com/articles/hello")
+      refute html =~ ~s(href="https://example.com/articles/")
     end
   end
 
@@ -452,10 +452,10 @@ defmodule Sayfa.SEOTest do
         title: "T",
         body: "",
         slug: "hello",
-        meta: %{"url_prefix" => "posts", "lang_prefix" => ""}
+        meta: %{"url_prefix" => "articles", "lang_prefix" => ""}
       }
 
-      assert SEO.content_url(content, @config) == "https://example.com/posts/hello"
+      assert SEO.content_url(content, @config) == "https://example.com/articles/hello"
     end
 
     test "builds URL without prefix" do
@@ -474,11 +474,11 @@ defmodule Sayfa.SEOTest do
         title: "T",
         body: "",
         slug: "hello",
-        meta: %{"url_prefix" => "posts", "lang_prefix" => ""}
+        meta: %{"url_prefix" => "articles", "lang_prefix" => ""}
       }
 
       config = %{base_url: "https://example.com/"}
-      assert SEO.content_url(content, config) == "https://example.com/posts/hello"
+      assert SEO.content_url(content, config) == "https://example.com/articles/hello"
     end
 
     test "includes lang_prefix in URL" do
@@ -486,10 +486,10 @@ defmodule Sayfa.SEOTest do
         title: "T",
         body: "",
         slug: "merhaba",
-        meta: %{"url_prefix" => "posts", "lang_prefix" => "tr"}
+        meta: %{"url_prefix" => "articles", "lang_prefix" => "tr"}
       }
 
-      assert SEO.content_url(content, @config) == "https://example.com/tr/posts/merhaba"
+      assert SEO.content_url(content, @config) == "https://example.com/tr/articles/merhaba"
     end
   end
 end

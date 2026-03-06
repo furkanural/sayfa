@@ -9,11 +9,11 @@ defmodule Sayfa.DevServer.RebuilderTest do
 
     content_dir = Path.join(tmp_dir, "content")
     output_dir = Path.join(tmp_dir, "output")
-    posts_dir = Path.join(content_dir, "posts")
+    articles_dir = Path.join(content_dir, "articles")
 
-    File.mkdir_p!(posts_dir)
+    File.mkdir_p!(articles_dir)
 
-    File.write!(Path.join(posts_dir, "hello.md"), """
+    File.write!(Path.join(articles_dir, "hello.md"), """
     ---
     title: "Hello"
     ---
@@ -30,7 +30,7 @@ defmodule Sayfa.DevServer.RebuilderTest do
       File.rm_rf!(tmp_dir)
     end)
 
-    {:ok, content_dir: content_dir, output_dir: output_dir, posts_dir: posts_dir}
+    {:ok, content_dir: content_dir, output_dir: output_dir, articles_dir: articles_dir}
   end
 
   test "initial build increments build_id to 1", ctx do

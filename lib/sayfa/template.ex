@@ -5,14 +5,14 @@ defmodule Sayfa.Template do
   Templates are rendered in three layers:
 
   1. **Content body** — Markdown already rendered to HTML (from `Sayfa.Content`)
-  2. **Layout template** — Wraps content body (e.g., `post.html.eex`, `page.html.eex`)
+  2. **Layout template** — Wraps content body (e.g., `article.html.eex`, `page.html.eex`)
   3. **Base template** — HTML shell (`<html>`, `<head>`, `<body>`), wraps layout output
 
   ## Layout Selection
 
   The layout is determined by (in priority order):
   1. Front matter `layout:` key
-  2. Content type directory default (`posts/` → `post`, `pages/` → `page`)
+  2. Content type directory default (`articles/` → `article`, `pages/` → `page`)
   3. Fallback to `page`
 
   ## Examples
@@ -26,7 +26,7 @@ defmodule Sayfa.Template do
   """
 
   @layout_from_content_type %{
-    "posts" => "post",
+    "articles" => "article",
     "pages" => "page",
     "notes" => "note",
     "projects" => "page",

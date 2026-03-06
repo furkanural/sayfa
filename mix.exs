@@ -52,7 +52,7 @@ defmodule Sayfa.MixProject do
       groups_for_modules: [
         Core: [Sayfa, Sayfa.Builder, Sayfa.Config, Sayfa.Content, Sayfa.Content.Raw],
         "Content Types": [
-          Sayfa.ContentTypes.Post,
+          Sayfa.ContentTypes.Article,
           Sayfa.ContentTypes.Note,
           Sayfa.ContentTypes.Project,
           Sayfa.ContentTypes.Talk,
@@ -65,7 +65,7 @@ defmodule Sayfa.MixProject do
           Sayfa.Blocks.Footer,
           Sayfa.Blocks.SocialLinks,
           Sayfa.Blocks.Toc,
-          Sayfa.Blocks.RecentPosts,
+          Sayfa.Blocks.RecentArticles,
           Sayfa.Blocks.TagCloud,
           Sayfa.Blocks.CategoryCloud,
           Sayfa.Blocks.ReadingTime,
@@ -74,7 +74,7 @@ defmodule Sayfa.MixProject do
           Sayfa.Blocks.CopyLink,
           Sayfa.Blocks.Breadcrumb,
           Sayfa.Blocks.LanguageSwitcher,
-          Sayfa.Blocks.RelatedPosts,
+          Sayfa.Blocks.RelatedArticles,
           Sayfa.Blocks.RelatedContent,
           Sayfa.Blocks.Analytics
         ],

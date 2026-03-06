@@ -14,7 +14,7 @@ defmodule Sayfa do
       content.body   #=> "<h1>...World</h1>"  # includes anchor id
 
       # Parse a file
-      {:ok, content} = Sayfa.parse_file("content/posts/hello.md")
+      {:ok, content} = Sayfa.parse_file("content/articles/hello.md")
 
       # Render markdown to HTML
       {:ok, html} = Sayfa.render_markdown("# Hello **World**")

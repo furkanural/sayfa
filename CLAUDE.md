@@ -67,7 +67,7 @@ sayfa/
 │   │   │   ├── footer.ex
 │   │   │   ├── social_links.ex
 │   │   │   ├── toc.ex
-│   │   │   ├── recent_posts.ex
+│   │   │   ├── recent_articles.ex
 │   │   │   ├── tag_cloud.ex
 │   │   │   ├── category_cloud.ex
 │   │   │   ├── reading_time.ex
@@ -76,12 +76,12 @@ sayfa/
 │   │   │   ├── copy_link.ex
 │   │   │   ├── breadcrumb.ex
 │   │   │   ├── language_switcher.ex
-│   │   │   ├── related_posts.ex
+│   │   │   ├── related_articles.ex
 │   │   │   ├── related_content.ex
 │   │   │   └── analytics.ex
 │   │   │
 │   │   ├── content_types/          # Built-in content types
-│   │   │   ├── post.ex
+│   │   │   ├── article.ex
 │   │   │   ├── note.ex
 │   │   │   ├── project.ex
 │   │   │   ├── talk.ex
@@ -107,7 +107,7 @@ sayfa/
 │   ├── templates/new_site/         # mix sayfa.new scaffolding
 │   ├── translations/               # Built-in UI translations (14 languages)
 │   └── default_theme/
-│       └── layouts/                # base, home, list, note, page, post
+│       └── layouts/                # base, home, list, note, page, article
 │
 └── test/
 ```
@@ -168,7 +168,7 @@ This separation allows hooks to modify content before markdown rendering.
 ```elixir
 # In templates:
 <%= @block.(:hero, title: "Welcome") %>
-<%= @block.(:recent_posts, limit: 5) %>
+<%= @block.(:recent_articles, limit: 5) %>
 ```
 
 Blocks implement `Sayfa.Behaviours.Block` with `name/0` and `render/1` callbacks.
@@ -179,7 +179,7 @@ Blocks implement `Sayfa.Behaviours.Block` with `name/0` and `render/1` callbacks
 2. **Layout template** — wraps content, places blocks (selected via `layout:` front matter)
 3. **Base template** — HTML shell (`<html>`, `<head>`), inserts `@inner_content`
 
-Available layouts: `home`, `post`, `page`, `list`, `note` (plus custom user layouts).
+Available layouts: `home`, `article`, `page`, `list`, `note` (plus custom user layouts).
 
 ### Internationalization
 
@@ -298,12 +298,12 @@ Configured in `.github/dependabot.yml` — weekly updates for:
 
 | Content Type | URL Pattern |
 |--------------|-------------|
-| Posts | `/posts/{slug}/` |
+| Articles | `/articles/{slug}/` |
 | Notes | `/notes/{slug}/` |
 | Projects | `/projects/{slug}/` |
 | Talks | `/talks/{slug}/` |
 | Pages | `/{slug}/` |
-| Turkish | `/tr/posts/{slug}/` |
+| Turkish | `/tr/articles/{slug}/` |
 
 No dates in URLs — keeps them clean and evergreen.
 
@@ -312,7 +312,7 @@ No dates in URLs — keeps them clean and evergreen.
 ```yaml
 ---
 title: "Required title"           # Required
-date: 2024-01-15                  # Required for posts/notes
+date: 2024-01-15                  # Required for articles/notes
 updated: 2024-01-20               # Optional
 lang: en                          # Optional (default: site default)
 slug: custom-slug                 # Optional (default: from filename)

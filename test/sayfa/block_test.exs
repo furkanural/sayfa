@@ -9,8 +9,8 @@ defmodule Sayfa.BlockTest do
   alias Sayfa.Blocks.Header
   alias Sayfa.Blocks.Hero
   alias Sayfa.Blocks.ReadingTime, as: ReadingTimeBlock
+  alias Sayfa.Blocks.RecentArticles
   alias Sayfa.Blocks.RecentContent
-  alias Sayfa.Blocks.RecentPosts
   alias Sayfa.Blocks.SocialLinks
   alias Sayfa.Blocks.TagCloud
   alias Sayfa.Blocks.TOC, as: TOCBlock
@@ -47,7 +47,7 @@ defmodule Sayfa.BlockTest do
         :footer,
         :social_links,
         :toc,
-        :recent_posts,
+        :recent_articles,
         :tag_cloud,
         :reading_time,
         :code_copy,
@@ -256,7 +256,7 @@ defmodule Sayfa.BlockTest do
           },
           nav: [{"Home", "/"}],
           lang: :en,
-          page_url: "/posts/"
+          page_url: "/articles/"
         })
 
       # Desktop variant (hidden on mobile)
@@ -289,11 +289,11 @@ defmodule Sayfa.BlockTest do
         Header.render(%{
           site: %{title: "Blog", default_lang: :en},
           lang: :tr,
-          nav: [{"Ana Sayfa", "/"}, {"Yazılar", "/posts/"}]
+          nav: [{"Ana Sayfa", "/"}, {"Yazılar", "/articles/"}]
         })
 
       assert html =~ ~s(href="/tr/")
-      assert html =~ ~s(href="/tr/posts/")
+      assert html =~ ~s(href="/tr/articles/")
     end
 
     test "nav URLs already containing lang prefix are not double-prefixed" do
@@ -301,11 +301,11 @@ defmodule Sayfa.BlockTest do
         Header.render(%{
           site: %{title: "Blog", default_lang: :en},
           lang: :tr,
-          nav: [{"Yazılar", "/tr/posts/"}]
+          nav: [{"Yazılar", "/tr/articles/"}]
         })
 
-      assert html =~ ~s(href="/tr/posts/")
-      refute html =~ ~s(href="/tr/tr/posts/")
+      assert html =~ ~s(href="/tr/articles/")
+      refute html =~ ~s(href="/tr/tr/articles/")
     end
 
     test "applies active class to current nav item" do
@@ -313,12 +313,12 @@ defmodule Sayfa.BlockTest do
         Header.render(%{
           site: %{title: "Blog", default_lang: :en},
           lang: :en,
-          nav: [{"Home", "/"}, {"Posts", "/posts/"}, {"About", "/about/"}],
-          page_url: "/posts/hello-world/"
+          nav: [{"Home", "/"}, {"Articles", "/articles/"}, {"About", "/about/"}],
+          page_url: "/articles/hello-world/"
         })
 
-      # "Posts" link should have active styling
-      assert html =~ ~r/href="\/posts\/"[^>]*header-nav-link-active/
+      # "Articles" link should have active styling
+      assert html =~ ~r/href="\/articles\/"[^>]*header-nav-link-active/
       # "Home" and "About" should not have active styling
       assert html =~ ~r/href="\/"[^>]*header-nav-link"/
       assert html =~ ~r/href="\/about\/"[^>]*header-nav-link"/
@@ -329,14 +329,14 @@ defmodule Sayfa.BlockTest do
         Header.render(%{
           site: %{title: "Blog", default_lang: :en},
           lang: :en,
-          nav: [{"Home", "/"}, {"Posts", "/posts/"}],
+          nav: [{"Home", "/"}, {"Articles", "/articles/"}],
           page_url: "/"
         })
 
       # Home should be active
       assert html =~ ~r/href="\/"[^>]*header-nav-link-active/
-      # Posts should not be active
-      assert html =~ ~r/href="\/posts\/"[^>]*header-nav-link"/
+      # Articles should not be active
+      assert html =~ ~r/href="\/articles\/"[^>]*header-nav-link"/
     end
 
     test "no active class when page_url is nil" do
@@ -344,7 +344,7 @@ defmodule Sayfa.BlockTest do
         Header.render(%{
           site: %{title: "Blog", default_lang: :en},
           lang: :en,
-          nav: [{"Home", "/"}, {"Posts", "/posts/"}],
+          nav: [{"Home", "/"}, {"Articles", "/articles/"}],
           page_url: nil
         })
 
@@ -357,12 +357,12 @@ defmodule Sayfa.BlockTest do
         Header.render(%{
           site: %{title: "Blog", default_lang: :en},
           lang: :tr,
-          nav: [{"Ana Sayfa", "/"}, {"Yazılar", "/posts/"}],
-          page_url: "/tr/posts/merhaba/"
+          nav: [{"Ana Sayfa", "/"}, {"Yazılar", "/articles/"}],
+          page_url: "/tr/articles/merhaba/"
         })
 
-      # Yazılar should be active (its URL becomes /tr/posts/ which matches /tr/posts/merhaba/)
-      assert html =~ ~r/href="\/tr\/posts\/"[^>]*header-nav-link-active/
+      # Yazılar should be active (its URL becomes /tr/articles/ which matches /tr/articles/merhaba/)
+      assert html =~ ~r/href="\/tr\/articles\/"[^>]*header-nav-link-active/
     end
 
     test "localized homepage is not active on subpages" do
@@ -370,14 +370,14 @@ defmodule Sayfa.BlockTest do
         Header.render(%{
           site: %{title: "Blog", default_lang: :en},
           lang: :tr,
-          nav: [{"Ana Sayfa", "/"}, {"Yazılar", "/posts/"}],
-          page_url: "/tr/posts/"
+          nav: [{"Ana Sayfa", "/"}, {"Yazılar", "/articles/"}],
+          page_url: "/tr/articles/"
         })
 
-      # Ana Sayfa (/tr/) should NOT be active when on /tr/posts/
+      # Ana Sayfa (/tr/) should NOT be active when on /tr/articles/
       assert html =~ ~r/href="\/tr\/"[^>]*header-nav-link"/
       # Yazılar should be active
-      assert html =~ ~r/href="\/tr\/posts\/"[^>]*header-nav-link-active/
+      assert html =~ ~r/href="\/tr\/articles\/"[^>]*header-nav-link-active/
     end
 
     test "localized homepage is active on exact match" do
@@ -385,14 +385,14 @@ defmodule Sayfa.BlockTest do
         Header.render(%{
           site: %{title: "Blog", default_lang: :en},
           lang: :tr,
-          nav: [{"Ana Sayfa", "/"}, {"Yazılar", "/posts/"}],
+          nav: [{"Ana Sayfa", "/"}, {"Yazılar", "/articles/"}],
           page_url: "/tr/"
         })
 
       # Ana Sayfa should be active on /tr/
       assert html =~ ~r/href="\/tr\/"[^>]*header-nav-link-active/
       # Yazılar should NOT be active
-      assert html =~ ~r/href="\/tr\/posts\/"[^>]*header-nav-link"/
+      assert html =~ ~r/href="\/tr\/articles\/"[^>]*header-nav-link"/
     end
 
     test "nav URLs are unchanged for default language" do
@@ -400,11 +400,11 @@ defmodule Sayfa.BlockTest do
         Header.render(%{
           site: %{title: "Blog", default_lang: :en},
           lang: :en,
-          nav: [{"Home", "/"}, {"Posts", "/posts/"}]
+          nav: [{"Home", "/"}, {"Articles", "/articles/"}]
         })
 
       assert html =~ ~s(href="/")
-      assert html =~ ~s(href="/posts/")
+      assert html =~ ~s(href="/articles/")
       refute html =~ ~s(href="/en/)
     end
   end
@@ -535,128 +535,128 @@ defmodule Sayfa.BlockTest do
     end
   end
 
-  describe "RecentPosts" do
-    test "renders recent posts" do
+  describe "RecentArticles" do
+    test "renders recent articles" do
       contents = [
         %Content{
-          title: "Post A",
+          title: "Article A",
           body: "",
           date: ~D[2024-06-01],
-          slug: "post-a",
-          meta: %{"content_type" => "posts", "url_prefix" => "posts"}
+          slug: "Article-a",
+          meta: %{"content_type" => "articles", "url_prefix" => "articles"}
         },
         %Content{
-          title: "Post B",
+          title: "Article B",
           body: "",
           date: ~D[2024-01-01],
-          slug: "post-b",
-          meta: %{"content_type" => "posts", "url_prefix" => "posts"}
+          slug: "Article-b",
+          meta: %{"content_type" => "articles", "url_prefix" => "articles"}
         },
         %Content{title: "Page", body: "", meta: %{"content_type" => "pages"}}
       ]
 
-      html = RecentPosts.render(%{contents: contents, limit: 2})
-      assert html =~ "Recent Posts"
-      assert html =~ "Post A"
-      assert html =~ "Post B"
+      html = RecentArticles.render(%{contents: contents, limit: 2})
+      assert html =~ "Recent Articles"
+      assert html =~ "Article A"
+      assert html =~ "Article B"
       refute html =~ "Page"
     end
 
-    test "returns empty string with no posts" do
-      assert RecentPosts.render(%{contents: []}) == ""
+    test "returns empty string with no articles" do
+      assert RecentArticles.render(%{contents: []}) == ""
     end
 
-    test "includes lang_prefix in post URLs" do
+    test "includes lang_prefix in article URLs" do
       contents = [
         %Content{
           title: "Merhaba",
           body: "",
           date: ~D[2024-06-01],
           slug: "merhaba",
-          meta: %{"content_type" => "posts", "url_prefix" => "posts", "lang_prefix" => "tr"}
+          meta: %{"content_type" => "articles", "url_prefix" => "articles", "lang_prefix" => "tr"}
         }
       ]
 
-      html = RecentPosts.render(%{contents: contents, limit: 5})
-      assert html =~ "/tr/posts/merhaba"
+      html = RecentArticles.render(%{contents: contents, limit: 5})
+      assert html =~ "/tr/articles/merhaba"
     end
 
     test "filters contents by language" do
       contents = [
         %Content{
-          title: "English Post",
+          title: "English Article",
           body: "",
           date: ~D[2024-06-01],
-          slug: "english-post",
+          slug: "english-Article",
           lang: :en,
-          meta: %{"content_type" => "posts", "url_prefix" => "posts"}
+          meta: %{"content_type" => "articles", "url_prefix" => "articles"}
         },
         %Content{
-          title: "Turkish Post",
+          title: "Turkish Article",
           body: "",
           date: ~D[2024-06-01],
-          slug: "turkish-post",
+          slug: "turkish-Article",
           lang: :tr,
-          meta: %{"content_type" => "posts", "url_prefix" => "posts", "lang_prefix" => "tr"}
+          meta: %{"content_type" => "articles", "url_prefix" => "articles", "lang_prefix" => "tr"}
         }
       ]
 
       html =
-        RecentPosts.render(%{
+        RecentArticles.render(%{
           contents: contents,
           lang: :tr,
           site: %{default_lang: :en}
         })
 
-      assert html =~ "Turkish Post"
-      refute html =~ "English Post"
+      assert html =~ "Turkish Article"
+      refute html =~ "English Article"
     end
 
     test "view all link includes lang prefix for non-default language" do
       contents = [
         %Content{
-          title: "Turkish Post",
+          title: "Turkish Article",
           body: "",
           date: ~D[2024-06-01],
-          slug: "post",
+          slug: "Article",
           lang: :tr,
-          meta: %{"content_type" => "posts", "url_prefix" => "posts", "lang_prefix" => "tr"}
+          meta: %{"content_type" => "articles", "url_prefix" => "articles", "lang_prefix" => "tr"}
         }
       ]
 
       html =
-        RecentPosts.render(%{
+        RecentArticles.render(%{
           contents: contents,
           lang: :tr,
           site: %{default_lang: :en},
           show_view_all: true
         })
 
-      assert html =~ ~s(href="/tr/posts/")
+      assert html =~ ~s(href="/tr/articles/")
     end
 
     test "view all link has no prefix for default language" do
       contents = [
         %Content{
-          title: "English Post",
+          title: "English Article",
           body: "",
           date: ~D[2024-06-01],
-          slug: "post",
+          slug: "Article",
           lang: :en,
-          meta: %{"content_type" => "posts", "url_prefix" => "posts"}
+          meta: %{"content_type" => "articles", "url_prefix" => "articles"}
         }
       ]
 
       html =
-        RecentPosts.render(%{
+        RecentArticles.render(%{
           contents: contents,
           lang: :en,
           site: %{default_lang: :en},
           show_view_all: true
         })
 
-      assert html =~ ~s(href="/posts/")
-      refute html =~ ~s(href="/en/posts/")
+      assert html =~ ~s(href="/articles/")
+      refute html =~ ~s(href="/en/articles/")
     end
   end
 
@@ -731,32 +731,32 @@ defmodule Sayfa.BlockTest do
   end
 
   describe "Breadcrumb" do
-    test "renders section link without lang_prefix" do
+    test "renders section back-link without lang_prefix" do
       content = %Content{
         title: "Hello World",
         body: "",
-        meta: %{"url_prefix" => "posts", "lang_prefix" => ""}
+        meta: %{"url_prefix" => "articles", "lang_prefix" => ""}
       }
 
       html = Breadcrumb.render(%{content: content, site: %{base_url: "https://example.com"}})
-      assert html =~ ~s(href="/posts/")
-      assert html =~ ~s(href="/")
+      assert html =~ ~s(href="/articles/")
+      assert html =~ ~s(class="back-link")
       refute html =~ ~s(href="/tr/)
     end
 
-    test "renders section link with lang_prefix" do
+    test "renders section back-link with lang_prefix" do
       content = %Content{
         title: "Merhaba",
         body: "",
-        meta: %{"url_prefix" => "posts", "lang_prefix" => "tr"}
+        meta: %{"url_prefix" => "articles", "lang_prefix" => "tr"}
       }
 
       html = Breadcrumb.render(%{content: content, site: %{base_url: "https://example.com"}})
-      assert html =~ ~s(href="/tr/posts/")
-      assert html =~ ~s(href="/tr/")
+      assert html =~ ~s(href="/tr/articles/")
+      assert html =~ ~s(class="back-link")
     end
 
-    test "renders home link to /tr/ for page with lang_prefix" do
+    test "returns empty HTML for bare page with lang_prefix but includes JSON-LD home" do
       content = %Content{
         title: "Hakkımda",
         body: "",
@@ -764,19 +764,20 @@ defmodule Sayfa.BlockTest do
       }
 
       html = Breadcrumb.render(%{content: content, site: %{base_url: "https://example.com"}})
-      assert html =~ ~s(href="/tr/")
+      refute html =~ ~s(class="back-link")
+      assert html =~ ~s("item":"https://example.com/tr/")
     end
 
     test "section name uses translation function" do
       content = %Content{
         title: "Phoenix LiveView Temelleri",
         body: "",
-        meta: %{"url_prefix" => "posts", "lang_prefix" => "tr"}
+        meta: %{"url_prefix" => "articles", "lang_prefix" => "tr"}
       }
 
       custom_t = fn
         "home" -> "Ana Sayfa"
-        "posts_title" -> "Yazılar"
+        "articles_title" -> "Yazılar"
         key -> key
       end
 
@@ -788,20 +789,19 @@ defmodule Sayfa.BlockTest do
         })
 
       assert html =~ "Yazılar"
-      assert html =~ "Ana Sayfa"
-      refute html =~ ">Posts<"
+      refute html =~ ">Articles<"
     end
 
     test "JSON-LD uses language-aware home URL" do
       content = %Content{
         title: "Merhaba",
         body: "",
-        meta: %{"url_prefix" => "posts", "lang_prefix" => "tr"}
+        meta: %{"url_prefix" => "articles", "lang_prefix" => "tr"}
       }
 
       html = Breadcrumb.render(%{content: content, site: %{base_url: "https://example.com"}})
       assert html =~ ~s("item":"https://example.com/tr/")
-      assert html =~ ~s("item":"https://example.com/tr/posts/")
+      assert html =~ ~s("item":"https://example.com/tr/articles/")
     end
   end
 
@@ -809,20 +809,20 @@ defmodule Sayfa.BlockTest do
     test "filters contents by language" do
       contents = [
         %Content{
-          title: "English Post",
+          title: "English Article",
           body: "",
           date: ~D[2024-06-01],
-          slug: "english-post",
+          slug: "english-Article",
           lang: :en,
-          meta: %{"content_type" => "posts", "url_prefix" => "posts"}
+          meta: %{"content_type" => "articles", "url_prefix" => "articles"}
         },
         %Content{
-          title: "Turkish Post",
+          title: "Turkish Article",
           body: "",
           date: ~D[2024-06-01],
-          slug: "turkish-post",
+          slug: "turkish-Article",
           lang: :tr,
-          meta: %{"content_type" => "posts", "url_prefix" => "posts", "lang_prefix" => "tr"}
+          meta: %{"content_type" => "articles", "url_prefix" => "articles", "lang_prefix" => "tr"}
         }
       ]
 
@@ -833,19 +833,19 @@ defmodule Sayfa.BlockTest do
           site: %{default_lang: :en}
         })
 
-      assert html =~ "Turkish Post"
-      refute html =~ "English Post"
+      assert html =~ "Turkish Article"
+      refute html =~ "English Article"
     end
 
     test "view all links include lang prefix for non-default language" do
       contents = [
         %Content{
-          title: "Turkish Post",
+          title: "Turkish Article",
           body: "",
           date: ~D[2024-06-01],
-          slug: "post",
+          slug: "Article",
           lang: :tr,
-          meta: %{"content_type" => "posts", "url_prefix" => "posts", "lang_prefix" => "tr"}
+          meta: %{"content_type" => "articles", "url_prefix" => "articles", "lang_prefix" => "tr"}
         }
       ]
 
@@ -856,7 +856,7 @@ defmodule Sayfa.BlockTest do
           site: %{default_lang: :en}
         })
 
-      assert html =~ ~s(href="/tr/posts/")
+      assert html =~ ~s(href="/tr/articles/")
     end
 
     test "section headings use translation function" do
@@ -867,12 +867,12 @@ defmodule Sayfa.BlockTest do
           date: ~D[2024-06-01],
           slug: "merhaba",
           lang: :tr,
-          meta: %{"content_type" => "posts", "url_prefix" => "posts", "lang_prefix" => "tr"}
+          meta: %{"content_type" => "articles", "url_prefix" => "articles", "lang_prefix" => "tr"}
         }
       ]
 
       custom_t = fn
-        "posts_title" -> "Yazılar"
+        "articles_title" -> "Yazılar"
         "view_all" -> "Tümünü gör"
         key -> key
       end
@@ -886,18 +886,18 @@ defmodule Sayfa.BlockTest do
         })
 
       assert html =~ "Yazılar"
-      refute html =~ ">Posts<"
+      refute html =~ ">Articles<"
     end
 
     test "view all links have no prefix for default language" do
       contents = [
         %Content{
-          title: "English Post",
+          title: "English Article",
           body: "",
           date: ~D[2024-06-01],
-          slug: "post",
+          slug: "Article",
           lang: :en,
-          meta: %{"content_type" => "posts", "url_prefix" => "posts"}
+          meta: %{"content_type" => "articles", "url_prefix" => "articles"}
         }
       ]
 
@@ -908,8 +908,8 @@ defmodule Sayfa.BlockTest do
           site: %{default_lang: :en}
         })
 
-      assert html =~ ~s(href="/posts/")
-      refute html =~ ~s(href="/en/posts/")
+      assert html =~ ~s(href="/articles/")
+      refute html =~ ~s(href="/en/articles/")
     end
   end
 end

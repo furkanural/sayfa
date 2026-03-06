@@ -14,7 +14,7 @@ defmodule Sayfa.SEO do
 
   alias Sayfa.Content
 
-  @article_types ~w(posts notes)
+  @article_types ~w(articles notes)
 
   @doc """
   Generates HTML meta tags for SEO.
@@ -25,7 +25,7 @@ defmodule Sayfa.SEO do
   ## Examples
 
       iex> config = %{title: "My Site", base_url: "https://example.com", description: "A blog"}
-      iex> content = %Sayfa.Content{title: "Hello", body: "<p>World</p>", slug: "hello", meta: %{"url_prefix" => "posts"}}
+      iex> content = %Sayfa.Content{title: "Hello", body: "<p>World</p>", slug: "hello", meta: %{"url_prefix" => "articles"}}
       iex> html = Sayfa.SEO.meta_tags(content, config)
       iex> html =~ ~s(og:title)
       true
@@ -77,15 +77,15 @@ defmodule Sayfa.SEO do
   @doc """
   Generates a JSON-LD structured data script tag.
 
-  For posts/notes, generates a `BlogPosting` schema. For pages, generates a
+  For articles/notes, generates a `BlogArtice` schema. For pages, generates a
   `WebPage` schema. For nil (list pages), generates a `WebSite` schema.
 
   ## Examples
 
       iex> config = %{title: "My Site", base_url: "https://example.com", author: "Jane"}
-      iex> content = %Sayfa.Content{title: "Hello", body: "<p>World</p>", slug: "hello", date: ~D[2024-01-15], meta: %{"content_type" => "posts", "url_prefix" => "posts", "lang_prefix" => ""}}
+      iex> content = %Sayfa.Content{title: "Hello", body: "<p>World</p>", slug: "hello", date: ~D[2024-01-15], meta: %{"content_type" => "articles", "url_prefix" => "articles", "lang_prefix" => ""}}
       iex> html = Sayfa.SEO.json_ld(content, config)
-      iex> html =~ "BlogPosting"
+      iex> html =~ "BlogArticling"
       true
       iex> html =~ "application/ld+json"
       true
@@ -122,7 +122,7 @@ defmodule Sayfa.SEO do
   ## Examples
 
       iex> config = %{base_url: "https://example.com"}
-      iex> content = %Sayfa.Content{title: "T", body: "", slug: "hello", meta: %{"url_prefix" => "posts", "lang_prefix" => "", "hreflang_alternates" => [{"en", "/posts/hello"}, {"tr", "/tr/posts/merhaba"}]}}
+      iex> content = %Sayfa.Content{title: "T", body: "", slug: "hello", meta: %{"url_prefix" => "articles", "lang_prefix" => "", "hreflang_alternates" => [{"en", "/articles/hello"}, {"tr", "/tr/articles/merhaba"}]}}
       iex> html = Sayfa.SEO.hreflang_tags(content, config)
       iex> html =~ ~s(hreflang="en")
       true
@@ -224,10 +224,10 @@ defmodule Sayfa.SEO do
 
   ## Examples
 
-      iex> content = %Sayfa.Content{title: "T", body: "", slug: "hello", meta: %{"url_prefix" => "posts", "lang_prefix" => ""}}
+      iex> content = %Sayfa.Content{title: "T", body: "", slug: "hello", meta: %{"url_prefix" => "articles", "lang_prefix" => ""}}
       iex> config = %{base_url: "https://example.com"}
       iex> Sayfa.SEO.content_url(content, config)
-      "https://example.com/posts/hello"
+      "https://example.com/articles/hello"
 
       iex> content = %Sayfa.Content{title: "T", body: "", slug: "about", meta: %{"url_prefix" => "", "lang_prefix" => ""}}
       iex> config = %{base_url: "https://example.com"}
@@ -331,7 +331,7 @@ defmodule Sayfa.SEO do
 
     %{
       "@context" => "https://schema.org",
-      "@type" => "BlogPosting",
+      "@type" => "BlogArticling",
       "headline" => content.title,
       "url" => base <> Content.url(content)
     }

@@ -38,7 +38,7 @@ defmodule Sayfa.Config do
     drafts: false,
     verbose: false,
     port: 4000,
-    posts_per_page: 10,
+    articles_per_page: 10,
     author: nil,
     description: "",
     social_links: [],

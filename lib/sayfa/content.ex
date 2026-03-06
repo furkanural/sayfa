@@ -22,11 +22,11 @@ defmodule Sayfa.Content do
   into the `meta` map:
 
       ---
-      title: "My Post"
+      title: "My Article"
       custom_field: "value"
       ---
 
-  Results in `content.title == "My Post"` and `content.meta["custom_field"] == "value"`.
+  Results in `content.title == "My Article"` and `content.meta["custom_field"] == "value"`.
   """
 
   alias Sayfa.Content.Raw
@@ -67,9 +67,9 @@ defmodule Sayfa.Content do
 
   ## Examples
 
-      iex> posts = [%Sayfa.Content{title: "A", body: "", meta: %{"content_type" => "posts"}},
-      ...>          %Sayfa.Content{title: "B", body: "", meta: %{"content_type" => "pages"}}]
-      iex> Sayfa.Content.all_of_type(posts, "posts") |> length()
+      iex> articles = [%Sayfa.Content{title: "A", body: "", meta: %{"content_type" => "articles"}},
+      ...>             %Sayfa.Content{title: "B", body: "", meta: %{"content_type" => "pages"}}]
+      iex> Sayfa.Content.all_of_type(articles, "articles") |> length()
       1
 
   """
@@ -319,7 +319,7 @@ defmodule Sayfa.Content do
 
   ## Examples
 
-      {:ok, raw} = Sayfa.Content.parse_raw_file("content/posts/hello.md")
+      {:ok, raw} = Sayfa.Content.parse_raw_file("content/articles/hello.md")
       raw.front_matter["title"]
       #=> "Hello"
 
@@ -348,7 +348,7 @@ defmodule Sayfa.Content do
 
   ## Examples
 
-      Sayfa.Content.parse_file("content/posts/2024-01-15-hello.md")
+      Sayfa.Content.parse_file("content/articles/2024-01-15-hello.md")
 
   """
   @spec parse_file(String.t()) :: {:ok, t()} | {:error, term()}
@@ -378,7 +378,7 @@ defmodule Sayfa.Content do
   ## Examples
 
       iex> raw = %Sayfa.Content.Raw{
-      ...>   path: "content/posts/hello.md",
+      ...>   path: "content/articles/hello.md",
       ...>   front_matter: %{"title" => "Hello"},
       ...>   body_markdown: "# World"
       ...> }
@@ -420,13 +420,13 @@ defmodule Sayfa.Content do
 
   ## Examples
 
-      iex> content = %Sayfa.Content{title: "T", body: "", slug: "hello", meta: %{"url_prefix" => "posts", "lang_prefix" => ""}}
+      iex> content = %Sayfa.Content{title: "T", body: "", slug: "hello", meta: %{"url_prefix" => "articles", "lang_prefix" => ""}}
       iex> Sayfa.Content.url(content)
-      "/posts/hello"
+      "/articles/hello"
 
-      iex> content = %Sayfa.Content{title: "T", body: "", slug: "merhaba", meta: %{"url_prefix" => "posts", "lang_prefix" => "tr"}}
+      iex> content = %Sayfa.Content{title: "T", body: "", slug: "merhaba", meta: %{"url_prefix" => "articles", "lang_prefix" => "tr"}}
       iex> Sayfa.Content.url(content)
-      "/tr/posts/merhaba"
+      "/tr/articles/merhaba"
 
       iex> content = %Sayfa.Content{title: "T", body: "", slug: "index", meta: %{"url_prefix" => "", "lang_prefix" => ""}}
       iex> Sayfa.Content.url(content)

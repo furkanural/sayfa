@@ -7,10 +7,10 @@ defmodule Sayfa.BuilderTest do
     tmp_dir = Path.join(System.tmp_dir!(), "sayfa_builder_#{System.unique_integer([:positive])}")
     content_dir = Path.join(tmp_dir, "content")
     output_dir = Path.join(tmp_dir, "output")
-    posts_dir = Path.join(content_dir, "posts")
+    articles_dir = Path.join(content_dir, "articles")
     pages_dir = Path.join(content_dir, "pages")
 
-    File.mkdir_p!(posts_dir)
+    File.mkdir_p!(articles_dir)
     File.mkdir_p!(pages_dir)
 
     on_exit(fn -> File.rm_rf!(tmp_dir) end)
@@ -19,7 +19,7 @@ defmodule Sayfa.BuilderTest do
      tmp_dir: tmp_dir,
      content_dir: content_dir,
      output_dir: output_dir,
-     posts_dir: posts_dir,
+     articles_dir: articles_dir,
      pages_dir: pages_dir}
   end
 
@@ -28,8 +28,8 @@ defmodule Sayfa.BuilderTest do
   end
 
   describe "build/1" do
-    test "builds posts and pages", ctx do
-      File.write!(Path.join(ctx.posts_dir, "2024-01-15-hello-world.md"), """
+    test "builds articles and pages", ctx do
+      File.write!(Path.join(ctx.articles_dir, "2024-01-15-hello-world.md"), """
       ---
       title: "Hello World"
       date: 2024-01-15
@@ -38,7 +38,7 @@ defmodule Sayfa.BuilderTest do
 
       # Hello World
 
-      This is my first post.
+      This is my first article.
       """)
 
       File.write!(Path.join(ctx.pages_dir, "about.md"), """
@@ -52,20 +52,20 @@ defmodule Sayfa.BuilderTest do
       """)
 
       assert {:ok, result} = Builder.build(build_opts(ctx))
-      # 2 individual + 1 tag archive (elixir) + 1 posts index = 4
+      # 2 individual + 1 tag archive (elixir) + 1 articles index = 4
       assert result.content_count == 2
       assert result.elapsed_ms >= 0
 
-      # Verify post output
-      post_path = Path.join([ctx.output_dir, "posts", "hello-world", "index.html"])
-      assert File.exists?(post_path)
-      post_html = File.read!(post_path)
-      assert post_html =~ "<!DOCTYPE html>"
-      assert post_html =~ "Hello World"
-      assert post_html =~ "first post"
+      # Verify article output
+      article_path = Path.join([ctx.output_dir, "articles", "hello-world", "index.html"])
+      assert File.exists?(article_path)
+      article_html = File.read!(article_path)
+      assert article_html =~ "<!DOCTYPE html>"
+      assert article_html =~ "Hello World"
+      assert article_html =~ "first article"
       # Tags should be clickable links
-      assert post_html =~ ~s(href="/tags/elixir/")
-      assert post_html =~ "elixir"
+      assert article_html =~ ~s(href="/tags/elixir/")
+      assert article_html =~ "elixir"
 
       # Verify page output
       page_path = Path.join([ctx.output_dir, "about", "index.html"])
@@ -74,9 +74,9 @@ defmodule Sayfa.BuilderTest do
       assert page_html =~ "<!DOCTYPE html>"
       assert page_html =~ "About"
 
-      # Verify posts index was generated
-      posts_index = Path.join([ctx.output_dir, "posts", "index.html"])
-      assert File.exists?(posts_index)
+      # Verify articles index was generated
+      articles_index = Path.join([ctx.output_dir, "articles", "index.html"])
+      assert File.exists?(articles_index)
 
       # Verify tag archive was generated
       tag_archive = Path.join([ctx.output_dir, "tags", "elixir", "index.html"])
@@ -84,16 +84,16 @@ defmodule Sayfa.BuilderTest do
     end
 
     test "filters drafts by default", ctx do
-      File.write!(Path.join(ctx.posts_dir, "published.md"), """
+      File.write!(Path.join(ctx.articles_dir, "published.md"), """
       ---
       title: "Published"
       ---
       Content.
       """)
 
-      File.write!(Path.join(ctx.posts_dir, "draft.md"), """
+      File.write!(Path.join(ctx.articles_dir, "draft.md"), """
       ---
-      title: "Draft Post"
+      title: "Draft article"
       draft: true
       ---
       Draft content.
@@ -101,15 +101,15 @@ defmodule Sayfa.BuilderTest do
 
       assert {:ok, result} = Builder.build(build_opts(ctx))
 
-      # 1 individual + 1 posts index + 1 feed.xml + 1 feed.json + 1 feed/posts.xml + 1 feed/posts.json + 1 sitemap.xml = 7
+      # 1 individual + 1 articles index + 1 feed.xml + 1 feed.json + 1 feed/articles.xml + 1 feed/articles.json + 1 sitemap.xml = 7
       assert result.files_written == 7
       assert result.content_count == 1
     end
 
     test "includes drafts when drafts: true", ctx do
-      File.write!(Path.join(ctx.posts_dir, "draft.md"), """
+      File.write!(Path.join(ctx.articles_dir, "draft.md"), """
       ---
-      title: "Draft Post"
+      title: "Draft article"
       draft: true
       ---
       Draft content.
@@ -117,7 +117,7 @@ defmodule Sayfa.BuilderTest do
 
       assert {:ok, result} = Builder.build(build_opts(ctx, drafts: true))
 
-      # 1 individual + 1 posts index + 1 feed.xml + 1 feed.json + 1 feed/posts.xml + 1 feed/posts.json + 1 sitemap.xml = 7
+      # 1 individual + 1 articles index + 1 feed.xml + 1 feed.json + 1 feed/articles.xml + 1 feed/articles.json + 1 sitemap.xml = 7
       assert result.files_written == 7
       assert result.content_count == 1
     end
@@ -174,22 +174,22 @@ defmodule Sayfa.BuilderTest do
 
   describe "archives" do
     test "generates tag archive pages", ctx do
-      File.write!(Path.join(ctx.posts_dir, "2024-01-15-post-1.md"), """
+      File.write!(Path.join(ctx.articles_dir, "2024-01-15-article-1.md"), """
       ---
-      title: "Post One"
+      title: "article One"
       date: 2024-01-15
       tags: [elixir, tutorial]
       ---
-      First post.
+      First article.
       """)
 
-      File.write!(Path.join(ctx.posts_dir, "2024-01-20-post-2.md"), """
+      File.write!(Path.join(ctx.articles_dir, "2024-01-20-article-2.md"), """
       ---
-      title: "Post Two"
+      title: "article Two"
       date: 2024-01-20
       tags: [elixir]
       ---
-      Second post.
+      Second article.
       """)
 
       assert {:ok, _result} = Builder.build(build_opts(ctx))
@@ -198,8 +198,8 @@ defmodule Sayfa.BuilderTest do
       elixir_path = Path.join([ctx.output_dir, "tags", "elixir", "index.html"])
       assert File.exists?(elixir_path)
       elixir_html = File.read!(elixir_path)
-      assert elixir_html =~ "Post One"
-      assert elixir_html =~ "Post Two"
+      assert elixir_html =~ "article One"
+      assert elixir_html =~ "article Two"
       assert elixir_html =~ "Tagged: elixir"
       # Tag archive list items should have tag references
       assert elixir_html =~ "elixir"
@@ -207,14 +207,14 @@ defmodule Sayfa.BuilderTest do
       tutorial_path = Path.join([ctx.output_dir, "tags", "tutorial", "index.html"])
       assert File.exists?(tutorial_path)
       tutorial_html = File.read!(tutorial_path)
-      assert tutorial_html =~ "Post One"
-      refute tutorial_html =~ "Post Two"
+      assert tutorial_html =~ "article One"
+      refute tutorial_html =~ "article Two"
     end
 
     test "generates category archive pages", ctx do
-      File.write!(Path.join(ctx.posts_dir, "post.md"), """
+      File.write!(Path.join(ctx.articles_dir, "article.md"), """
       ---
-      title: "Categorized Post"
+      title: "Categorized article"
       date: 2024-01-15
       categories: [programming]
       ---
@@ -226,7 +226,7 @@ defmodule Sayfa.BuilderTest do
       cat_path = Path.join([ctx.output_dir, "categories", "programming", "index.html"])
       assert File.exists?(cat_path)
       cat_html = File.read!(cat_path)
-      assert cat_html =~ "Categorized Post"
+      assert cat_html =~ "Categorized article"
       assert cat_html =~ "Category: programming"
     end
   end
@@ -235,27 +235,30 @@ defmodule Sayfa.BuilderTest do
     test "generates paginated index for content types", ctx do
       for i <- 1..3 do
         File.write!(
-          Path.join(ctx.posts_dir, "2024-01-#{String.pad_leading("#{i}", 2, "0")}-post-#{i}.md"),
+          Path.join(
+            ctx.articles_dir,
+            "2024-01-#{String.pad_leading("#{i}", 2, "0")}-article-#{i}.md"
+          ),
           """
           ---
-          title: "Post #{i}"
+          title: "article #{i}"
           date: 2024-01-#{String.pad_leading("#{i}", 2, "0")}
           ---
-          Post #{i} content.
+          article #{i} content.
           """
         )
       end
 
-      assert {:ok, _result} = Builder.build(build_opts(ctx, posts_per_page: 2))
+      assert {:ok, _result} = Builder.build(build_opts(ctx, articles_per_page: 2))
 
       # Page 1
-      index_path = Path.join([ctx.output_dir, "posts", "index.html"])
+      index_path = Path.join([ctx.output_dir, "articles", "index.html"])
       assert File.exists?(index_path)
       index_html = File.read!(index_path)
-      assert index_html =~ "Posts"
+      assert index_html =~ "Articles"
 
       # Page 2
-      page2_path = Path.join([ctx.output_dir, "posts", "page", "2", "index.html"])
+      page2_path = Path.join([ctx.output_dir, "articles", "page", "2", "index.html"])
       assert File.exists?(page2_path)
     end
 
@@ -273,17 +276,17 @@ defmodule Sayfa.BuilderTest do
       refute File.exists?(Path.join([ctx.output_dir, "pages", "index.html"]))
     end
 
-    test "user posts/index.md overrides auto-generated posts index", ctx do
-      File.write!(Path.join(ctx.posts_dir, "index.md"), """
+    test "user articles/index.md overrides auto-generated articles index", ctx do
+      File.write!(Path.join(ctx.articles_dir, "index.md"), """
       ---
-      title: "My Custom Posts Index"
+      title: "My Custom Articles Index"
       layout: page
       ---
 
-      Welcome to my custom posts listing.
+      Welcome to my custom articles listing.
       """)
 
-      File.write!(Path.join(ctx.posts_dir, "2024-01-15-hello.md"), """
+      File.write!(Path.join(ctx.articles_dir, "2024-01-15-hello.md"), """
       ---
       title: "Hello"
       date: 2024-01-15
@@ -293,11 +296,11 @@ defmodule Sayfa.BuilderTest do
 
       assert {:ok, _result} = Builder.build(build_opts(ctx))
 
-      index_path = Path.join([ctx.output_dir, "posts", "index.html"])
+      index_path = Path.join([ctx.output_dir, "articles", "index.html"])
       assert File.exists?(index_path)
       html = File.read!(index_path)
-      assert html =~ "My Custom Posts Index"
-      assert html =~ "custom posts listing"
+      assert html =~ "My Custom Articles Index"
+      assert html =~ "custom articles listing"
     end
 
     test "enriches content with content type metadata", ctx do
@@ -319,7 +322,7 @@ defmodule Sayfa.BuilderTest do
 
   describe "feeds and sitemap" do
     test "generates feed.xml and sitemap.xml", ctx do
-      File.write!(Path.join(ctx.posts_dir, "2024-01-15-hello.md"), """
+      File.write!(Path.join(ctx.articles_dir, "2024-01-15-hello.md"), """
       ---
       title: "Hello"
       date: 2024-01-15
@@ -337,15 +340,15 @@ defmodule Sayfa.BuilderTest do
       assert feed_xml =~ "Hello"
 
       # Per-type feed
-      posts_feed = Path.join([ctx.output_dir, "feed", "posts.xml"])
-      assert File.exists?(posts_feed)
+      articles_feed = Path.join([ctx.output_dir, "feed", "articles.xml"])
+      assert File.exists?(articles_feed)
 
       # Sitemap
       sitemap_path = Path.join(ctx.output_dir, "sitemap.xml")
       assert File.exists?(sitemap_path)
       sitemap_xml = File.read!(sitemap_path)
       assert sitemap_xml =~ "<urlset"
-      assert sitemap_xml =~ "/posts/hello"
+      assert sitemap_xml =~ "/articles/hello"
     end
 
     test "sitemap uses root path for index page", ctx do
@@ -370,7 +373,7 @@ defmodule Sayfa.BuilderTest do
 
   describe "robots.txt" do
     test "generates robots.txt with sitemap directive", ctx do
-      File.write!(Path.join(ctx.posts_dir, "2024-01-15-hello.md"), """
+      File.write!(Path.join(ctx.articles_dir, "2024-01-15-hello.md"), """
       ---
       title: "Hello"
       date: 2024-01-15
@@ -391,10 +394,10 @@ defmodule Sayfa.BuilderTest do
 
   describe "root feed includes all languages" do
     test "root feed.xml contains content from all languages", ctx do
-      tr_posts_dir = Path.join([ctx.content_dir, "tr", "posts"])
-      File.mkdir_p!(tr_posts_dir)
+      tr_articles_dir = Path.join([ctx.content_dir, "tr", "articles"])
+      File.mkdir_p!(tr_articles_dir)
 
-      File.write!(Path.join(ctx.posts_dir, "2024-01-15-hello.md"), """
+      File.write!(Path.join(ctx.articles_dir, "2024-01-15-hello.md"), """
       ---
       title: "Hello World"
       date: 2024-01-15
@@ -402,7 +405,7 @@ defmodule Sayfa.BuilderTest do
       English content.
       """)
 
-      File.write!(Path.join(tr_posts_dir, "2024-01-15-merhaba.md"), """
+      File.write!(Path.join(tr_articles_dir, "2024-01-15-merhaba.md"), """
       ---
       title: "Merhaba Dünya"
       date: 2024-01-15
@@ -424,10 +427,10 @@ defmodule Sayfa.BuilderTest do
 
   describe "hreflang enrichment" do
     test "adds hreflang_alternates to content with translations", ctx do
-      tr_posts_dir = Path.join([ctx.content_dir, "tr", "posts"])
-      File.mkdir_p!(tr_posts_dir)
+      tr_articles_dir = Path.join([ctx.content_dir, "tr", "articles"])
+      File.mkdir_p!(tr_articles_dir)
 
-      File.write!(Path.join(ctx.posts_dir, "2024-01-15-hello.md"), """
+      File.write!(Path.join(ctx.articles_dir, "2024-01-15-hello.md"), """
       ---
       title: "Hello World"
       date: 2024-01-15
@@ -437,7 +440,7 @@ defmodule Sayfa.BuilderTest do
       English content.
       """)
 
-      File.write!(Path.join(tr_posts_dir, "2024-01-15-merhaba.md"), """
+      File.write!(Path.join(tr_articles_dir, "2024-01-15-merhaba.md"), """
       ---
       title: "Merhaba Dünya"
       date: 2024-01-15
@@ -452,23 +455,23 @@ defmodule Sayfa.BuilderTest do
                  build_opts(ctx, languages: [en: [name: "English"], tr: [name: "Türkçe"]])
                )
 
-      # English post should have hreflang tags
-      en_html = File.read!(Path.join([ctx.output_dir, "posts", "hello", "index.html"]))
+      # English article should have hreflang tags
+      en_html = File.read!(Path.join([ctx.output_dir, "articles", "hello", "index.html"]))
       assert en_html =~ ~s(hreflang="en")
       assert en_html =~ ~s(hreflang="tr")
       assert en_html =~ ~s(hreflang="x-default")
 
-      # Turkish post should also have hreflang tags
-      tr_html = File.read!(Path.join([ctx.output_dir, "tr", "posts", "merhaba", "index.html"]))
+      # Turkish article should also have hreflang tags
+      tr_html = File.read!(Path.join([ctx.output_dir, "tr", "articles", "merhaba", "index.html"]))
       assert tr_html =~ ~s(hreflang="tr")
       assert tr_html =~ ~s(hreflang="en")
     end
 
     test "adds hreflang tags to type index pages", ctx do
-      tr_posts_dir = Path.join([ctx.content_dir, "tr", "posts"])
-      File.mkdir_p!(tr_posts_dir)
+      tr_articles_dir = Path.join([ctx.content_dir, "tr", "articles"])
+      File.mkdir_p!(tr_articles_dir)
 
-      File.write!(Path.join(ctx.posts_dir, "2024-01-15-hello.md"), """
+      File.write!(Path.join(ctx.articles_dir, "2024-01-15-hello.md"), """
       ---
       title: "Hello"
       date: 2024-01-15
@@ -477,7 +480,7 @@ defmodule Sayfa.BuilderTest do
       Hello content.
       """)
 
-      File.write!(Path.join(tr_posts_dir, "2024-01-15-merhaba.md"), """
+      File.write!(Path.join(tr_articles_dir, "2024-01-15-merhaba.md"), """
       ---
       title: "Merhaba"
       date: 2024-01-15
@@ -491,15 +494,15 @@ defmodule Sayfa.BuilderTest do
                  build_opts(ctx, languages: [en: [name: "English"], tr: [name: "Türkçe"]])
                )
 
-      # English posts index should have hreflang pointing to Turkish posts index
-      en_index = File.read!(Path.join([ctx.output_dir, "posts", "index.html"]))
+      # English articles index should have hreflang pointing to Turkish articles index
+      en_index = File.read!(Path.join([ctx.output_dir, "articles", "index.html"]))
       assert en_index =~ ~s(hreflang="en")
       assert en_index =~ ~s(hreflang="tr")
-      assert en_index =~ ~s(href="http://localhost:4000/posts/")
-      assert en_index =~ ~s(href="http://localhost:4000/tr/posts/")
+      assert en_index =~ ~s(href="http://localhost:4000/articles/")
+      assert en_index =~ ~s(href="http://localhost:4000/tr/articles/")
 
-      # Turkish posts index should also have hreflang tags
-      tr_index = File.read!(Path.join([ctx.output_dir, "tr", "posts", "index.html"]))
+      # Turkish articles index should also have hreflang tags
+      tr_index = File.read!(Path.join([ctx.output_dir, "tr", "articles", "index.html"]))
       assert tr_index =~ ~s(hreflang="en")
       assert tr_index =~ ~s(hreflang="tr")
     end
@@ -507,9 +510,9 @@ defmodule Sayfa.BuilderTest do
 
   describe "content enrichment" do
     test "adds reading_time and toc to content meta", ctx do
-      File.write!(Path.join(ctx.posts_dir, "2024-01-15-rich.md"), """
+      File.write!(Path.join(ctx.articles_dir, "2024-01-15-rich.md"), """
       ---
-      title: "Rich Post"
+      title: "Rich article"
       date: 2024-01-15
       ---
       ## Introduction
@@ -524,9 +527,9 @@ defmodule Sayfa.BuilderTest do
       assert {:ok, _result} = Builder.build(build_opts(ctx))
 
       # Verify the rendered output contains proper HTML (meaning enrichment ran)
-      post_path = Path.join([ctx.output_dir, "posts", "rich", "index.html"])
-      assert File.exists?(post_path)
-      html = File.read!(post_path)
+      article_path = Path.join([ctx.output_dir, "articles", "rich", "index.html"])
+      assert File.exists?(article_path)
+      html = File.read!(article_path)
       assert html =~ "Introduction"
       assert html =~ "Getting Started"
     end
@@ -534,19 +537,19 @@ defmodule Sayfa.BuilderTest do
 
   describe "seo tags" do
     test "base template includes OG tags", ctx do
-      File.write!(Path.join(ctx.posts_dir, "2024-01-15-seo-test.md"), """
+      File.write!(Path.join(ctx.articles_dir, "2024-01-15-seo-test.md"), """
       ---
-      title: "SEO Test Post"
+      title: "SEO Test article"
       date: 2024-01-15
       ---
-      Post body for SEO.
+      article body for SEO.
       """)
 
       assert {:ok, _result} = Builder.build(build_opts(ctx))
 
-      html = File.read!(Path.join([ctx.output_dir, "posts", "seo-test", "index.html"]))
+      html = File.read!(Path.join([ctx.output_dir, "articles", "seo-test", "index.html"]))
       assert html =~ "og:title"
-      assert html =~ "SEO Test Post"
+      assert html =~ "SEO Test article"
       assert html =~ "application/atom+xml"
     end
   end
@@ -602,11 +605,11 @@ defmodule Sayfa.BuilderTest do
   describe "multilingual build" do
     test "outputs non-default language content with language prefix", ctx do
       # Create Turkish content subdirectory
-      tr_posts_dir = Path.join([ctx.content_dir, "tr", "posts"])
-      File.mkdir_p!(tr_posts_dir)
+      tr_articles_dir = Path.join([ctx.content_dir, "tr", "articles"])
+      File.mkdir_p!(tr_articles_dir)
 
-      # English post (default language)
-      File.write!(Path.join(ctx.posts_dir, "2024-01-15-hello.md"), """
+      # English article (default language)
+      File.write!(Path.join(ctx.articles_dir, "2024-01-15-hello.md"), """
       ---
       title: "Hello World"
       date: 2024-01-15
@@ -614,8 +617,8 @@ defmodule Sayfa.BuilderTest do
       English content.
       """)
 
-      # Turkish post
-      File.write!(Path.join(tr_posts_dir, "2024-01-15-merhaba.md"), """
+      # Turkish article
+      File.write!(Path.join(tr_articles_dir, "2024-01-15-merhaba.md"), """
       ---
       title: "Merhaba Dünya"
       date: 2024-01-15
@@ -630,13 +633,13 @@ defmodule Sayfa.BuilderTest do
 
       assert result.content_count == 2
 
-      # English post at /posts/hello/
-      en_path = Path.join([ctx.output_dir, "posts", "hello", "index.html"])
+      # English article at /articles/hello/
+      en_path = Path.join([ctx.output_dir, "articles", "hello", "index.html"])
       assert File.exists?(en_path)
       assert File.read!(en_path) =~ "Hello World"
 
-      # Turkish post at /tr/posts/merhaba/
-      tr_path = Path.join([ctx.output_dir, "tr", "posts", "merhaba", "index.html"])
+      # Turkish article at /tr/articles/merhaba/
+      tr_path = Path.join([ctx.output_dir, "tr", "articles", "merhaba", "index.html"])
       assert File.exists?(tr_path)
       assert File.read!(tr_path) =~ "Merhaba"
 
@@ -644,16 +647,16 @@ defmodule Sayfa.BuilderTest do
       main_feed = Path.join(ctx.output_dir, "feed.xml")
       assert File.exists?(main_feed)
 
-      # Turkish posts index at /tr/posts/index.html
-      tr_posts_index = Path.join([ctx.output_dir, "tr", "posts", "index.html"])
-      assert File.exists?(tr_posts_index)
-      tr_index_html = File.read!(tr_posts_index)
+      # Turkish articles index at /tr/articles/index.html
+      tr_articles_index = Path.join([ctx.output_dir, "tr", "articles", "index.html"])
+      assert File.exists?(tr_articles_index)
+      tr_index_html = File.read!(tr_articles_index)
       assert tr_index_html =~ "Merhaba"
 
-      # English posts index at /posts/index.html (no Turkish posts)
-      en_posts_index = Path.join([ctx.output_dir, "posts", "index.html"])
-      assert File.exists?(en_posts_index)
-      en_index_html = File.read!(en_posts_index)
+      # English articles index at /articles/index.html (no Turkish articles)
+      en_articles_index = Path.join([ctx.output_dir, "articles", "index.html"])
+      assert File.exists?(en_articles_index)
+      en_index_html = File.read!(en_articles_index)
       assert en_index_html =~ "Hello World"
       refute en_index_html =~ "Merhaba"
     end
@@ -661,25 +664,25 @@ defmodule Sayfa.BuilderTest do
 
   describe "prev/next navigation" do
     test "injects prev_content and next_content into content meta", ctx do
-      File.write!(Path.join(ctx.posts_dir, "2024-01-01-first.md"), """
+      File.write!(Path.join(ctx.articles_dir, "2024-01-01-first.md"), """
       ---
-      title: "First Post"
+      title: "First article"
       date: 2024-01-01
       ---
       First.
       """)
 
-      File.write!(Path.join(ctx.posts_dir, "2024-02-01-second.md"), """
+      File.write!(Path.join(ctx.articles_dir, "2024-02-01-second.md"), """
       ---
-      title: "Second Post"
+      title: "Second article"
       date: 2024-02-01
       ---
       Second.
       """)
 
-      File.write!(Path.join(ctx.posts_dir, "2024-03-01-third.md"), """
+      File.write!(Path.join(ctx.articles_dir, "2024-03-01-third.md"), """
       ---
-      title: "Third Post"
+      title: "Third article"
       date: 2024-03-01
       ---
       Third.
@@ -687,17 +690,17 @@ defmodule Sayfa.BuilderTest do
 
       assert {:ok, _result} = Builder.build(build_opts(ctx))
 
-      # Middle post should have both prev and next
-      second_html = File.read!(Path.join([ctx.output_dir, "posts", "second", "index.html"]))
+      # Middle article should have both prev and next
+      second_html = File.read!(Path.join([ctx.output_dir, "articles", "second", "index.html"]))
       assert second_html =~ "<!DOCTYPE html>"
 
-      # First post (oldest) should exist
-      first_html = File.read!(Path.join([ctx.output_dir, "posts", "first", "index.html"]))
-      assert first_html =~ "First Post"
+      # First article (oldest) should exist
+      first_html = File.read!(Path.join([ctx.output_dir, "articles", "first", "index.html"]))
+      assert first_html =~ "First article"
 
-      # Third post (newest) should exist
-      third_html = File.read!(Path.join([ctx.output_dir, "posts", "third", "index.html"]))
-      assert third_html =~ "Third Post"
+      # Third article (newest) should exist
+      third_html = File.read!(Path.join([ctx.output_dir, "articles", "third", "index.html"]))
+      assert third_html =~ "Third article"
     end
   end
 
@@ -717,10 +720,10 @@ defmodule Sayfa.BuilderTest do
 
   describe "auto-link translations" do
     test "auto-links content with matching slugs across languages", ctx do
-      tr_dir = Path.join(ctx.content_dir, "tr/posts")
+      tr_dir = Path.join(ctx.content_dir, "tr/articles")
       File.mkdir_p!(tr_dir)
 
-      File.write!(Path.join(ctx.posts_dir, "hello.md"), """
+      File.write!(Path.join(ctx.articles_dir, "hello.md"), """
       ---
       title: "Hello"
       date: 2024-01-15
@@ -748,18 +751,18 @@ defmodule Sayfa.BuilderTest do
       assert result.content_count == 2
 
       # Both should have hreflang alternates
-      en_html = File.read!(Path.join(ctx.output_dir, "posts/hello/index.html"))
-      tr_html = File.read!(Path.join(ctx.output_dir, "tr/posts/hello/index.html"))
+      en_html = File.read!(Path.join(ctx.output_dir, "articles/hello/index.html"))
+      tr_html = File.read!(Path.join(ctx.output_dir, "tr/articles/hello/index.html"))
 
       assert en_html =~ "hreflang"
       assert tr_html =~ "hreflang"
     end
 
     test "explicit translations take priority over auto-linking", ctx do
-      tr_dir = Path.join(ctx.content_dir, "tr/posts")
+      tr_dir = Path.join(ctx.content_dir, "tr/articles")
       File.mkdir_p!(tr_dir)
 
-      File.write!(Path.join(ctx.posts_dir, "hello.md"), """
+      File.write!(Path.join(ctx.articles_dir, "hello.md"), """
       ---
       title: "Hello"
       date: 2024-01-15
@@ -792,8 +795,8 @@ defmodule Sayfa.BuilderTest do
 
   describe "empty list pages for all languages" do
     test "generates list pages for languages with no content", ctx do
-      # Only create English posts, but configure en+tr languages
-      File.write!(Path.join(ctx.posts_dir, "2024-01-15-hello.md"), """
+      # Only create English articles, but configure en+tr languages
+      File.write!(Path.join(ctx.articles_dir, "2024-01-15-hello.md"), """
       ---
       title: "Hello"
       date: 2024-01-15
@@ -809,22 +812,22 @@ defmodule Sayfa.BuilderTest do
 
       {:ok, _result} = Builder.build(opts)
 
-      # English posts index should exist
-      en_index = Path.join([ctx.output_dir, "posts", "index.html"])
+      # English articles index should exist
+      en_index = Path.join([ctx.output_dir, "articles", "index.html"])
       assert File.exists?(en_index)
 
-      # Turkish posts index should also exist (empty state)
-      tr_index = Path.join([ctx.output_dir, "tr", "posts", "index.html"])
+      # Turkish articles index should also exist (empty state)
+      tr_index = Path.join([ctx.output_dir, "tr", "articles", "index.html"])
       assert File.exists?(tr_index)
     end
   end
 
   describe "multilingual tag archives" do
     test "generates language-prefixed tag archives", ctx do
-      tr_posts_dir = Path.join([ctx.content_dir, "tr", "posts"])
-      File.mkdir_p!(tr_posts_dir)
+      tr_articles_dir = Path.join([ctx.content_dir, "tr", "articles"])
+      File.mkdir_p!(tr_articles_dir)
 
-      File.write!(Path.join(ctx.posts_dir, "2024-01-15-hello.md"), """
+      File.write!(Path.join(ctx.articles_dir, "2024-01-15-hello.md"), """
       ---
       title: "Hello World"
       date: 2024-01-15
@@ -833,7 +836,7 @@ defmodule Sayfa.BuilderTest do
       English content.
       """)
 
-      File.write!(Path.join(tr_posts_dir, "2024-01-15-merhaba.md"), """
+      File.write!(Path.join(tr_articles_dir, "2024-01-15-merhaba.md"), """
       ---
       title: "Merhaba Dünya"
       date: 2024-01-15
@@ -863,10 +866,10 @@ defmodule Sayfa.BuilderTest do
     end
 
     test "generates language-prefixed category archives", ctx do
-      tr_posts_dir = Path.join([ctx.content_dir, "tr", "posts"])
-      File.mkdir_p!(tr_posts_dir)
+      tr_articles_dir = Path.join([ctx.content_dir, "tr", "articles"])
+      File.mkdir_p!(tr_articles_dir)
 
-      File.write!(Path.join(ctx.posts_dir, "2024-01-15-hello.md"), """
+      File.write!(Path.join(ctx.articles_dir, "2024-01-15-hello.md"), """
       ---
       title: "Hello World"
       date: 2024-01-15
@@ -875,7 +878,7 @@ defmodule Sayfa.BuilderTest do
       English content.
       """)
 
-      File.write!(Path.join(tr_posts_dir, "2024-01-15-merhaba.md"), """
+      File.write!(Path.join(tr_articles_dir, "2024-01-15-merhaba.md"), """
       ---
       title: "Merhaba Dünya"
       date: 2024-01-15
@@ -905,10 +908,10 @@ defmodule Sayfa.BuilderTest do
     end
 
     test "tag archive title uses i18n translation", ctx do
-      tr_posts_dir = Path.join([ctx.content_dir, "tr", "posts"])
-      File.mkdir_p!(tr_posts_dir)
+      tr_articles_dir = Path.join([ctx.content_dir, "tr", "articles"])
+      File.mkdir_p!(tr_articles_dir)
 
-      File.write!(Path.join(tr_posts_dir, "2024-01-15-merhaba.md"), """
+      File.write!(Path.join(tr_articles_dir, "2024-01-15-merhaba.md"), """
       ---
       title: "Merhaba Dünya"
       date: 2024-01-15
@@ -931,11 +934,11 @@ defmodule Sayfa.BuilderTest do
       assert tr_html =~ "Etiket: elixir"
     end
 
-    test "tag links on TR posts point to /tr/tags/", ctx do
-      tr_posts_dir = Path.join([ctx.content_dir, "tr", "posts"])
-      File.mkdir_p!(tr_posts_dir)
+    test "tag links on TR articles point to /tr/tags/", ctx do
+      tr_articles_dir = Path.join([ctx.content_dir, "tr", "articles"])
+      File.mkdir_p!(tr_articles_dir)
 
-      File.write!(Path.join(tr_posts_dir, "2024-01-15-merhaba.md"), """
+      File.write!(Path.join(tr_articles_dir, "2024-01-15-merhaba.md"), """
       ---
       title: "Merhaba Dünya"
       date: 2024-01-15
@@ -949,16 +952,16 @@ defmodule Sayfa.BuilderTest do
                  build_opts(ctx, languages: [en: [name: "English"], tr: [name: "Türkçe"]])
                )
 
-      tr_post = Path.join([ctx.output_dir, "tr", "posts", "merhaba", "index.html"])
-      assert File.exists?(tr_post)
-      tr_html = File.read!(tr_post)
+      tr_article = Path.join([ctx.output_dir, "tr", "articles", "merhaba", "index.html"])
+      assert File.exists?(tr_article)
+      tr_html = File.read!(tr_article)
       assert tr_html =~ ~s(href="/tr/tags/elixir/")
       refute tr_html =~ ~r{href="/tags/elixir/"}
     end
 
     test "language switcher hides for tags only in one language", ctx do
-      # Only create English posts with a tag, no Turkish posts with same tag
-      File.write!(Path.join(ctx.posts_dir, "2024-01-15-hello.md"), """
+      # Only create English articles with a tag, no Turkish articles with same tag
+      File.write!(Path.join(ctx.articles_dir, "2024-01-15-hello.md"), """
       ---
       title: "Hello World"
       date: 2024-01-15
@@ -981,10 +984,10 @@ defmodule Sayfa.BuilderTest do
     end
 
     test "sitemap includes language-prefixed tag URLs", ctx do
-      tr_posts_dir = Path.join([ctx.content_dir, "tr", "posts"])
-      File.mkdir_p!(tr_posts_dir)
+      tr_articles_dir = Path.join([ctx.content_dir, "tr", "articles"])
+      File.mkdir_p!(tr_articles_dir)
 
-      File.write!(Path.join(ctx.posts_dir, "2024-01-15-hello.md"), """
+      File.write!(Path.join(ctx.articles_dir, "2024-01-15-hello.md"), """
       ---
       title: "Hello"
       date: 2024-01-15
@@ -993,7 +996,7 @@ defmodule Sayfa.BuilderTest do
       English.
       """)
 
-      File.write!(Path.join(tr_posts_dir, "2024-01-15-merhaba.md"), """
+      File.write!(Path.join(tr_articles_dir, "2024-01-15-merhaba.md"), """
       ---
       title: "Merhaba"
       date: 2024-01-15
@@ -1050,7 +1053,7 @@ defmodule Sayfa.BuilderTest do
 
   describe "asset digesting" do
     test "fingerprints asset URLs and writes manifest", ctx do
-      File.write!(Path.join(ctx.posts_dir, "2024-01-15-hello.md"), """
+      File.write!(Path.join(ctx.articles_dir, "2024-01-15-hello.md"), """
       ---
       title: "Hello"
       date: 2024-01-15
@@ -1060,7 +1063,7 @@ defmodule Sayfa.BuilderTest do
 
       assert {:ok, _result} = Builder.build(build_opts(ctx))
 
-      html = File.read!(Path.join([ctx.output_dir, "posts", "hello", "index.html"]))
+      html = File.read!(Path.join([ctx.output_dir, "articles", "hello", "index.html"]))
 
       assert html =~ ~r|/assets/css/main\.[0-9a-f]{12}\.css|
       assert html =~ ~r|/assets/js/enhancements\.[0-9a-f]{12}\.js|
@@ -1077,7 +1080,7 @@ defmodule Sayfa.BuilderTest do
 
   describe "i18n list pages" do
     test "non-default language list pages use correct lang", ctx do
-      tr_dir = Path.join(ctx.content_dir, "tr/posts")
+      tr_dir = Path.join(ctx.content_dir, "tr/articles")
       File.mkdir_p!(tr_dir)
 
       File.write!(Path.join(tr_dir, "merhaba.md"), """
@@ -1097,7 +1100,7 @@ defmodule Sayfa.BuilderTest do
 
       {:ok, _result} = Builder.build(opts)
 
-      tr_index = File.read!(Path.join(ctx.output_dir, "tr/posts/index.html"))
+      tr_index = File.read!(Path.join(ctx.output_dir, "tr/articles/index.html"))
       assert tr_index =~ ~s(lang="tr")
     end
   end

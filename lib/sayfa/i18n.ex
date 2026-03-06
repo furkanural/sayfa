@@ -2,9 +2,9 @@ defmodule Sayfa.I18n do
   @moduledoc """
   Multilingual support using subdirectory-based language detection.
 
-  Content files placed in a language subdirectory (e.g., `content/tr/posts/merhaba.md`)
+  Content files placed in a language subdirectory (e.g., `content/tr/articles/merhaba.md`)
   are detected as that language and output with a language prefix in the URL
-  (e.g., `/tr/posts/merhaba/`).
+  (e.g., `/tr/articles/merhaba/`).
 
   The default language has no URL prefix. Non-default languages get `/<lang>/` prefix.
 
@@ -32,12 +32,12 @@ defmodule Sayfa.I18n do
   ## Examples
 
       iex> config = %{default_lang: :en, languages: [en: [name: "English"], tr: [name: "Türkçe"]]}
-      iex> Sayfa.I18n.detect_language("tr/posts/merhaba.md", config)
-      {:tr, "posts/merhaba.md"}
+      iex> Sayfa.I18n.detect_language("tr/articles/merhaba.md", config)
+      {:tr, "articles/merhaba.md"}
 
       iex> config = %{default_lang: :en, languages: [en: [name: "English"]]}
-      iex> Sayfa.I18n.detect_language("posts/hello.md", config)
-      {:en, "posts/hello.md"}
+      iex> Sayfa.I18n.detect_language("articles/hello.md", config)
+      {:en, "articles/hello.md"}
 
   """
 
@@ -50,12 +50,12 @@ defmodule Sayfa.I18n do
   ## Examples
 
       iex> config = %{default_lang: :en, languages: [en: [name: "English"], tr: [name: "Türkçe"]]}
-      iex> Sayfa.I18n.detect_language("tr/posts/merhaba.md", config)
-      {:tr, "posts/merhaba.md"}
+      iex> Sayfa.I18n.detect_language("tr/articles/merhaba.md", config)
+      {:tr, "articles/merhaba.md"}
 
       iex> config = %{default_lang: :en, languages: [en: [name: "English"], tr: [name: "Türkçe"]]}
-      iex> Sayfa.I18n.detect_language("posts/hello.md", config)
-      {:en, "posts/hello.md"}
+      iex> Sayfa.I18n.detect_language("articles/hello.md", config)
+      {:en, "articles/hello.md"}
 
       iex> config = %{default_lang: :en, languages: [en: [name: "English"]]}
       iex> Sayfa.I18n.detect_language("about.md", config)

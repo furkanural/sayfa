@@ -665,29 +665,29 @@
     color: var(--color-ctp-blue);
   }
 
-  .recent-post-list {
+  .recent-article-list {
     @apply space-y-0 divide-y;
   }
 
-  .recent-post-list > * + * {
+  .recent-article-list > * + * {
     border-color: color-mix(in srgb, var(--color-ctp-surface1) 70%, transparent);
   }
 
-  .recent-post-link {
+  .recent-article-link {
     @apply flex items-baseline gap-4 py-4;
   }
 
-  .recent-post-date {
+  .recent-article-date {
     @apply shrink-0 text-sm tabular-nums w-22;
     color: var(--color-ctp-subtext0);
   }
 
-  .recent-post-title {
+  .recent-article-title {
     @apply text-sm font-medium;
     color: var(--color-ctp-text);
   }
 
-  .recent-post-link:hover .recent-post-title {
+  .recent-article-link:hover .recent-article-title {
     color: var(--color-ctp-blue);
   }
 
@@ -705,31 +705,30 @@
     @apply grid grid-cols-1 sm:grid-cols-3 gap-4;
   }
 
-  .breadcrumb-nav {
-    @apply mb-6;
-  }
-
-  .breadcrumb-list {
-    @apply flex items-center gap-1.5 text-sm;
+  .back-link {
+    @apply text-sm mb-6 inline-flex items-center gap-1.5 transition-colors;
     color: var(--color-ctp-subtext0);
   }
 
-  .breadcrumb-link {
-    @apply transition-colors;
-    color: var(--color-ctp-subtext0);
-  }
-
-  .breadcrumb-link:hover {
+  .back-link:hover {
     color: var(--color-ctp-blue);
   }
 
-  .breadcrumb-current {
-    color: var(--color-ctp-text);
+  .back-link-icon {
+    @apply transition-transform duration-200;
+    flex-shrink: 0;
   }
 
-  .breadcrumb-chevron {
-    @apply w-3.5 h-3.5 shrink-0;
-    color: var(--color-ctp-overlay0);
+  .back-link:hover .back-link-icon {
+    transform: translateX(-3px);
+  }
+
+  [dir="rtl"] .back-link-icon {
+    transform: scaleX(-1);
+  }
+
+  [dir="rtl"] .back-link:hover .back-link-icon {
+    transform: scaleX(-1) translateX(-3px);
   }
 
   .toc-nav {
@@ -1252,7 +1251,7 @@
 a, button { transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease; }
 button { cursor: pointer; }
 
-/* Featured post accent animation */
+/* Featured article accent animation */
 .featured-accent {
   @apply relative;
 }

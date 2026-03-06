@@ -9,11 +9,11 @@ defmodule Mix.Tasks.Sayfa.Gen.Content do
 
   ## Examples
 
-      mix sayfa.gen.content post "My First Post"
+      mix sayfa.gen.content article "My First Article"
       mix sayfa.gen.content note "Quick Tip"
       mix sayfa.gen.content project "My Project" --tags=elixir,oss --draft
       mix sayfa.gen.content talk "Intro to Elixir" --date=2026-03-15
-      mix sayfa.gen.content post "Hello World" --lang=en,tr
+      mix sayfa.gen.content article "Hello World" --lang=en,tr
       mix sayfa.gen.content --list
 
   ## Options

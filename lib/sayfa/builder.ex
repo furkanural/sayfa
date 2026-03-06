@@ -9,7 +9,7 @@ defmodule Sayfa.Builder do
   3. **Parse** — parse front matter and render Markdown for each file
   4. **Classify** — determine content type from directory structure, enrich with type metadata
   5. **Filter** — exclude drafts (unless `drafts: true`)
-  6. **Validate** — log warnings for missing required fields (e.g., `date` on posts)
+  6. **Validate** — log warnings for missing required fields (e.g., `date` on articles)
   7. **Enrich** — add reading time, table of contents, and prev/next navigation to content metadata
   8. **Render** — apply three-layer template pipeline for individual pages
   9. **Archives** — generate tag and category archive pages
@@ -375,7 +375,7 @@ defmodule Sayfa.Builder do
   defp classify_content(content, file_path, content_dir, config) do
     relative = Path.relative_to(file_path, content_dir)
 
-    # Detect language from path (e.g., "tr/posts/hello.md" → {:tr, "posts/hello.md"})
+    # Detect language from path (e.g., "tr/articles/hello.md" → {:tr, "articles/hello.md"})
     {lang, lang_stripped_path} = I18n.detect_language(relative, config)
 
     parts = Path.split(lang_stripped_path)
@@ -608,7 +608,7 @@ defmodule Sayfa.Builder do
   # --- Content Type Indexes ---
 
   defp build_type_indexes(all_contents, config) do
-    page_size = Map.get(config, :posts_per_page, 10)
+    page_size = Map.get(config, :articles_per_page, 10)
 
     all_groups =
       Enum.group_by(all_contents, fn c ->

@@ -18,13 +18,13 @@ defmodule Mix.Tasks.Sayfa.NewTest do
       # Verify directory structure
       assert File.dir?(project_path)
       assert File.dir?(Path.join(project_path, "config"))
-      assert File.dir?(Path.join(project_path, "content/posts"))
+      assert File.dir?(Path.join(project_path, "content/articles"))
       assert File.dir?(Path.join(project_path, "content/pages"))
 
       # Verify generated files
       assert File.exists?(Path.join(project_path, "mix.exs"))
       assert File.exists?(Path.join(project_path, "config/config.exs"))
-      assert File.exists?(Path.join(project_path, "content/posts/welcome.md"))
+      assert File.exists?(Path.join(project_path, "content/articles/welcome.md"))
       assert File.exists?(Path.join(project_path, "content/pages/about.md"))
       assert File.exists?(Path.join(project_path, ".formatter.exs"))
       assert File.exists?(Path.join(project_path, ".gitignore"))
@@ -39,7 +39,7 @@ defmodule Mix.Tasks.Sayfa.NewTest do
       assert config =~ "My Blog"
       assert config =~ "default_lang: :en"
 
-      welcome = File.read!(Path.join(project_path, "content/posts/welcome.md"))
+      welcome = File.read!(Path.join(project_path, "content/articles/welcome.md"))
       assert welcome =~ "Welcome to My Blog"
       assert welcome =~ "tags: [welcome]"
 
@@ -86,7 +86,7 @@ defmodule Mix.Tasks.Sayfa.NewTest do
       config = File.read!(Path.join(project_path, "config/config.exs"))
       assert config =~ "Cool Site"
 
-      welcome = File.read!(Path.join(project_path, "content/posts/welcome.md"))
+      welcome = File.read!(Path.join(project_path, "content/articles/welcome.md"))
       assert welcome =~ "Welcome to Cool Site"
     end
 
@@ -100,7 +100,7 @@ defmodule Mix.Tasks.Sayfa.NewTest do
       assert config =~ "tr:"
 
       # Directories created for Turkish
-      assert File.dir?(Path.join([project_path, "content", "tr", "posts"]))
+      assert File.dir?(Path.join([project_path, "content", "tr", "articles"]))
       assert File.dir?(Path.join([project_path, "content", "tr", "pages"]))
 
       # Turkish content files generated
@@ -108,7 +108,7 @@ defmodule Mix.Tasks.Sayfa.NewTest do
       assert File.exists?(Path.join([project_path, "content", "tr", "pages", "about.md"]))
 
       assert File.exists?(
-               Path.join([project_path, "content", "tr", "posts", "building-with-sayfa.md"])
+               Path.join([project_path, "content", "tr", "articles", "building-with-sayfa.md"])
              )
 
       # Verify front matter has correct lang and translations back to default lang
@@ -121,11 +121,13 @@ defmodule Mix.Tasks.Sayfa.NewTest do
       assert tr_about =~ "lang: tr"
       assert tr_about =~ "en: about"
 
-      tr_post =
-        File.read!(Path.join([project_path, "content", "tr", "posts", "building-with-sayfa.md"]))
+      tr_article =
+        File.read!(
+          Path.join([project_path, "content", "tr", "articles", "building-with-sayfa.md"])
+        )
 
-      assert tr_post =~ "lang: tr"
-      assert tr_post =~ "en: building-with-sayfa"
+      assert tr_article =~ "lang: tr"
+      assert tr_article =~ "en: building-with-sayfa"
     end
 
     test "errors when directory already exists", ctx do

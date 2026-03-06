@@ -10,7 +10,7 @@ translations:
   <%= @default_lang %>: building-with-sayfa
 ---
 
-Sayfa is a static site generator built in Elixir. This post covers the key commands to get you started.
+Sayfa is a static site generator built in Elixir. This article covers the key commands to get you started.
 
 ## Quick Reference
 
@@ -18,7 +18,7 @@ Sayfa is a static site generator built in Elixir. This post covers the key comma
 mix deps.get          # Install dependencies
 mix sayfa.serve       # Start dev server with live reload
 mix sayfa.build       # Build static site to _site/
-mix sayfa.gen.content post "My Post"  # Generate a new post
+mix sayfa.gen.content article "My Article"  # Generate a new article
 ```
 
-For the full guide, see the [English version](/posts/building-with-sayfa/).
+For the full guide, see the [English version](/articles/building-with-sayfa/).

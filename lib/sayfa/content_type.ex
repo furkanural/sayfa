@@ -3,7 +3,7 @@ defmodule Sayfa.ContentType do
   Registry and lookup functions for content types.
 
   Maps directory names and type names to content type modules.
-  By default, five built-in types are registered: post, note, project,
+  By default, five built-in types are registered: article, note, project,
   talk, and page.
 
   Custom types can be added via application config:
@@ -12,11 +12,11 @@ defmodule Sayfa.ContentType do
 
   ## Examples
 
-      iex> Sayfa.ContentType.find_by_name(:post)
-      Sayfa.ContentTypes.Post
+      iex> Sayfa.ContentType.find_by_name(:article)
+      Sayfa.ContentTypes.Article
 
-      iex> Sayfa.ContentType.find_by_directory("posts")
-      Sayfa.ContentTypes.Post
+      iex> Sayfa.ContentType.find_by_directory("articles")
+      Sayfa.ContentTypes.Article
 
       iex> Sayfa.ContentType.find_by_directory("unknown")
       nil
@@ -35,7 +35,7 @@ defmodule Sayfa.ContentType do
   @spec default_types() :: [module()]
   def default_types do
     [
-      Sayfa.ContentTypes.Post,
+      Sayfa.ContentTypes.Article,
       Sayfa.ContentTypes.Note,
       Sayfa.ContentTypes.Project,
       Sayfa.ContentTypes.Talk,
@@ -65,8 +65,8 @@ defmodule Sayfa.ContentType do
 
   ## Examples
 
-      iex> Sayfa.ContentType.find_by_directory("posts")
-      Sayfa.ContentTypes.Post
+      iex> Sayfa.ContentType.find_by_directory("articles")
+      Sayfa.ContentTypes.Article
 
       iex> Sayfa.ContentType.find_by_directory("nonexistent")
       nil
@@ -82,8 +82,8 @@ defmodule Sayfa.ContentType do
 
   ## Examples
 
-      iex> Sayfa.ContentType.find_by_name(:post)
-      Sayfa.ContentTypes.Post
+      iex> Sayfa.ContentType.find_by_name(:article)
+      Sayfa.ContentTypes.Article
 
       iex> Sayfa.ContentType.find_by_name(:unknown)
       nil

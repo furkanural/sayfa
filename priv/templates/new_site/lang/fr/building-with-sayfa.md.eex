@@ -18,7 +18,7 @@ Sayfa est un générateur de sites statiques construit en Elixir. Cet article co
 mix deps.get          # Installer les dépendances
 mix sayfa.serve       # Démarrer le serveur de développement avec rechargement à chaud
 mix sayfa.build       # Construire le site statique dans _site/
-mix sayfa.gen.content post "Mon Article"  # Générer un nouvel article
+mix sayfa.gen.content article "Mon Article"  # Générer un nouvel article
 ```
 
-Pour le guide complet, consultez la [version anglaise](/posts/building-with-sayfa/).
+Pour le guide complet, consultez la [version anglaise](/articles/building-with-sayfa/).

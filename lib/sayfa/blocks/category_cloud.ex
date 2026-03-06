@@ -64,10 +64,10 @@ defmodule Sayfa.Blocks.CategoryCloud do
     count = length(items)
     slug = Slug.slugify(category)
     classes = size_classes(count, max_count)
-    posts_label = Sayfa.I18n.t("posts_count", lang, site, count: count)
+    articles_label = Sayfa.I18n.t("articles_count", lang, site, count: count)
     cat_url = category_url(slug, lang_prefix)
 
-    "<a href=\"#{cat_url}\" class=\"inline-flex items-center gap-1 h-7 px-2.5 rounded-md #{classes}\" title=\"#{Block.escape_html(posts_label)}\">#{@folder_icon} #{Block.escape_html(category)} <span class=\"cloud-count\">#{count}</span></a>"
+    "<a href=\"#{cat_url}\" class=\"inline-flex items-center gap-1 h-7 px-2.5 rounded-md #{classes}\" title=\"#{Block.escape_html(articles_label)}\">#{@folder_icon} #{Block.escape_html(category)} <span class=\"cloud-count\">#{count}</span></a>"
   end
 
   defp category_url(slug, ""), do: "/categories/#{Block.escape_html(slug)}/"

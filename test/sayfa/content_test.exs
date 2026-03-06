@@ -15,7 +15,7 @@ defmodule Sayfa.ContentTest do
     test "parses all known front matter fields" do
       raw = """
       ---
-      title: "Test Post"
+      title: "Test Article"
       date: 2024-01-15
       slug: custom-slug
       lang: en
@@ -28,7 +28,7 @@ defmodule Sayfa.ContentTest do
       """
 
       assert {:ok, content} = Content.parse(raw)
-      assert content.title == "Test Post"
+      assert content.title == "Test Article"
       assert content.date == ~D[2024-01-15]
       assert content.slug == "custom-slug"
       assert content.lang == :en
@@ -40,7 +40,7 @@ defmodule Sayfa.ContentTest do
     test "puts unknown fields into meta" do
       raw = """
       ---
-      title: Post
+      title: Article
       custom_field: custom value
       featured: true
       image: /images/cover.jpg
@@ -157,7 +157,7 @@ defmodule Sayfa.ContentTest do
   describe "from_raw/1" do
     test "transforms Raw struct into Content" do
       raw = %Raw{
-        path: "content/posts/2024-01-15-hello.md",
+        path: "content/articles/2024-01-15-hello.md",
         front_matter: %{"title" => "Hello", "tags" => ["elixir"]},
         body_markdown: "# World",
         filename: "2024-01-15-hello.md"
@@ -167,13 +167,13 @@ defmodule Sayfa.ContentTest do
       assert content.title == "Hello"
       assert content.body =~ "World"
       assert content.tags == ["elixir"]
-      assert content.source_path == "content/posts/2024-01-15-hello.md"
+      assert content.source_path == "content/articles/2024-01-15-hello.md"
       assert content.slug == "hello"
     end
 
     test "uses date from filename when front matter has no date" do
       raw = %Raw{
-        path: "content/posts/2024-03-20-hello.md",
+        path: "content/articles/2024-03-20-hello.md",
         front_matter: %{"title" => "Hello"},
         body_markdown: "# World",
         filename: "2024-03-20-hello.md"
@@ -185,7 +185,7 @@ defmodule Sayfa.ContentTest do
 
     test "front matter date takes precedence over filename date" do
       raw = %Raw{
-        path: "content/posts/2024-03-20-hello.md",
+        path: "content/articles/2024-03-20-hello.md",
         front_matter: %{"title" => "Hello", "date" => ~D[2025-01-01]},
         body_markdown: "# World",
         filename: "2024-03-20-hello.md"
@@ -220,7 +220,7 @@ defmodule Sayfa.ContentTest do
     end
 
     test "handles multiple extensions" do
-      assert Content.slug_from_filename("2024-01-15-post.html.md") == "post.html"
+      assert Content.slug_from_filename("2024-01-15-Article.html.md") == "Article.html"
     end
   end
 
@@ -245,16 +245,19 @@ defmodule Sayfa.ContentTest do
   describe "url/1" do
     test "builds URL with url_prefix" do
       content =
-        make_content(%{slug: "hello", meta: %{"url_prefix" => "posts", "lang_prefix" => ""}})
+        make_content(%{slug: "hello", meta: %{"url_prefix" => "articles", "lang_prefix" => ""}})
 
-      assert Content.url(content) == "/posts/hello"
+      assert Content.url(content) == "/articles/hello"
     end
 
     test "builds URL with lang_prefix" do
       content =
-        make_content(%{slug: "merhaba", meta: %{"url_prefix" => "posts", "lang_prefix" => "tr"}})
+        make_content(%{
+          slug: "merhaba",
+          meta: %{"url_prefix" => "articles", "lang_prefix" => "tr"}
+        })
 
-      assert Content.url(content) == "/tr/posts/merhaba"
+      assert Content.url(content) == "/tr/articles/merhaba"
     end
 
     test "builds URL for pages (empty url_prefix)" do
@@ -269,9 +272,9 @@ defmodule Sayfa.ContentTest do
 
     test "builds URL for index with prefix" do
       content =
-        make_content(%{slug: "index", meta: %{"url_prefix" => "posts", "lang_prefix" => ""}})
+        make_content(%{slug: "index", meta: %{"url_prefix" => "articles", "lang_prefix" => ""}})
 
-      assert Content.url(content) == "/posts"
+      assert Content.url(content) == "/articles"
     end
 
     test "builds URL for index with lang_prefix" do
@@ -303,18 +306,18 @@ defmodule Sayfa.ContentTest do
   describe "all_of_type/2" do
     test "filters by content_type in meta" do
       contents = [
-        make_content(%{title: "Post", meta: %{"content_type" => "posts"}}),
+        make_content(%{title: "Article", meta: %{"content_type" => "articles"}}),
         make_content(%{title: "Page", meta: %{"content_type" => "pages"}}),
-        make_content(%{title: "Post 2", meta: %{"content_type" => "posts"}})
+        make_content(%{title: "Article 2", meta: %{"content_type" => "articles"}})
       ]
 
-      result = Content.all_of_type(contents, "posts")
+      result = Content.all_of_type(contents, "articles")
       assert length(result) == 2
-      assert Enum.all?(result, fn c -> c.meta["content_type"] == "posts" end)
+      assert Enum.all?(result, fn c -> c.meta["content_type"] == "articles" end)
     end
 
     test "returns empty list when no match" do
-      contents = [make_content(%{title: "Post", meta: %{"content_type" => "posts"}})]
+      contents = [make_content(%{title: "Article", meta: %{"content_type" => "articles"}})]
       assert Content.all_of_type(contents, "notes") == []
     end
   end

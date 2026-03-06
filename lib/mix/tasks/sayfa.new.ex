@@ -76,7 +76,7 @@ defmodule Mix.Tasks.Sayfa.New do
     dirs = [
       path,
       Path.join(path, "config"),
-      Path.join(path, "content/posts"),
+      Path.join(path, "content/articles"),
       Path.join(path, "content/pages"),
       Path.join(path, "content/notes"),
       Path.join(path, "content/projects"),
@@ -101,7 +101,7 @@ defmodule Mix.Tasks.Sayfa.New do
     write_template(
       templates_dir,
       "welcome.md.eex",
-      Path.join(path, "content/posts/welcome.md"),
+      Path.join(path, "content/articles/welcome.md"),
       assigns
     )
 
@@ -122,7 +122,7 @@ defmodule Mix.Tasks.Sayfa.New do
     write_template(
       templates_dir,
       "building-with-sayfa.md.eex",
-      Path.join(path, "content/posts/building-with-sayfa.md"),
+      Path.join(path, "content/articles/building-with-sayfa.md"),
       assigns
     )
 
@@ -194,7 +194,7 @@ defmodule Mix.Tasks.Sayfa.New do
   defp generate_lang_content(lang, path, templates_dir, assigns) do
     lang_path = Path.join([path, "content", lang])
     File.mkdir_p!(Path.join(lang_path, "pages"))
-    File.mkdir_p!(Path.join(lang_path, "posts"))
+    File.mkdir_p!(Path.join(lang_path, "articles"))
 
     lang_assigns = Keyword.put(assigns, :lang, lang)
 
@@ -215,7 +215,7 @@ defmodule Mix.Tasks.Sayfa.New do
     write_template(
       templates_dir,
       lang_template_name(templates_dir, lang, "building-with-sayfa.md.eex"),
-      Path.join([lang_path, "posts", "building-with-sayfa.md"]),
+      Path.join([lang_path, "articles", "building-with-sayfa.md"]),
       lang_assigns
     )
   end
@@ -282,7 +282,7 @@ defmodule Mix.Tasks.Sayfa.New do
     Mix.shell().info("")
     Mix.shell().info("    Edit config/config.exs to configure your site")
     Mix.shell().info("    Edit content/pages/index.md to update your home page")
-    Mix.shell().info("    Browse content/posts/, notes/, projects/, talks/ for examples")
+    Mix.shell().info("    Browse content/articles/, notes/, projects/, talks/ for examples")
     Mix.shell().info("    Run mix sayfa.gen.layout home to customize a layout")
     Mix.shell().info("")
   end

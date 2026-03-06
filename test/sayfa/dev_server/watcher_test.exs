@@ -5,7 +5,7 @@ defmodule Sayfa.DevServer.WatcherTest do
 
   describe "relevant_file?/1" do
     test "markdown files are relevant" do
-      assert Watcher.relevant_file?("content/posts/hello.md")
+      assert Watcher.relevant_file?("content/articles/hello.md")
     end
 
     test "EEx templates are relevant" do

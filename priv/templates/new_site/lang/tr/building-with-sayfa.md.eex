@@ -18,7 +18,7 @@ Sayfa, Elixir ile geliştirilmiş bir statik site üreticisidir. Bu yazı, başl
 mix deps.get          # Bağımlılıkları yükle
 mix sayfa.serve       # Canlı yenileme ile geliştirme sunucusunu başlat
 mix sayfa.build       # Statik siteyi _site/ klasörüne derle
-mix sayfa.gen.content post "Yazım"  # Yeni bir yazı oluştur
+mix sayfa.gen.content article "Yazım"  # Yeni bir yazı oluştur
 ```
 
-Tam rehber için [İngilizce versiyona](/posts/building-with-sayfa/) bakın.
+Tam rehber için [İngilizce versiyona](/articles/building-with-sayfa/) bakın.

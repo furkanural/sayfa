@@ -15,10 +15,10 @@ defmodule Sayfa.DevServer.PlugTest do
     <!DOCTYPE html><html><body><h1>Home</h1></body></html>
     """)
 
-    File.mkdir_p!(Path.join(tmp_dir, "posts"))
+    File.mkdir_p!(Path.join(tmp_dir, "articles"))
 
-    File.write!(Path.join([tmp_dir, "posts", "index.html"]), """
-    <!DOCTYPE html><html><body><h1>Posts</h1></body></html>
+    File.write!(Path.join([tmp_dir, "articles", "index.html"]), """
+    <!DOCTYPE html><html><body><h1>articles</h1></body></html>
     """)
 
     File.write!(Path.join(tmp_dir, "style.css"), "body { color: red; }")
@@ -62,9 +62,9 @@ defmodule Sayfa.DevServer.PlugTest do
     end
 
     test "serves index.html for directory paths", %{output_dir: dir} do
-      conn = conn(:get, "/posts") |> call_plug(dir)
+      conn = conn(:get, "/articles") |> call_plug(dir)
       assert conn.status == 200
-      assert conn.resp_body =~ "Posts"
+      assert conn.resp_body =~ "articles"
     end
 
     test "returns 404 for directory without index.html", %{output_dir: dir} do

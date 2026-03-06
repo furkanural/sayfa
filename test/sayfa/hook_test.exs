@@ -72,9 +72,9 @@ defmodule Sayfa.HookTest do
     tmp_dir = Path.join(System.tmp_dir!(), "sayfa_hook_#{System.unique_integer([:positive])}")
     content_dir = Path.join(tmp_dir, "content")
     output_dir = Path.join(tmp_dir, "dist")
-    posts_dir = Path.join(content_dir, "posts")
+    articles_dir = Path.join(content_dir, "articles")
 
-    File.mkdir_p!(posts_dir)
+    File.mkdir_p!(articles_dir)
 
     on_exit(fn ->
       File.rm_rf!(tmp_dir)
@@ -82,14 +82,17 @@ defmodule Sayfa.HookTest do
     end)
 
     {:ok,
-     tmp_dir: tmp_dir, content_dir: content_dir, output_dir: output_dir, posts_dir: posts_dir}
+     tmp_dir: tmp_dir,
+     content_dir: content_dir,
+     output_dir: output_dir,
+     articles_dir: articles_dir}
   end
 
   describe "after_parse hook" do
     test "transforms content title", ctx do
       Application.put_env(:sayfa, :hooks, [UppercaseTitleHook])
 
-      File.write!(Path.join(ctx.posts_dir, "test.md"), """
+      File.write!(Path.join(ctx.articles_dir, "test.md"), """
       ---
       title: "hello world"
       date: 2024-01-15
@@ -102,7 +105,7 @@ defmodule Sayfa.HookTest do
 
       assert result.content_count == 1
 
-      html = File.read!(Path.join([ctx.output_dir, "posts", "test", "index.html"]))
+      html = File.read!(Path.join([ctx.output_dir, "articles", "test", "index.html"]))
       assert html =~ "HELLO WORLD"
     end
   end
@@ -111,7 +114,7 @@ defmodule Sayfa.HookTest do
     test "modifies raw markdown", ctx do
       Application.put_env(:sayfa, :hooks, [BeforeParseHook])
 
-      File.write!(Path.join(ctx.posts_dir, "test.md"), """
+      File.write!(Path.join(ctx.articles_dir, "test.md"), """
       ---
       title: "Test"
       date: 2024-01-15
@@ -122,7 +125,7 @@ defmodule Sayfa.HookTest do
       assert {:ok, _result} =
                Builder.build(content_dir: ctx.content_dir, output_dir: ctx.output_dir)
 
-      html = File.read!(Path.join([ctx.output_dir, "posts", "test", "index.html"]))
+      html = File.read!(Path.join([ctx.output_dir, "articles", "test", "index.html"]))
       assert html =~ "Injected by hook"
     end
   end
@@ -131,7 +134,7 @@ defmodule Sayfa.HookTest do
     test "appends to rendered HTML", ctx do
       Application.put_env(:sayfa, :hooks, [AfterRenderHook])
 
-      File.write!(Path.join(ctx.posts_dir, "test.md"), """
+      File.write!(Path.join(ctx.articles_dir, "test.md"), """
       ---
       title: "Test"
       date: 2024-01-15
@@ -142,7 +145,7 @@ defmodule Sayfa.HookTest do
       assert {:ok, _result} =
                Builder.build(content_dir: ctx.content_dir, output_dir: ctx.output_dir)
 
-      html = File.read!(Path.join([ctx.output_dir, "posts", "test", "index.html"]))
+      html = File.read!(Path.join([ctx.output_dir, "articles", "test", "index.html"]))
       assert html =~ "<!-- hook -->"
     end
   end
@@ -151,7 +154,7 @@ defmodule Sayfa.HookTest do
     test "error hook halts build", ctx do
       Application.put_env(:sayfa, :hooks, [ErrorHook])
 
-      File.write!(Path.join(ctx.posts_dir, "test.md"), """
+      File.write!(Path.join(ctx.articles_dir, "test.md"), """
       ---
       title: "Test"
       ---
@@ -167,7 +170,7 @@ defmodule Sayfa.HookTest do
     test "hooks run in sequence", ctx do
       Application.put_env(:sayfa, :hooks, [BeforeParseHook, UppercaseTitleHook])
 
-      File.write!(Path.join(ctx.posts_dir, "test.md"), """
+      File.write!(Path.join(ctx.articles_dir, "test.md"), """
       ---
       title: "hello"
       date: 2024-01-15
@@ -178,7 +181,7 @@ defmodule Sayfa.HookTest do
       assert {:ok, _result} =
                Builder.build(content_dir: ctx.content_dir, output_dir: ctx.output_dir)
 
-      html = File.read!(Path.join([ctx.output_dir, "posts", "test", "index.html"]))
+      html = File.read!(Path.join([ctx.output_dir, "articles", "test", "index.html"]))
       assert html =~ "HELLO"
       assert html =~ "Injected by hook"
     end

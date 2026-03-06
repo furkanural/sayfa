@@ -22,9 +22,9 @@ defmodule Mix.Tasks.Sayfa.Gen.LayoutTest do
 
   describe "run/1" do
     test "copies layout file to themes/custom/layouts/", ctx do
-      Layout.run(["post"])
+      Layout.run(["article"])
 
-      dest = Path.join([ctx.tmp_dir, "themes", "custom", "layouts", "post.html.eex"])
+      dest = Path.join([ctx.tmp_dir, "themes", "custom", "layouts", "article.html.eex"])
       assert File.exists?(dest)
 
       content = File.read!(dest)
@@ -42,9 +42,9 @@ defmodule Mix.Tasks.Sayfa.Gen.LayoutTest do
     test "errors when file already exists", ctx do
       dest_dir = Path.join([ctx.tmp_dir, "themes", "custom", "layouts"])
       File.mkdir_p!(dest_dir)
-      File.write!(Path.join(dest_dir, "post.html.eex"), "existing")
+      File.write!(Path.join(dest_dir, "article.html.eex"), "existing")
 
-      assert catch_exit(Layout.run(["post"]))
+      assert catch_exit(Layout.run(["article"]))
     end
 
     test "--list shows available layouts" do

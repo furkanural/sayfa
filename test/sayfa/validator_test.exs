@@ -18,7 +18,7 @@ defmodule Sayfa.ValidatorTest do
     test "validates all items in the list" do
       contents = [
         make_content(meta: %{"content_type" => "pages"}),
-        make_content(meta: %{"content_type" => "posts"}, date: ~D[2024-01-01])
+        make_content(meta: %{"content_type" => "articles"}, date: ~D[2024-01-01])
       ]
 
       result = Validator.validate_all(contents)
@@ -32,8 +32,8 @@ defmodule Sayfa.ValidatorTest do
       assert :ok = Validator.validate_one(content)
     end
 
-    test "returns :ok for posts with date" do
-      content = make_content(date: ~D[2024-01-15], meta: %{"content_type" => "posts"})
+    test "returns :ok for articles with date" do
+      content = make_content(date: ~D[2024-01-15], meta: %{"content_type" => "articles"})
       assert :ok = Validator.validate_one(content)
     end
 
@@ -42,8 +42,8 @@ defmodule Sayfa.ValidatorTest do
       assert :ok = Validator.validate_one(content)
     end
 
-    test "returns :ok for posts without date (warning is logged but :ok returned)" do
-      content = make_content(meta: %{"content_type" => "posts"})
+    test "returns :ok for articles without date (warning is logged but :ok returned)" do
+      content = make_content(meta: %{"content_type" => "articles"})
       # validate_one always returns :ok; warning is a side effect
       assert :ok = Validator.validate_one(content)
     end

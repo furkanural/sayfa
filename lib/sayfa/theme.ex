@@ -11,7 +11,7 @@ defmodule Sayfa.Theme do
 
       themes/my_theme/
       ├── layouts/
-      │   ├── post.html.eex
+      │   ├── article.html.eex
       │   └── custom.html.eex
       └── assets/
           ├── css/

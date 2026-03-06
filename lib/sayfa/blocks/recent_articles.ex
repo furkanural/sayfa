@@ -1,19 +1,19 @@
-defmodule Sayfa.Blocks.RecentPosts do
+defmodule Sayfa.Blocks.RecentArticles do
   @moduledoc """
-  Recent posts block.
+  Recent articles block.
 
-  Renders a chronological list of the most recent posts with date and title.
+  Renders a chronological list of the most recent articles with date and title.
 
   ## Assigns
 
   - `:contents` — list of all site contents (injected by block helper)
-  - `:limit` — number of posts to show (default: 5)
+  - `:limit` — number of articles to show (default: 5)
   - `:show_view_all` — whether to show "View all" link (default: false)
 
   ## Examples
 
-      <%= @block.(:recent_posts, limit: 3) %>
-      <%= @block.(:recent_posts, limit: 5, show_view_all: true) %>
+      <%= @block.(:recent_articles, limit: 3) %>
+      <%= @block.(:recent_articles, limit: 5, show_view_all: true) %>
 
   """
 
@@ -24,7 +24,7 @@ defmodule Sayfa.Blocks.RecentPosts do
   alias Sayfa.I18n
 
   @impl true
-  def name, do: :recent_posts
+  def name, do: :recent_articles
 
   @impl true
   def render(assigns) do
@@ -38,19 +38,19 @@ defmodule Sayfa.Blocks.RecentPosts do
     contents = filter_by_lang(contents, lang)
     lang_prefix = lang_prefix_path(lang, site)
 
-    posts =
+    articles =
       contents
-      |> Content.all_of_type("posts")
+      |> Content.all_of_type("articles")
       |> Content.recent(limit)
 
-    if posts == [] do
+    if articles == [] do
       ""
     else
-      items = Enum.map_join(posts, "\n", &render_post_item(&1, lang, site))
+      items = Enum.map_join(articles, "\n", &render_article_item(&1, lang, site))
 
       view_all_html =
         if show_view_all do
-          "<a href=\"#{lang_prefix}/posts/\" class=\"section-link\">#{Block.escape_html(t.("view_all"))} <svg class=\"icon-3_5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"m9 18 6-6-6-6\"/></svg></a>"
+          "<a href=\"#{lang_prefix}/articles/\" class=\"section-link\">#{Block.escape_html(t.("view_all"))} <svg class=\"icon-3_5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"m9 18 6-6-6-6\"/></svg></a>"
         else
           ""
         end
@@ -58,10 +58,10 @@ defmodule Sayfa.Blocks.RecentPosts do
       """
       <section class="container-content section-spacing">\
         <div class="recent-section-header">\
-          <h2 class="section-title">#{Block.escape_html(t.("recent_posts"))}</h2>\
+          <h2 class="section-title">#{Block.escape_html(t.("recent_articles"))}</h2>\
           #{view_all_html}\
         </div>\
-        <div class="recent-post-list">\
+        <div class="recent-article-list">\
       #{items}\
         </div>\
       </section>\
@@ -69,21 +69,21 @@ defmodule Sayfa.Blocks.RecentPosts do
     end
   end
 
-  defp render_post_item(post, lang, site) do
-    url = Content.url(post)
-    title = Block.escape_html(post.title)
+  defp render_article_item(article, lang, site) do
+    url = Content.url(article)
+    title = Block.escape_html(article.title)
 
     date_html =
-      if post.date do
-        "<time class=\"recent-post-date\">#{Sayfa.DateFormat.format(post.date, lang || :en, site)}</time>"
+      if article.date do
+        "<time class=\"recent-article-date\">#{Sayfa.DateFormat.format(article.date, lang || :en, site)}</time>"
       else
         ""
       end
 
     """
-        <a href="#{url}" class="recent-post-link">\
+        <a href="#{url}" class="recent-article-link">\
           #{date_html}\
-          <span class="recent-post-title">#{title}</span>\
+          <span class="recent-article-title">#{title}</span>\
         </a>\
     """
   end

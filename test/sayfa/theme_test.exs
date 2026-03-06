@@ -50,7 +50,7 @@ defmodule Sayfa.ThemeTest do
     test "finds all default layouts" do
       config = %{theme: "default", theme_parent: "default"}
 
-      for layout <- ~w(base post page list home) do
+      for layout <- ~w(base article page list home) do
         path = Theme.resolve_layout(layout, config)
         assert path != nil, "Expected to find layout: #{layout}"
         assert File.exists?(path)

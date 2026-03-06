@@ -6,12 +6,12 @@ defmodule Sayfa.Content.RawTest do
   describe "struct creation" do
     test "creates struct with required fields" do
       raw = %Raw{
-        path: "content/posts/hello.md",
+        path: "content/articles/hello.md",
         front_matter: %{"title" => "Hello"},
         body_markdown: "# Hello"
       }
 
-      assert raw.path == "content/posts/hello.md"
+      assert raw.path == "content/articles/hello.md"
       assert raw.front_matter == %{"title" => "Hello"}
       assert raw.body_markdown == "# Hello"
       assert raw.filename == nil
@@ -19,7 +19,7 @@ defmodule Sayfa.Content.RawTest do
 
     test "creates struct with all fields" do
       raw = %Raw{
-        path: "content/posts/2024-01-15-hello.md",
+        path: "content/articles/2024-01-15-hello.md",
         front_matter: %{"title" => "Hello", "date" => ~D[2024-01-15]},
         body_markdown: "# Hello World",
         filename: "2024-01-15-hello.md"
