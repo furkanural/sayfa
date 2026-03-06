@@ -71,14 +71,14 @@ Sayfa follows a **two-layer architecture**:
 - Two-struct content pipeline (`Raw` -> `Content`) for maximum flexibility
 
 ### Content Organization
-- 5 built-in content types (posts, notes, projects, talks, pages)
+- 5 built-in content types (articles, notes, projects, talks, pages)
 - Categories and tags with auto-generated archive pages
 - Pagination with configurable page size
 - Collections API (filter, sort, group, recent)
 
 ### Templates & Theming
 - Three-layer template composition (content -> layout -> base)
-- 17 built-in blocks (hero, header, footer, social links, TOC, recent posts, tag cloud, category cloud, reading time, code copy, copy link, breadcrumb, recent content, language switcher, related posts, related content, analytics) with 24 platform icons including GitHub, X/Twitter, Mastodon, LinkedIn, Bluesky, YouTube, Instagram, and more
+- 17 built-in blocks (hero, header, footer, social links, TOC, recent articles, tag cloud, category cloud, reading time, code copy, copy link, breadcrumb, recent content, language switcher, related articles, related content, analytics) with 24 platform icons including GitHub, X/Twitter, Mastodon, LinkedIn, Bluesky, YouTube, Instagram, and more
 - Theme inheritance (custom -> parent -> default)
 - EEx templates with `@block` helper
 - Configurable syntax highlighting theme (`highlight_theme`)
@@ -87,7 +87,7 @@ Sayfa follows a **two-layer architecture**:
 
 ### Internationalization
 - Directory-based multilingual support
-- Per-language URL prefixes (`/tr/posts/...`)
+- Per-language URL prefixes (`/tr/articles/...`)
 - 14 pre-built UI translations (en, tr, de, es, fr, it, pt, ja, ko, zh, ar, ru, nl, pl)
 - Language switcher block with auto-detection of available translations
 - RTL language support (Arabic, Hebrew, Farsi, Urdu)
@@ -147,8 +147,8 @@ Sayfa ships with 5 built-in content types. Each maps to a directory under `conte
 
 | Type | Directory | URL Pattern | Default Layout |
 |------|-----------|-------------|----------------|
-| Post | `content/posts/` | `/posts/{slug}/` | `post` |
-| Note | `content/notes/` | `/notes/{slug}/` | `post` |
+| Article | `content/articles/` | `/articles/{slug}/` | `article` |
+| Note | `content/notes/` | `/notes/{slug}/` | `article` |
 | Project | `content/projects/` | `/projects/{slug}/` | `page` |
 | Talk | `content/talks/` | `/talks/{slug}/` | `page` |
 | Page | `content/pages/` | `/{slug}/` | `page` |
@@ -158,8 +158,8 @@ No dates in URLs — keeps them clean and evergreen.
 ### Filename Convention
 
 ```
-# Dated content (posts, notes)
-2024-01-15-my-post-title.md  →  /posts/my-post-title/
+# Dated content (articles, notes)
+2024-01-15-my-article-title.md  →  /articles/my-article-title/
 
 # Undated content (projects, pages)
 my-project.md                →  /projects/my-project/
@@ -206,7 +206,7 @@ Content files use YAML front matter delimited by `---`:
 ```yaml
 ---
 title: "Building a Static Site Generator"   # Required
-date: 2024-01-15                            # Required for posts/notes
+date: 2024-01-15                            # Required for articles/notes
 slug: custom-slug                           # Optional (default: from filename)
 lang: en                                    # Optional (default: site default)
 description: "A brief description"          # Optional, used for SEO
@@ -242,7 +242,7 @@ Any unrecognized fields are stored in the `meta` map and accessible in templates
 Sayfa uses a **three-layer composition** model:
 
 1. **Content body** — Markdown rendered to HTML
-2. **Layout template** — Wraps the content, places blocks (e.g., `post.html.eex`)
+2. **Layout template** — Wraps the content, places blocks (e.g., `article.html.eex`)
 3. **Base template** — HTML shell (`<html>`, `<head>`, etc.), inserts `@inner_content`
 
 ### Selecting a Layout
@@ -265,8 +265,8 @@ Resolution order:
 
 | Layout | Used For | Typical Blocks |
 |--------|----------|----------------|
-| `home.html.eex` | Homepage | hero, recent_posts, tag_cloud |
-| `post.html.eex` | Single post | reading_time, toc, social_links |
+| `home.html.eex` | Homepage | hero, recent_articles, tag_cloud |
+| `article.html.eex` | Single article | reading_time, toc, social_links |
 | `note.html.eex` | Single note | reading_time, copy_link |
 | `page.html.eex` | Static pages | content only |
 | `list.html.eex` | Content listings | pagination |
@@ -295,8 +295,10 @@ Blocks are reusable EEx components invoked via the `@block` helper:
 
 ```eex
 <%= @block.(:hero, title: "Welcome", subtitle: "My Elixir Blog") %>
-<%= @block.(:recent_posts, limit: 5) %>
+<%= @block.(:recent_articles, limit: 5) %>
 <%= @block.(:tag_cloud) %>
+<%= @block.(:language_switcher, variant: :desktop) %>
+<%= @block.(:breadcrumb) %>
 ```
 
 ### Built-in Blocks
@@ -308,16 +310,16 @@ Blocks are reusable EEx components invoked via the `@block` helper:
 | Footer | `:footer` | Site footer |
 | Social Links | `:social_links` | Social media link icons |
 | Table of Contents | `:toc` | Auto-generated TOC from headings |
-| Recent Posts | `:recent_posts` | List of recent posts |
+| Recent Articles | `:recent_articles` | List of recent articles |
 | Tag Cloud | `:tag_cloud` | Tag cloud with counts |
 | Category Cloud | `:category_cloud` | Category cloud with counts |
 | Reading Time | `:reading_time` | Estimated reading time |
 | Code Copy | `:code_copy` | Copy button for code blocks |
 | Copy Link | `:copy_link` | Copy page URL to clipboard |
-| Breadcrumb | `:breadcrumb` | Breadcrumb navigation |
+| Breadcrumb | `:breadcrumb` | Back link to section with JSON-LD `BreadcrumbList` structured data for SEO |
 | Recent Content | `:recent_content` | Recent items from any content type |
-| Language Switcher | `:language_switcher` | Switch between content translations |
-| Related Posts | `:related_posts` | Posts related by tags/categories |
+| Language Switcher | `:language_switcher` | Switch between content translations; supports `variant:` assign (`:desktop`, `:mobile`) for multiple instances on the same page |
+| Related Articles | `:related_articles` | Articles related by tags/categories |
 | Related Content | `:related_content` | Content related by tags/categories (auto-detects type; accepts `type:` assign) |
 
 ### Custom Blocks
@@ -374,7 +376,7 @@ Create a theme directory in your project:
 themes/
   my_theme/
     layouts/
-      post.html.eex    # Override specific layouts
+      article.html.eex    # Override specific layouts
     assets/
       css/
         custom.css
@@ -405,10 +407,10 @@ Sayfa uses a directory-based approach for multilingual content:
 
 ```
 content/
-  posts/
+  articles/
     hello-world.md          # English (default)
   tr/
-    posts/
+    articles/
       merhaba-dunya.md      # Turkish
 ```
 
@@ -426,8 +428,8 @@ config :sayfa, :site,
 ### URL Patterns
 
 ```
-English (default):  /posts/hello-world/
-Turkish:            /tr/posts/merhaba-dunya/
+English (default):  /articles/hello-world/
+Turkish:            /tr/articles/merhaba-dunya/
 ```
 
 ### Linking Translations
@@ -446,7 +448,7 @@ translations:
 Generate pre-linked multilingual content in one command:
 
 ```bash
-mix sayfa.gen.content post "Hello World" --lang=en,tr
+mix sayfa.gen.content article "Hello World" --lang=en,tr
 ```
 
 ### Translation Function
@@ -454,7 +456,7 @@ mix sayfa.gen.content post "Hello World" --lang=en,tr
 Templates receive a `@t` function for translating UI strings:
 
 ```eex
-<%= @t.("recent_posts") %>   <%# "Recent Posts" in English, "Son Yazılar" in Turkish %>
+<%= @t.("recent_articles") %>   <%# "Recent Articles" in English, "Son Makaleler" in Turkish %>
 <%= @t.("min_read") %>       <%# "min read" / "dk okuma" %>
 ```
 
@@ -496,7 +498,7 @@ Sayfa generates Atom XML feeds automatically:
 
 ```
 /feed.xml              # All content
-/feed/posts.xml        # Posts only
+/feed/articles.xml     # Articles only
 /feed/notes.xml        # Notes only
 ```
 
@@ -527,7 +529,7 @@ config :sayfa, :site,
   # Content
   content_dir: "content",
   output_dir: "dist",
-  posts_per_page: 10,
+  articles_per_page: 10,
   drafts: false,
 
   # Language
@@ -563,7 +565,7 @@ config :sayfa, :site,
 | `base_url` | String | `"http://localhost:4000"` | Production URL |
 | `content_dir` | String | `"content"` | Content source directory |
 | `output_dir` | String | `"dist"` | Build output directory |
-| `posts_per_page` | Integer | `10` | Pagination size |
+| `articles_per_page` | Integer | `10` | Pagination size |
 | `drafts` | Boolean | `false` | Include drafts in build |
 | `default_lang` | Atom | `:en` | Default content language |
 | `languages` | Keyword | `[en: [name: "English"]]` | Available languages |
@@ -609,9 +611,9 @@ mix sayfa.build --source ./my_site    # Custom source directory
 Generate a new content file:
 
 ```bash
-mix sayfa.gen.content post "My First Post"
+mix sayfa.gen.content article "My First Article"
 mix sayfa.gen.content note "Quick Tip" --tags=elixir,tips
-mix sayfa.gen.content post "Hello World" --lang=en,tr    # Multilingual
+mix sayfa.gen.content article "Hello World" --lang=en,tr    # Multilingual
 mix sayfa.gen.content --list                              # List content types
 ```
 
@@ -664,7 +666,7 @@ my_site/
 │   └── site.exs                # Site configuration
 │
 ├── content/
-│   ├── posts/                  # Blog posts
+│   ├── articles/               # Articles
 │   │   └── 2024-01-15-hello-world.md
 │   ├── notes/                  # Quick notes
 │   ├── projects/               # Portfolio projects
@@ -672,7 +674,7 @@ my_site/
 │   ├── pages/                  # Static pages
 │   │   └── about.md
 │   └── tr/                     # Turkish translations
-│       └── posts/
+│       └── articles/
 │
 ├── themes/
 │   └── my_theme/               # Custom theme (optional)

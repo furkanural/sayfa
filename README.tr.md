@@ -70,14 +70,14 @@ Sayfa **iki katmanli bir mimari** kullanir:
 - Maksimum esneklik icin iki yapilik icerik hatti (`Raw` -> `Content`)
 
 ### Icerik Organizasyonu
-- 5 yerlesik icerik turu (yazilar, notlar, projeler, konusmalar, sayfalar)
+- 5 yerlesik icerik turu (makaleler, notlar, projeler, konusmalar, sayfalar)
 - Otomatik arsiv sayfalari ile kategoriler ve etiketler
 - Yapilandirilabilir sayfa boyutu ile sayfalama
 - Koleksiyonlar API'si (filtreleme, siralama, gruplama, son eklenenler)
 
 ### Sablonlar ve Tema
 - Uc katmanli sablon bilesimi (icerik -> duzen -> temel)
-- 17 yerlesik blok (hero, baslik, altbilgi, sosyal baglantilar, icerik tablosu, son yazilar, etiket bulutu, kategori bulutu, okuma suresi, kod kopyalama, baglanti kopyalama, breadcrumb, son icerikler, dil degistirici, ilgili yazilar, ilgili icerikler, analitik) ve 24 platform ikonu (GitHub, X/Twitter, Mastodon, LinkedIn, Bluesky, YouTube, Instagram ve daha fazlasi)
+- 17 yerlesik blok (hero, baslik, altbilgi, sosyal baglantilar, icerik tablosu, son makaleler, etiket bulutu, kategori bulutu, okuma suresi, kod kopyalama, baglanti kopyalama, breadcrumb, son icerikler, dil degistirici, ilgili makaleler, ilgili icerikler, analitik) ve 24 platform ikonu (GitHub, X/Twitter, Mastodon, LinkedIn, Bluesky, YouTube, Instagram ve daha fazlasi)
 - Tema mirasi (ozel -> ust -> varsayilan)
 - `@block` yardimcisi ile EEx sablonlari
 - Yapilandirilabilir sozdizimi vurgulama temasi (`highlight_theme`)
@@ -86,7 +86,7 @@ Sayfa **iki katmanli bir mimari** kullanir:
 
 ### Uluslararasilastirma
 - Dizin tabanli cok dilli destek
-- Dil bazli URL on ekleri (`/tr/posts/...`)
+- Dil bazli URL on ekleri (`/tr/articles/...`)
 - 14 yerlesik UI cevirisi (en, tr, de, es, fr, it, pt, ja, ko, zh, ar, ru, nl, pl)
 - Mevcut cevirileri otomatik algilayan dil degistirici bloku
 - RTL dil destegi (Arapca, Ibranice, Farsca, Urduca)
@@ -146,8 +146,8 @@ Sayfa 5 yerlesik icerik turu ile gelir. Her biri `content/` altinda bir dizine v
 
 | Tur | Dizin | URL Deseni | Varsayilan Duzen |
 |-----|-------|------------|------------------|
-| Yazi | `content/posts/` | `/posts/{slug}/` | `post` |
-| Not | `content/notes/` | `/notes/{slug}/` | `post` |
+| Makale | `content/articles/` | `/articles/{slug}/` | `article` |
+| Not | `content/notes/` | `/notes/{slug}/` | `article` |
 | Proje | `content/projects/` | `/projects/{slug}/` | `page` |
 | Konusma | `content/talks/` | `/talks/{slug}/` | `page` |
 | Sayfa | `content/pages/` | `/{slug}/` | `page` |
@@ -157,8 +157,8 @@ URL'lerde tarih yok — temiz ve kalici kalir.
 ### Dosya Adi Kurali
 
 ```
-# Tarihli icerik (yazilar, notlar)
-2024-01-15-elixir-ile-ssg.md  →  /posts/elixir-ile-ssg/
+# Tarihli icerik (makaleler, notlar)
+2024-01-15-elixir-ile-ssg.md  →  /articles/elixir-ile-ssg/
 
 # Tarihsiz icerik (projeler, sayfalar)
 projem.md                      →  /projects/projem/
@@ -205,7 +205,7 @@ Icerik dosyalari `---` ile ayrilmis YAML on bilgi kullanir:
 ```yaml
 ---
 title: "Statik Site Ureteci Yapmak"         # Zorunlu
-date: 2024-01-15                             # Yazilar/notlar icin zorunlu
+date: 2024-01-15                             # Makaleler/notlar icin zorunlu
 slug: ozel-slug                              # Istege bagli (varsayilan: dosya adindan)
 lang: tr                                     # Istege bagli (varsayilan: site varsayilani)
 description: "Kisa bir aciklama"             # Istege bagli, SEO icin
@@ -241,7 +241,7 @@ Taninmayan alanlar `meta` haritasinda saklanir ve sablonlarda `@content.meta["al
 Sayfa **uc katmanli bir bilesim** modeli kullanir:
 
 1. **Icerik govdesi** — Markdown'dan HTML'e donusturulur
-2. **Duzen sablonu** — Icerigi sarar, bloklari yerlestirir (ornegin `post.html.eex`)
+2. **Duzen sablonu** — Icerigi sarar, bloklari yerlestirir (ornegin `article.html.eex`)
 3. **Temel sablon** — HTML kabuGu (`<html>`, `<head>`, vb.), `@inner_content` ekler
 
 ### Duzen Secimi
@@ -264,8 +264,8 @@ Cozumleme sirasi:
 
 | Duzen | Kullanim | Tipik Bloklar |
 |-------|----------|---------------|
-| `home.html.eex` | Ana sayfa | hero, recent_posts, tag_cloud |
-| `post.html.eex` | Tekil yazi | reading_time, toc, social_links |
+| `home.html.eex` | Ana sayfa | hero, recent_articles, tag_cloud |
+| `article.html.eex` | Tekil makale | reading_time, toc, social_links |
 | `note.html.eex` | Tekil not | reading_time, copy_link |
 | `page.html.eex` | Statik sayfalar | yalnizca icerik |
 | `list.html.eex` | Icerik listeleri | sayfalama |
@@ -294,8 +294,10 @@ Bloklar, `@block` yardimcisi ile cagirilan yeniden kullanilabilir EEx bilesenler
 
 ```eex
 <%= @block.(:hero, title: "Hos Geldiniz", subtitle: "Elixir Blogum") %>
-<%= @block.(:recent_posts, limit: 5) %>
+<%= @block.(:recent_articles, limit: 5) %>
 <%= @block.(:tag_cloud) %>
+<%= @block.(:language_switcher, variant: :desktop) %>
+<%= @block.(:breadcrumb) %>
 ```
 
 ### Yerlesik Bloklar
@@ -307,16 +309,16 @@ Bloklar, `@block` yardimcisi ile cagirilan yeniden kullanilabilir EEx bilesenler
 | Altbilgi | `:footer` | Site altbilgisi |
 | Sosyal Baglantilar | `:social_links` | Sosyal medya baglanti ikonlari |
 | Icerik Tablosu | `:toc` | Basliklardan otomatik uretilen icerik tablosu |
-| Son Yazilar | `:recent_posts` | Son yazilarin listesi |
+| Son Makaleler | `:recent_articles` | Son makalelerin listesi |
 | Etiket Bulutu | `:tag_cloud` | Sayili etiket bulutu |
 | Kategori Bulutu | `:category_cloud` | Sayili kategori bulutu |
 | Okuma Suresi | `:reading_time` | Tahmini okuma suresi |
 | Kod Kopyalama | `:code_copy` | Kod bloklari icin kopyalama dugmesi |
 | Baglanti Kopyalama | `:copy_link` | Sayfa URL'sini panoya kopyala |
-| Icerik Yolu | `:breadcrumb` | Icerik yolu navigasyonu |
+| Icerik Yolu | `:breadcrumb` | Bolume geri baglantisi ve SEO icin JSON-LD `BreadcrumbList` yapisal verisi |
 | Son Icerikler | `:recent_content` | Herhangi bir icerik turunun son ogeler |
-| Dil Degistirici | `:language_switcher` | Icerik cevirileri arasinda gecis |
-| Ilgili Yazilar | `:related_posts` | Etiket/kategoriye gore ilgili yazilar |
+| Dil Degistirici | `:language_switcher` | Icerik cevirileri arasinda gecis; ayni sayfada birden fazla ornek icin `variant:` destekler (`:desktop`, `:mobile`) |
+| Ilgili Makaleler | `:related_articles` | Etiket/kategoriye gore ilgili makaleler |
 | Ilgili Icerikler | `:related_content` | Etiket/kategoriye gore ilgili icerikler (turu otomatik algilar; `type:` atamasini kabul eder) |
 
 ### Ozel Bloklar
@@ -367,7 +369,7 @@ Projenizde bir tema dizini olusturun:
 themes/
   benim_temam/
     layouts/
-      post.html.eex    # Belirli duzenleri gecersiz kilin
+      article.html.eex    # Belirli duzenleri gecersiz kilin
     assets/
       css/
         ozel.css
@@ -398,10 +400,10 @@ Sayfa, cok dilli icerik icin dizin tabanli bir yaklasim kullanir:
 
 ```
 content/
-  posts/
+  articles/
     hello-world.md          # Ingilizce (varsayilan)
   tr/
-    posts/
+    articles/
       merhaba-dunya.md      # Turkce
 ```
 
@@ -419,8 +421,8 @@ config :sayfa, :site,
 ### URL Desenleri
 
 ```
-Ingilizce (varsayilan):  /posts/hello-world/
-Turkce:                  /tr/posts/merhaba-dunya/
+Ingilizce (varsayilan):  /articles/hello-world/
+Turkce:                  /tr/articles/merhaba-dunya/
 ```
 
 ### Cevirileri Baglama
@@ -439,7 +441,7 @@ translations:
 Tek komutla cok dilli icerik olusturun:
 
 ```bash
-mix sayfa.gen.content post "Hello World" --lang=en,tr
+mix sayfa.gen.content article "Hello World" --lang=en,tr
 ```
 
 ### Ceviri Fonksiyonu
@@ -447,7 +449,7 @@ mix sayfa.gen.content post "Hello World" --lang=en,tr
 Sablonlar, UI dizelerini cevirmek icin bir `@t` fonksiyonu alir:
 
 ```eex
-<%= @t.("recent_posts") %>   <%# Ingilizce'de "Recent Posts", Turkce'de "Son Yazilar" %>
+<%= @t.("recent_articles") %>   <%# Ingilizce'de "Recent Articles", Turkce'de "Son Makaleler" %>
 <%= @t.("min_read") %>       <%# "min read" / "dk okuma" %>
 ```
 
@@ -489,7 +491,7 @@ Sayfa otomatik olarak Atom XML beslemeleri uretir:
 
 ```
 /feed.xml              # Tum icerik
-/feed/posts.xml        # Yalnizca yazilar
+/feed/articles.xml     # Yalnizca makaleler
 /feed/notes.xml        # Yalnizca notlar
 ```
 
@@ -520,7 +522,7 @@ config :sayfa, :site,
   # Icerik
   content_dir: "content",
   output_dir: "dist",
-  posts_per_page: 10,
+  articles_per_page: 10,
   drafts: false,
 
   # Dil
@@ -559,7 +561,7 @@ config :sayfa, :site,
 | `base_url` | String | `"http://localhost:4000"` | Uretim URL'si |
 | `content_dir` | String | `"content"` | Icerik kaynak dizini |
 | `output_dir` | String | `"dist"` | Derleme cikis dizini |
-| `posts_per_page` | Integer | `10` | Sayfalama boyutu |
+| `articles_per_page` | Integer | `10` | Sayfalama boyutu |
 | `drafts` | Boolean | `false` | Taslaklari derlemeye dahil et |
 | `default_lang` | Atom | `:en` | Varsayilan icerik dili |
 | `languages` | Keyword | `[en: [name: "English"]]` | Kullanilabilir diller |
@@ -605,9 +607,9 @@ mix sayfa.build --source ./sitem      # Ozel kaynak dizini
 Yeni bir icerik dosyasi olusturun:
 
 ```bash
-mix sayfa.gen.content post "Ilk Yazim"
+mix sayfa.gen.content article "Ilk Makalem"
 mix sayfa.gen.content note "Hizli Ipucu" --tags=elixir,ipuclari
-mix sayfa.gen.content post "Merhaba Dunya" --lang=en,tr    # Cok dilli
+mix sayfa.gen.content article "Merhaba Dunya" --lang=en,tr    # Cok dilli
 mix sayfa.gen.content --list                                # Icerik turlerini listele
 ```
 
@@ -660,7 +662,7 @@ sitem/
 │   └── site.exs                # Site yapilandirmasi
 │
 ├── content/
-│   ├── posts/                  # Blog yazilari
+│   ├── articles/               # Makaleler
 │   │   └── 2024-01-15-merhaba-dunya.md
 │   ├── notes/                  # Hizli notlar
 │   ├── projects/               # Portfolyo projeleri
@@ -668,7 +670,7 @@ sitem/
 │   ├── pages/                  # Statik sayfalar
 │   │   └── hakkimda.md
 │   └── en/                     # Ingilizce ceviriler
-│       └── posts/
+│       └── articles/
 │
 ├── themes/
 │   └── benim_temam/            # Ozel tema (istege bagli)
