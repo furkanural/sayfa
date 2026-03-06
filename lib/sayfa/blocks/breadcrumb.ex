@@ -1,14 +1,13 @@
 defmodule Sayfa.Blocks.Breadcrumb do
   @moduledoc """
-  Breadcrumb block with JSON-LD structured data.
+  Back-link block with JSON-LD structured data.
 
-  Renders a visible `<nav>` breadcrumb trail and a `<script type="application/ld+json">`
-  tag with `BreadcrumbList` schema for SEO.
+  Renders a minimal `← Section` back link for section content (e.g. articles,
+  notes) and a `<script type="application/ld+json">` tag with `BreadcrumbList`
+  schema for SEO. Bare pages (no `url_prefix`) emit only the JSON-LD.
 
-  The breadcrumb trail is derived from the content's `url_prefix` and `title`:
-
-  - `/posts/hello/` → Home > Posts > Hello
-  - `/about/` → Home > About
+  - `/articles/hello/` → renders `← Articles` back link
+  - `/about/` → no back link (JSON-LD only)
   - List/home pages (no `@content`) → no output
 
   ## Assigns
@@ -40,7 +39,7 @@ defmodule Sayfa.Blocks.Breadcrumb do
       lang_prefix = content.meta["lang_prefix"] || ""
       home_url = if lang_prefix == "", do: "/", else: "/#{lang_prefix}/"
 
-      render_html(crumbs, home_label, home_url) <>
+      render_html(crumbs, t) <>
         render_json_ld(crumbs, base_url, home_label, home_url)
     else
       ""
@@ -69,30 +68,20 @@ defmodule Sayfa.Blocks.Breadcrumb do
     end
   end
 
-  defp render_html(crumbs, home_label, home_url) do
-    chevron =
-      ~s(<svg class="breadcrumb-chevron" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>)
+  defp render_html(crumbs, t) do
+    case crumbs do
+      [{_title, nil} | _] ->
+        ""
 
-    items =
-      Enum.map(crumbs, fn {name, url} ->
-        escaped = Sayfa.Block.escape_html(name)
+      [{section_name, section_url} | _] ->
+        escaped = Sayfa.Block.escape_html(section_name)
+        label = t.("back_to_all") |> String.replace("%{section}", escaped)
 
-        content =
-          if url do
-            ~s(<a href="#{url}" class="breadcrumb-link">#{escaped}</a>)
-          else
-            escaped
-          end
+        icon =
+          ~s(<svg class="back-link-icon" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>)
 
-        ~s(#{chevron}<li class="breadcrumb-current">#{content}</li>)
-      end)
-
-    escaped_home = Sayfa.Block.escape_html(home_label)
-
-    home_link =
-      ~s(<li><a href="#{home_url}" class="breadcrumb-link">#{escaped_home}</a></li>)
-
-    ~s(<nav aria-label="Breadcrumb" class="breadcrumb-nav"><ol class="breadcrumb-list">#{home_link}#{Enum.join(items)}</ol></nav>)
+        ~s(<a href="#{section_url}" class="back-link">#{icon}#{label}</a>)
+    end
   end
 
   defp render_json_ld(crumbs, base_url, home_label, home_url) do
