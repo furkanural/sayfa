@@ -6,7 +6,7 @@ defmodule Sayfa.TOC do
   TOC entries with level, text, and anchor ID. Skips h1 as that
   is typically the page title.
 
-  Requires headings to have anchor IDs (enabled via MDEx `header_ids` option).
+  Requires headings to have anchor IDs (enabled via MDEx `header_id_prefix` option).
 
   ## Examples
 

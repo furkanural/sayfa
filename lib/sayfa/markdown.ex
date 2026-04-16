@@ -66,7 +66,7 @@ defmodule Sayfa.Markdown do
         table: true,
         autolink: true,
         tasklist: true,
-        header_ids: ""
+        header_id_prefix: ""
       ],
       render: [
         unsafe_: true
