@@ -5,8 +5,20 @@ updates:
     directory: /
     schedule:
       interval: weekly
+      day: wednesday
+    labels:
+      - ":robot: dependabot"
+      - ":purple_circle: elixir"
+      - ":heavy_plus_sign: dependencies"
+    open-pull-requests-limit: 10
 
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: weekly
+      day: wednesday
+    labels:
+      - ":robot: dependabot"
+      - ":octocat: github-actions"
+      - ":heavy_plus_sign: dependencies"
+    open-pull-requests-limit: 10
