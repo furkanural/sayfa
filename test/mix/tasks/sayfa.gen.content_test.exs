@@ -29,23 +29,27 @@ defmodule Mix.Tasks.Sayfa.Gen.ContentTest do
   end
 
   describe "slug generation" do
-    test "uses custom slug when provided via --slug" do
+    test "uses custom slug when provided via --slug", %{tmp_dir: tmp_dir} do
       Application.delete_env(:sayfa, :content_types)
 
       output =
         capture_io(fn ->
-          Content.run(["article", "My Title", "--slug", "custom-slug", "--date", "2024-01-15"])
+          File.cd!(tmp_dir, fn ->
+            Content.run(["article", "My Title", "--slug", "custom-slug", "--date", "2024-01-15"])
+          end)
         end)
 
       assert output =~ "custom-slug.md"
     end
 
-    test "slugifies title when no --slug provided" do
+    test "slugifies title when no --slug provided", %{tmp_dir: tmp_dir} do
       Application.delete_env(:sayfa, :content_types)
 
       output =
         capture_io(fn ->
-          Content.run(["article", "Hello World Test", "--date", "2024-01-15"])
+          File.cd!(tmp_dir, fn ->
+            Content.run(["article", "Hello World Test", "--date", "2024-01-15"])
+          end)
         end)
 
       assert output =~ "hello-world-test.md"
@@ -53,12 +57,14 @@ defmodule Mix.Tasks.Sayfa.Gen.ContentTest do
   end
 
   describe "multilingual content generation" do
-    test "generates multiple language versions with translations" do
+    test "generates multiple language versions with translations", %{tmp_dir: tmp_dir} do
       Application.delete_env(:sayfa, :content_types)
 
       output =
         capture_io(fn ->
-          Content.run(["article", "Test Article", "--lang", "en,tr", "--date", "2024-01-15"])
+          File.cd!(tmp_dir, fn ->
+            Content.run(["article", "Test Article", "--lang", "en,tr", "--date", "2024-01-15"])
+          end)
         end)
 
       # Should create both language versions
