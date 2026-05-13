@@ -33,8 +33,10 @@ defmodule Sayfa.SEO do
       true
 
   """
-  @spec meta_tags(Content.t() | nil, map()) :: String.t()
-  def meta_tags(%Content{} = content, config) do
+  @spec meta_tags(Content.t() | nil, map(), String.t() | nil) :: String.t()
+  def meta_tags(content, config, page_url \\ nil)
+
+  def meta_tags(%Content{} = content, config, _page_url) do
     description = content_description(content)
     url = content_url(content, config)
     twitter_card_type = if content.meta["image"], do: "summary_large_image", else: "summary"
@@ -58,10 +60,10 @@ defmodule Sayfa.SEO do
     |> Enum.join("\n")
   end
 
-  def meta_tags(nil, config) do
+  def meta_tags(nil, config, page_url) do
     description = Map.get(config, :description, "")
 
-    [
+    tags = [
       meta("description", description),
       meta("og:title", config.title),
       meta("og:description", description),
@@ -71,7 +73,10 @@ defmodule Sayfa.SEO do
       meta("twitter:title", config.title),
       meta("twitter:description", description)
     ]
-    |> Enum.join("\n")
+
+    tags = if page_url, do: tags ++ [link_tag("canonical", page_url)], else: tags
+
+    Enum.join(tags, "\n")
   end
 
   @doc """
@@ -85,7 +90,7 @@ defmodule Sayfa.SEO do
       iex> config = %{title: "My Site", base_url: "https://example.com", author: "Jane"}
       iex> content = %Sayfa.Content{title: "Hello", body: "<p>World</p>", slug: "hello", date: ~D[2024-01-15], meta: %{"content_type" => "articles", "url_prefix" => "articles", "lang_prefix" => ""}}
       iex> html = Sayfa.SEO.json_ld(content, config)
-      iex> html =~ "BlogArticling"
+      iex> html =~ "BlogPosting"
       true
       iex> html =~ "application/ld+json"
       true
@@ -150,12 +155,18 @@ defmodule Sayfa.SEO do
 
     tags =
       if length(alternates) > 1 do
-        {_lang, self_path} = List.first(alternates)
+        default_lang = Map.get(config, :default_lang, :en)
 
-        tags ++
-          [
-            ~s(<link rel="alternate" hreflang="x-default" href="#{escape_attr(base <> self_path)}">)
-          ]
+        case List.keyfind(alternates, to_string(default_lang), 0) do
+          {_lang, default_path} ->
+            tags ++
+              [
+                ~s(<link rel="alternate" hreflang="x-default" href="#{escape_attr(base <> default_path)}">)
+              ]
+
+          nil ->
+            tags
+        end
       else
         tags
       end
@@ -331,7 +342,7 @@ defmodule Sayfa.SEO do
 
     %{
       "@context" => "https://schema.org",
-      "@type" => "BlogArticling",
+      "@type" => "BlogPosting",
       "headline" => content.title,
       "url" => base <> Content.url(content)
     }

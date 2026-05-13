@@ -316,7 +316,7 @@ defmodule Sayfa.Feed do
       "date_published" => to_rfc3339(content.date)
     }
 
-    if content.tags && content.tags != [] do
+    if content.tags != [] do
       Map.put(item, "tags", content.tags)
     else
       item

@@ -71,7 +71,7 @@ defmodule Sayfa.Blocks.RecentContent do
     title = Block.escape_html(content.title)
     description = Block.escape_html(content.meta["description"] || "")
     reading_time = content.meta["reading_time"]
-    first_tag = List.first(content.tags || [])
+    first_tag = List.first(content.tags)
 
     date_html =
       if content.date do
@@ -170,7 +170,7 @@ defmodule Sayfa.Blocks.RecentContent do
     title = Block.escape_html(content.title)
     description = content.meta["description"]
     status = content.meta["status"]
-    first_tag = List.first(content.tags || [])
+    first_tag = List.first(content.tags)
 
     description_html =
       if description do
