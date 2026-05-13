@@ -648,7 +648,6 @@ defmodule Sayfa.Builder do
         Enum.any?(items, fn c -> c.slug == "index" end)
       end)
       |> Enum.map(fn {key, _} -> key end)
-      |> MapSet.new()
 
     # Build an index for each {content_type, lang_prefix} group
     type_lang_groups =
@@ -695,7 +694,7 @@ defmodule Sayfa.Builder do
     all_keys =
       for type <- content_types,
           lp <- lang_prefixes,
-          not MapSet.member?(excluded_keys, {type, lp}),
+          not Enum.member?(excluded_keys, {type, lp}),
           do: {type, lp}
 
     # Add empty entries for missing combos
@@ -998,7 +997,7 @@ defmodule Sayfa.Builder do
       |> Enum.reject(fn {{type, _}, _} -> type == "pages" end)
       |> Map.new()
 
-    index_groups = ensure_all_type_lang_combos(index_groups, contents, config, MapSet.new())
+    index_groups = ensure_all_type_lang_combos(index_groups, contents, config, [])
 
     index_urls =
       Enum.map(index_groups, fn {{type, lang_prefix}, _} ->

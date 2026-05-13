@@ -68,8 +68,8 @@ defmodule Sayfa.Blocks.RelatedContent do
   end
 
   defp find_related(content, contents, type, lang, limit) do
-    current_tags = MapSet.new(content.tags || [])
-    current_cats = MapSet.new(content.categories || [])
+    current_tags = MapSet.new(content.tags)
+    current_cats = MapSet.new(content.categories)
     current_slug = content.slug
 
     contents
@@ -78,10 +78,10 @@ defmodule Sayfa.Blocks.RelatedContent do
       c.slug != current_slug and (is_nil(lang) or c.lang == lang)
     end)
     |> Enum.map(fn c ->
-      tag_overlap = MapSet.intersection(current_tags, MapSet.new(c.tags || [])) |> MapSet.size()
+      tag_overlap = MapSet.intersection(current_tags, MapSet.new(c.tags)) |> MapSet.size()
 
       cat_overlap =
-        MapSet.intersection(current_cats, MapSet.new(c.categories || [])) |> MapSet.size()
+        MapSet.intersection(current_cats, MapSet.new(c.categories)) |> MapSet.size()
 
       {c, tag_overlap + cat_overlap}
     end)
@@ -94,7 +94,7 @@ defmodule Sayfa.Blocks.RelatedContent do
   defp render_item(item, lang, site) do
     url = Content.url(item)
     title = Block.escape_html(item.title)
-    first_cat = List.first(item.categories || [])
+    first_cat = List.first(item.categories)
 
     date_html =
       if item.date do

@@ -107,6 +107,16 @@ defmodule Sayfa.SEOTest do
       assert html =~ ~s(name="description" content="A great blog")
       assert html =~ ~s(property="og:type" content="website")
     end
+
+    test "adds canonical tag when page_url is provided" do
+      html = SEO.meta_tags(nil, @config, "https://example.com/tags/elixir/")
+      assert html =~ ~s(rel="canonical" href="https://example.com/tags/elixir/")
+    end
+
+    test "does not add canonical tag when page_url is nil" do
+      html = SEO.meta_tags(nil, @config)
+      refute html =~ "canonical"
+    end
   end
 
   describe "meta_tags/2 article OG tags" do
@@ -239,7 +249,7 @@ defmodule Sayfa.SEOTest do
       html = SEO.json_ld(content, config)
 
       assert html =~ ~s(application/ld+json)
-      assert html =~ ~s("BlogArticling")
+      assert html =~ ~s("BlogPosting")
       assert html =~ ~s("Hello World")
       assert html =~ ~s("2024-01-15")
       assert html =~ ~s("Jane")
@@ -311,7 +321,9 @@ defmodule Sayfa.SEOTest do
       assert html =~ ~s(href="https://example.com/tr/articles/merhaba")
     end
 
-    test "adds x-default when multiple alternates exist" do
+    test "adds x-default pointing to default language when multiple alternates exist" do
+      config = Map.put(@config, :default_lang, :en)
+
       content = %Content{
         title: "Hello",
         body: "",
@@ -320,15 +332,15 @@ defmodule Sayfa.SEOTest do
           "url_prefix" => "articles",
           "lang_prefix" => "",
           "hreflang_alternates" => [
-            {"en", "/articles/hello"},
-            {"tr", "/tr/articles/merhaba"}
+            {"tr", "/tr/articles/merhaba"},
+            {"en", "/articles/hello"}
           ]
         }
       }
 
-      html = SEO.hreflang_tags(content, @config)
+      html = SEO.hreflang_tags(content, config)
       assert html =~ ~s(hreflang="x-default")
-      # x-default points to the first (self) entry
+      # x-default points to the default language, not the first alternate
       assert html =~ ~s(hreflang="x-default" href="https://example.com/articles/hello")
     end
 

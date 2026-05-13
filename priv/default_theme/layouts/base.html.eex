@@ -6,7 +6,7 @@
   <%= if Map.get(@site, :view_transitions, false) do %><meta name="view-transition" content="same-origin"><% end %>
   <title><%= if assigns[:page_title], do: "#{assigns[:page_title]} — #{@site.title}", else: @site.title %></title>
   <%= Sayfa.SEO.favicon_tags() %>
-  <%= Sayfa.SEO.meta_tags(assigns[:content], @site) %>
+  <%= Sayfa.SEO.meta_tags(assigns[:content], @site, assigns[:page_url]) %>
   <%= Sayfa.SEO.json_ld(assigns[:content], @site) %>
   <%= Sayfa.SEO.hreflang_tags(assigns[:content], @site, assigns[:archive_alternates]) %>
   <link rel="alternate" type="application/atom+xml" title="<%= @site.title %>" href="<%= String.trim_trailing(@site.base_url, "/") %>/feed.xml">
