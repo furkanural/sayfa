@@ -29,8 +29,8 @@ defmodule Sayfa.Template do
     "articles" => "article",
     "pages" => "page",
     "notes" => "note",
-    "projects" => "page",
-    "talks" => "page"
+    "projects" => "project",
+    "talks" => "talk"
   }
 
   @doc """
@@ -239,4 +239,69 @@ defmodule Sayfa.Template do
   end
 
   defp resolve_layout(_content), do: "page"
+
+  @doc """
+  Renders an error page (e.g. 404) through the base template.
+
+  Uses the given layout name (e.g. `"404"`) and wraps it in the base template
+  with minimal assigns.
+
+  ## Examples
+
+      {:ok, html} = Sayfa.Template.render_error_page("404", config: config)
+
+  """
+  @spec render_error_page(String.t(), keyword()) :: {:ok, String.t()} | {:error, term()}
+  def render_error_page(layout_name, opts) do
+    config = Keyword.fetch!(opts, :config)
+    lang = Keyword.get(opts, :lang, config.default_lang)
+    t_fn = Sayfa.I18n.translate_function(lang, config)
+    site = Sayfa.I18n.resolve_site_config(config, lang, config)
+
+    page_url = Keyword.get(opts, :page_url)
+
+    block_ctx = [
+      site: site,
+      content: nil,
+      contents: [],
+      lang: lang,
+      t: t_fn,
+      page_url: page_url
+    ]
+
+    block_fn = Sayfa.Block.build_helper(block_ctx)
+
+    layout_path =
+      case Keyword.get(opts, :layouts_dir) do
+        nil ->
+          Sayfa.Theme.resolve_layout(layout_name, config) ||
+            raise "Layout not found: #{layout_name}"
+
+        dir ->
+          Path.join(dir, "#{layout_name}.html.eex")
+      end
+
+    base_path =
+      case Keyword.get(opts, :layouts_dir) do
+        nil -> Sayfa.Theme.resolve_layout("base", config)
+        dir -> Path.join(dir, "base.html.eex")
+      end
+
+    dir = Sayfa.I18n.text_direction(lang)
+
+    assigns = [
+      site: site,
+      content: nil,
+      page_title: Keyword.get(opts, :page_title, site.title),
+      page_url: page_url,
+      lang: lang,
+      dir: dir,
+      block: block_fn,
+      t: t_fn
+    ]
+
+    with {:ok, layout_html} <- render_file(layout_path, assigns) do
+      render_file(base_path, [inner_content: layout_html] ++ assigns)
+    end
+  end
 end

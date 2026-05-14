@@ -47,7 +47,7 @@ defmodule Sayfa.Blocks.TOC do
     heading = Block.escape_html(t.("on_this_page"))
 
     """
-    <nav class="toc-nav">\
+    <nav class="toc-nav" aria-label="#{heading}">\
       <h2 class="toc-heading">#{heading}</h2>\
       <ul class="toc-list">\
     #{items}\

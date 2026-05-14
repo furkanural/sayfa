@@ -40,6 +40,7 @@ defmodule Sayfa.SEO do
     description = content_description(content)
     url = content_url(content, config)
     twitter_card_type = if content.meta["image"], do: "summary_large_image", else: "summary"
+    locale = og_locale(content)
 
     tags = [
       meta("description", description),
@@ -48,6 +49,7 @@ defmodule Sayfa.SEO do
       meta("og:url", url),
       meta("og:type", "article"),
       meta("og:site_name", config.title),
+      meta("og:locale", locale),
       meta("twitter:card", twitter_card_type),
       meta("twitter:title", content.title),
       meta("twitter:description", description),
@@ -57,11 +59,15 @@ defmodule Sayfa.SEO do
     tags
     |> maybe_add_image(content)
     |> maybe_add_article_tags(content, config)
+    |> maybe_add_og_updated_time(content)
+    |> maybe_add_twitter_site(config)
+    |> maybe_add_twitter_creator(content, config)
     |> Enum.join("\n")
   end
 
   def meta_tags(nil, config, page_url) do
     description = Map.get(config, :description, "")
+    locale = og_locale(nil)
 
     tags = [
       meta("description", description),
@@ -69,6 +75,7 @@ defmodule Sayfa.SEO do
       meta("og:description", description),
       meta("og:type", "website"),
       meta("og:site_name", config.title),
+      meta("og:locale", locale),
       meta("twitter:card", "summary"),
       meta("twitter:title", config.title),
       meta("twitter:description", description)
@@ -76,7 +83,9 @@ defmodule Sayfa.SEO do
 
     tags = if page_url, do: tags ++ [link_tag("canonical", page_url)], else: tags
 
-    Enum.join(tags, "\n")
+    tags
+    |> maybe_add_twitter_site(config)
+    |> Enum.join("\n")
   end
 
   @doc """
@@ -334,6 +343,43 @@ defmodule Sayfa.SEO do
     tag_metas = Enum.map(content_tags, fn tag -> meta("article:tag", tag) end)
     tags ++ tag_metas
   end
+
+  defp og_locale(%Content{lang: lang}) when not is_nil(lang) do
+    to_string(lang) |> locale_from_lang()
+  end
+
+  defp og_locale(_nil) do
+    default_lang = Sayfa.Config.get(:default_lang, :en)
+    locale_from_lang(to_string(default_lang))
+  end
+
+  defp locale_from_lang("en"), do: "en_US"
+  defp locale_from_lang("tr"), do: "tr_TR"
+  defp locale_from_lang(lang), do: String.replace(lang, "-", "_") |> String.downcase()
+
+  defp maybe_add_og_updated_time(tags, %Content{meta: %{"updated" => updated}})
+       when not is_nil(updated) do
+    tags ++ [meta("og:updated_time", format_date(updated))]
+  end
+
+  defp maybe_add_og_updated_time(tags, _content), do: tags
+
+  defp maybe_add_twitter_site(tags, %{twitter_handle: handle}) when is_binary(handle) do
+    tags ++ [meta("twitter:site", handle)]
+  end
+
+  defp maybe_add_twitter_site(tags, _config), do: tags
+
+  defp maybe_add_twitter_creator(tags, %Content{meta: %{"author" => author}}, _config)
+       when is_binary(author) do
+    tags ++ [meta("twitter:creator", author)]
+  end
+
+  defp maybe_add_twitter_creator(tags, _content, %{author: author}) when is_binary(author) do
+    tags ++ [meta("twitter:creator", author)]
+  end
+
+  defp maybe_add_twitter_creator(tags, _content, _config), do: tags
 
   # --- JSON-LD Helpers ---
 

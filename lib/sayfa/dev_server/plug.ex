@@ -73,11 +73,25 @@ defmodule Sayfa.DevServer.Plug do
         if File.regular?(index) do
           serve_file(conn, index)
         else
-          send_resp(conn, 404, "Not Found")
+          not_found(conn, output_dir)
         end
 
       true ->
-        send_resp(conn, 404, "Not Found")
+        not_found(conn, output_dir)
+    end
+  end
+
+  defp not_found(conn, output_dir) do
+    path = Path.join(output_dir, "404.html")
+
+    if File.regular?(path) do
+      body = File.read!(path)
+
+      conn
+      |> put_resp_content_type("text/html")
+      |> send_resp(404, body)
+    else
+      send_resp(conn, 404, "Not Found")
     end
   end
 

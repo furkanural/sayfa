@@ -73,7 +73,6 @@ defmodule Sayfa.MixProject do
           Sayfa.Blocks.CopyLink,
           Sayfa.Blocks.Breadcrumb,
           Sayfa.Blocks.LanguageSwitcher,
-          Sayfa.Blocks.RelatedArticles,
           Sayfa.Blocks.RelatedContent,
           Sayfa.Blocks.Analytics
         ],
@@ -97,6 +96,15 @@ defmodule Sayfa.MixProject do
           Sayfa.DevServer.Plug,
           Sayfa.DevServer.Watcher,
           Sayfa.DevServer.Rebuilder
+        ],
+        "Mix Tasks": [
+          Mix.Tasks.Sayfa.New,
+          Mix.Tasks.Sayfa.Build,
+          Mix.Tasks.Sayfa.Serve,
+          Mix.Tasks.Sayfa.Upgrade,
+          Mix.Tasks.Sayfa.Gen.Layout,
+          Mix.Tasks.Sayfa.Gen.Content,
+          Mix.Tasks.Sayfa.Gen.Lang
         ]
       ]
     ]
@@ -106,6 +114,7 @@ defmodule Sayfa.MixProject do
     [
       licenses: ["MIT"],
       links: %{"GitHub" => @source_url},
+      authors: ["Furkan Ural"],
       files: ~w(lib priv .formatter.exs mix.exs README.md LICENSE CHANGELOG.md)
     ]
   end

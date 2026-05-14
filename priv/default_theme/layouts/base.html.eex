@@ -1,30 +1,32 @@
 <!DOCTYPE html>
-<html lang="<%= Map.get(assigns, :lang, "en") %>" dir="<%= Map.get(assigns, :dir, "ltr") %>" class="site-root">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <%= if Map.get(@site, :view_transitions, false) do %><meta name="view-transition" content="same-origin"><% end %>
-  <title><%= if assigns[:page_title], do: "#{assigns[:page_title]} — #{@site.title}", else: @site.title %></title>
-  <%= Sayfa.SEO.favicon_tags() %>
-  <%= Sayfa.SEO.meta_tags(assigns[:content], @site, assigns[:page_url]) %>
-  <%= Sayfa.SEO.json_ld(assigns[:content], @site) %>
-  <%= Sayfa.SEO.hreflang_tags(assigns[:content], @site, assigns[:archive_alternates]) %>
-  <link rel="alternate" type="application/atom+xml" title="<%= @site.title %>" href="<%= String.trim_trailing(@site.base_url, "/") %>/feed.xml">
-  <link rel="alternate" type="application/feed+json" title="<%= @site.title %>" href="<%= String.trim_trailing(@site.base_url, "/") %>/feed.json">
-<%= for link <- Map.get(assigns, :feed_links, []) do %>
-  <link rel="alternate" type="<%= link.type %>" title="<%= link.title %>" href="<%= link.url %>">
-<% end %>
-  <link rel="preload" href="/assets/fonts/noto-sans-arabic-400.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="/assets/fonts/noto-sans-arabic-600.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/assets/css/main.css">
-</head>
-<body class="site-body">
-  <%= @block.(:header, nav: Map.get(@site, :nav, []), page_url: assigns[:page_url]) %>
-  <%= @inner_content %>
-  <%= @block.(:footer, author: Map.get(@site, :author, @site.title)) %>
-  <%= @block.(:code_copy, []) %>
-  <script src="/assets/js/enhancements.js" defer></script>
-  <%= @block.(:analytics, []) %>
-</body>
-<!-- Built with Sayfa https://hex.pm/packages/sayfa -->
+<html class="site-root" lang="<%= Map.get(assigns, :lang, "en") %>" dir="<%= Map.get(assigns, :dir, "ltr") %>">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="<%= Map.get(@site, :theme_color, "#1e1e2e") %>">
+    <%= if Map.get(@site, :view_transitions, false) do %><meta name="view-transition" content="same-origin"><% end %>
+    <title><%= if assigns[:page_title], do: "#{assigns[:page_title]} — #{@site.title}", else: @site.title %></title>
+    <%= Sayfa.SEO.favicon_tags() %>
+    <%= Sayfa.SEO.meta_tags(assigns[:content], @site, assigns[:page_url]) %>
+    <%= Sayfa.SEO.json_ld(assigns[:content], @site) %>
+    <%= Sayfa.SEO.hreflang_tags(assigns[:content], @site, assigns[:archive_alternates]) %>
+    <link rel="alternate" type="application/atom+xml" title="<%= @site.title %>" href="<%= String.trim_trailing(@site.base_url, "/") %>/feed.xml">
+    <link rel="alternate" type="application/feed+json" title="<%= @site.title %>" href="<%= String.trim_trailing(@site.base_url, "/") %>/feed.json">
+  <%= for link <- Map.get(assigns, :feed_links, []) do %>
+    <link rel="alternate" type="<%= link.type %>" title="<%= link.title %>" href="<%= link.url %>">
+  <% end %>
+    <link rel="preload" href="/assets/fonts/noto-sans-arabic-400.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/assets/fonts/noto-sans-arabic-600.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="/assets/css/main.css">
+  </head>
+  <body class="site-body">
+    <a href="#main" class="skip-link"><%= @t.("skip_to_content") %></a>
+    <%= @block.(:header, nav: Map.get(@site, :nav, []), page_url: assigns[:page_url]) %>
+    <%= @inner_content %>
+    <%= @block.(:footer, author: Map.get(@site, :author, @site.title)) %>
+    <%= @block.(:code_copy, []) %>
+    <script src="/assets/js/enhancements.js" defer></script>
+    <%= @block.(:analytics, []) %>
+  </body>
+  <!-- Built with Sayfa https://hex.pm/packages/sayfa -->
 </html>
