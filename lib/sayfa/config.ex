@@ -45,7 +45,8 @@ defmodule Sayfa.Config do
     tailwind_version: "4.1.12",
     static_dir: "static",
     highlight_theme: "github_light",
-    view_transitions: false
+    view_transitions: false,
+    words_per_minute: 200
   }
 
   @doc """

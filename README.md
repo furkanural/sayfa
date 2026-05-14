@@ -2,7 +2,7 @@
 
 [![Hex Version](https://img.shields.io/hexpm/v/sayfa.svg)](https://hex.pm/packages/sayfa)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Elixir](https://img.shields.io/badge/elixir-~%3E%201.18-purple.svg)](https://elixir-lang.org/)
+[![Elixir](https://img.shields.io/badge/elixir-~%3E%201.19-purple.svg)](https://elixir-lang.org/)
 
 A simple, extensible static site generator built in Elixir. **Sayfa** means "page" in Turkish.
 
@@ -39,14 +39,14 @@ A simple, extensible static site generator built in Elixir. **Sayfa** means "pag
 Sayfa follows a **two-layer architecture**:
 
 1. **Sayfa** (this package) — A reusable Hex package with the core static site generation engine: markdown parsing, template rendering, feed generation, block system, and more.
-2. **Your site** — A project that depends on Sayfa via `{:sayfa, "~> 0.1"}`. You bring your content, theme, and configuration; Sayfa handles the build.
+2. **Your site** — A project that depends on Sayfa via `{:sayfa, "~> 0.4"}`. You bring your content, theme, and configuration; Sayfa handles the build.
 
 ```
 ┌──────────────────────────────────────────────────────┐
 │                  YOUR WEBSITE                        │
 │   content/     themes/     lib/blocks/    config/    │
 └──────────────────────────┬───────────────────────────┘
-                           │ {:sayfa, "~> 0.1"}
+                           │ {:sayfa, "~> 0.4"}
                            ▼
 ┌──────────────────────────────────────────────────────┐
 │                  SAYFA (Hex Package)                 │

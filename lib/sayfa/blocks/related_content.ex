@@ -5,8 +5,7 @@ defmodule Sayfa.Blocks.RelatedContent do
   Finds content items sharing the most tags/categories with the current item and
   renders up to 3 related items with title, date, and first category.
 
-  Unlike `RelatedArticles` which is hardcoded to articles, this block auto-detects the
-  current content's type or accepts an explicit `type:` assign.
+  This block auto-detects the current content's type or accepts an explicit `type:` assign.
 
   ## Assigns
 

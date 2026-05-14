@@ -94,7 +94,7 @@ Sayfa includes 16 built-in blocks you can use in your layouts:
 ### Content Blocks
 - `:recent_articles` — Recent articles list
 - `:recent_content` — Recent items from any content type
-- `:related_articles` — Related articles by tags/categories
+- `:related_content` — Related content by tags/categories
 
 ### Utility Blocks
 - `:toc` — Table of contents
@@ -110,7 +110,7 @@ Use blocks in your custom layouts:
 ```elixir
 <%%= @block.(:breadcrumb, []) %>
 <%%= @block.(:recent_articles, limit: 5) %>
-<%%= @block.(:related_articles, limit: 3) %>
+<%%= @block.(:related_content, limit: 3) %>
 ```
 
 ## Images

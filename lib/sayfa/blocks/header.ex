@@ -116,7 +116,7 @@ defmodule Sayfa.Blocks.Header do
       Enum.map_join(nav, "", fn {label, url} ->
         classes =
           if active?(url, page_url) do
-            "header-nav-link-active"
+            "header-nav-link-active\" aria-current=\"page"
           else
             "header-nav-link"
           end
@@ -128,7 +128,7 @@ defmodule Sayfa.Blocks.Header do
       Enum.map_join(nav, "", fn {label, url} ->
         classes =
           if active?(url, page_url) do
-            "header-mobile-link-active"
+            "header-mobile-link-active\" aria-current=\"page"
           else
             "header-mobile-link"
           end
@@ -138,7 +138,7 @@ defmodule Sayfa.Blocks.Header do
 
     """
           <div class="header-nav-wrap">\
-            <nav class="header-desktop-nav">#{desktop_items}#{lang_switcher_desktop}</nav>\
+            <nav class="header-desktop-nav" aria-label="Primary">#{desktop_items}#{lang_switcher_desktop}</nav>\
     #{if lang_switcher_mobile != "", do: "<div class=\"header-mobile-switcher\">#{lang_switcher_mobile}</div>", else: ""}\
             <button id="menu-toggle" class="header-menu-toggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="mobile-menu">\
               <svg class="icon-menu menu-open" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true"><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/></svg>\
@@ -146,7 +146,7 @@ defmodule Sayfa.Blocks.Header do
             </button>\
           </div>\
         </div>\
-        <nav id="mobile-menu" class="header-mobile-menu hidden">\
+        <nav id="mobile-menu" class="header-mobile-menu hidden" aria-label="Mobile primary">\
           <div class="header-mobile-list">#{mobile_items}</div>\
         </nav>\
     """

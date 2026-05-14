@@ -2,7 +2,7 @@
 
 [![Hex Surumu](https://img.shields.io/hexpm/v/sayfa.svg)](https://hex.pm/packages/sayfa)
 [![Lisans: MIT](https://img.shields.io/badge/Lisans-MIT-blue.svg)](LICENSE)
-[![Elixir](https://img.shields.io/badge/elixir-~%3E%201.18-purple.svg)](https://elixir-lang.org/)
+[![Elixir](https://img.shields.io/badge/elixir-~%3E%201.19-purple.svg)](https://elixir-lang.org/)
 
 Elixir ile yazilmis basit ve genisletilebilir bir statik site ureteci. **Sayfa** — adini Turkce'den aliyor.
 
@@ -38,14 +38,14 @@ Elixir ile yazilmis basit ve genisletilebilir bir statik site ureteci. **Sayfa**
 Sayfa **iki katmanli bir mimari** kullanir:
 
 1. **Sayfa** (bu paket) — Temel statik site uretim motoru: Markdown ayristirma, sablon olusturma, besleme uretimi, blok sistemi ve dahasi.
-2. **Siteniz** — `{:sayfa, "~> 0.1"}` ile Sayfa'ya bagli bir proje. Siz icerigi, temayi ve yapilandirmayi saglarsiniz; Sayfa derlemeyi halleder.
+2. **Siteniz** — `{:sayfa, "~> 0.4"}` ile Sayfa'ya bagli bir proje. Siz icerigi, temayi ve yapilandirmayi saglarsiniz; Sayfa derlemeyi halleder.
 
 ```
 ┌──────────────────────────────────────────────────────┐
 │                    SITENIZ                            │
 │   content/     themes/     lib/blocks/    config/    │
 └──────────────────────────┬───────────────────────────┘
-                           │ {:sayfa, "~> 0.1"}
+                           │ {:sayfa, "~> 0.4"}
                            ▼
 ┌──────────────────────────────────────────────────────┐
 │                 SAYFA (Hex Paketi)                    │

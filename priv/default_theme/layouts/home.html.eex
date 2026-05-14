@@ -1,4 +1,4 @@
-<main>
+<main id="main">
   <section class="container-content section-spacing-lg">
     <div class="prose-content">
       <%= @inner_content %>

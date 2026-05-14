@@ -1,9 +1,14 @@
-<article class="container-content page-wrapper">
-  <%= @block.(:breadcrumb, []) %>
-  <header class="content-header-sm">
-    <h1 class="page-title-lg"><%= @content.title %></h1>
-  </header>
-  <div class="prose-page">
-    <%= @inner_content %>
-  </div>
-</article>
+<main id="main">
+  <article class="container-content page-wrapper">
+    <%= @block.(:breadcrumb, []) %>
+    <header class="content-header-sm">
+      <h1 class="page-title-lg"><%= @content.title %></h1>
+      <div class="content-meta-row">
+        <%= @block.(:copy_link, []) %>
+      </div>
+    </header>
+    <div class="prose-page">
+      <%= @inner_content %>
+    </div>
+  </article>
+</main>

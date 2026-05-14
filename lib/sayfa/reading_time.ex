@@ -11,11 +11,12 @@ defmodule Sayfa.ReadingTime do
 
   """
 
-  @words_per_minute 200
+  @default_words_per_minute 200
 
   @doc """
   Calculates reading time in minutes from an HTML string.
 
+  Uses `words_per_minute` from site config (default: 200).
   Returns at least 1 minute even for very short content.
 
   ## Examples
@@ -33,11 +34,13 @@ defmodule Sayfa.ReadingTime do
   """
   @spec calculate(String.t()) :: pos_integer()
   def calculate(html) when is_binary(html) do
+    wpm = Sayfa.Config.get(:words_per_minute, @default_words_per_minute)
+
     html
     |> strip_tags()
     |> String.split(~r/\s+/, trim: true)
     |> length()
-    |> then(&max(1, div(&1, @words_per_minute)))
+    |> then(&max(1, div(&1, wpm)))
   end
 
   defp strip_tags(html) do

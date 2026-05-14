@@ -99,8 +99,6 @@ defmodule Sayfa.Builder do
          _ <- timed_sync("Validate contents", verbose, fn -> Validator.validate_all(contents) end),
          contents <- timed_sync("Enrich contents", verbose, fn -> enrich_contents(contents) end),
          contents <-
-           timed_sync("Enrich prev/next", verbose, fn -> enrich_prev_next(contents) end),
-         contents <-
            timed_sync("Auto-link translations", verbose, fn ->
              auto_link_translations(contents, config)
            end),
@@ -121,6 +119,8 @@ defmodule Sayfa.Builder do
          {:ok, sitemap_count} <-
            timed("Generate sitemap", verbose, fn -> build_sitemap(contents, config) end) do
       timed_sync("Generate robots.txt", verbose, fn -> build_robots_txt(config) end)
+
+      timed_sync("Generate 404 page", verbose, fn -> generate_404_page(config) end)
 
       timed_sync("Copy theme assets", verbose, fn ->
         Sayfa.Theme.copy_assets(config, config.output_dir)
@@ -833,51 +833,6 @@ defmodule Sayfa.Builder do
     end)
   end
 
-  # --- Prev / Next Navigation ---
-
-  defp enrich_prev_next(contents) do
-    # Build sorted lists per {content_type, lang_prefix} (ascending = oldest first)
-    # so prev = older, next = newer from the reader's perspective.
-    sorted_groups =
-      contents
-      |> Enum.group_by(fn c -> {c.meta["content_type"], c.meta["lang_prefix"] || ""} end)
-      |> Map.new(fn {key, items} ->
-        sorted = items |> Enum.filter(& &1.date) |> Content.sort_by_date(:asc)
-        {key, sorted}
-      end)
-
-    Enum.map(contents, &enrich_one_prev_next(&1, sorted_groups))
-  end
-
-  defp enrich_one_prev_next(content, _sorted_groups) when is_nil(content.date), do: content
-
-  defp enrich_one_prev_next(content, sorted_groups) do
-    key = {content.meta["content_type"], content.meta["lang_prefix"] || ""}
-    sorted_items = Map.get(sorted_groups, key, [])
-    idx = Enum.find_index(sorted_items, fn c -> c.slug == content.slug end)
-    apply_prev_next(content, sorted_items, idx)
-  end
-
-  defp apply_prev_next(content, _sorted_items, nil), do: content
-
-  defp apply_prev_next(content, sorted_items, idx) do
-    prev_item = if idx > 0, do: Enum.at(sorted_items, idx - 1), else: nil
-    next_item = if idx < length(sorted_items) - 1, do: Enum.at(sorted_items, idx + 1), else: nil
-
-    meta =
-      content.meta
-      |> Map.put("prev_content", nav_info(prev_item))
-      |> Map.put("next_content", nav_info(next_item))
-
-    %{content | meta: meta}
-  end
-
-  defp nav_info(nil), do: nil
-
-  defp nav_info(content) do
-    %{title: content.title, url: Content.url(content), date: content.date, slug: content.slug}
-  end
-
   # --- Feeds ---
 
   defp build_feeds(contents, config) do
@@ -1041,6 +996,19 @@ defmodule Sayfa.Builder do
     path = Path.join(config.output_dir, "robots.txt")
     File.mkdir_p!(Path.dirname(path))
     File.write!(path, content)
+  end
+
+  defp generate_404_page(config) do
+    case Template.render_error_page("404", config: config, page_url: "/404.html") do
+      {:ok, html} ->
+        path = Path.join(config.output_dir, "404.html")
+        File.write!(path, html)
+        :ok
+
+      {:error, reason} ->
+        Logger.warning("Failed to generate 404 page: #{inspect(reason)}")
+        :ok
+    end
   end
 
   # --- Auto-link translations ---

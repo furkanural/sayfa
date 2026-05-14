@@ -660,48 +660,6 @@ defmodule Sayfa.BuilderTest do
     end
   end
 
-  describe "prev/next navigation" do
-    test "injects prev_content and next_content into content meta", ctx do
-      File.write!(Path.join(ctx.articles_dir, "2024-01-01-first.md"), """
-      ---
-      title: "First article"
-      date: 2024-01-01
-      ---
-      First.
-      """)
-
-      File.write!(Path.join(ctx.articles_dir, "2024-02-01-second.md"), """
-      ---
-      title: "Second article"
-      date: 2024-02-01
-      ---
-      Second.
-      """)
-
-      File.write!(Path.join(ctx.articles_dir, "2024-03-01-third.md"), """
-      ---
-      title: "Third article"
-      date: 2024-03-01
-      ---
-      Third.
-      """)
-
-      assert {:ok, _result} = Builder.build(build_opts(ctx))
-
-      # Middle article should have both prev and next
-      second_html = File.read!(Path.join([ctx.output_dir, "articles", "second", "index.html"]))
-      assert second_html =~ "<!DOCTYPE html>"
-
-      # First article (oldest) should exist
-      first_html = File.read!(Path.join([ctx.output_dir, "articles", "first", "index.html"]))
-      assert first_html =~ "First article"
-
-      # Third article (newest) should exist
-      third_html = File.read!(Path.join([ctx.output_dir, "articles", "third", "index.html"]))
-      assert third_html =~ "Third article"
-    end
-  end
-
   describe "clean/1" do
     test "removes the output directory", ctx do
       File.mkdir_p!(ctx.output_dir)
