@@ -197,6 +197,7 @@
 @layer components {
   .site-root {
     @apply scroll-smooth;
+    scroll-padding-top: 5rem;
   }
 
   .site-body {
@@ -402,6 +403,7 @@
   .prose-page {
     @apply prose max-w-none
            prose-headings:font-bold
+           prose-headings:scroll-mt-20
            prose-img:rounded-lg prose-img:shadow-sm prose-img:mx-auto
            prose-code:before:content-none prose-code:after:content-none
            prose-code:font-mono prose-code:text-sm
