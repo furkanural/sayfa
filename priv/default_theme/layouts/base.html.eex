@@ -15,6 +15,8 @@
   <%= for link <- Map.get(assigns, :feed_links, []) do %>
     <link rel="alternate" type="<%= link.type %>" title="<%= link.title %>" href="<%= link.url %>">
   <% end %>
+    <link rel="preload" href="/assets/fonts/inter-latin-400.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/assets/fonts/inter-latin-600.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="/assets/fonts/noto-sans-arabic-400.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="/assets/fonts/noto-sans-arabic-600.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="/assets/css/main.css">

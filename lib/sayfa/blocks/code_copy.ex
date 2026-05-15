@@ -25,7 +25,11 @@ defmodule Sayfa.Blocks.CodeCopy do
 
   @impl true
   def render(assigns) do
-    selector = Block.escape_html(Map.get(assigns, :selector, "pre code"))
+    selector =
+      Block.escape_html(
+        Map.get(assigns, :selector, Sayfa.Config.get(:code_copy_selector, "pre code"))
+      )
+
     t = Map.get(assigns, :t, Sayfa.I18n.default_translate_function())
     copy_text = t.("copy")
     copied_text = t.("code_copied")

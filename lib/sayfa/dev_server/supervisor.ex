@@ -18,6 +18,7 @@ defmodule Sayfa.DevServer.Supervisor do
   - `:output_dir` — directory to serve (default: "dist")
   - `:content_dir` — content directory to watch (default: "content")
   """
+  @spec start_link(keyword()) :: Supervisor.on_start()
   def start_link(opts) do
     Supervisor.start_link(__MODULE__, opts, name: __MODULE__)
   end

@@ -197,6 +197,7 @@
 @layer components {
   .site-root {
     @apply scroll-smooth;
+    scroll-padding-top: 5rem;
   }
 
   .site-body {
@@ -212,36 +213,6 @@
     --card-shadow-hover: 0 1px 0 color-mix(in srgb, var(--site-border) 55%, transparent),
       0 18px 28px -26px color-mix(in srgb, var(--color-ctp-crust) 78%, transparent);
     --card-lift: -1px;
-  }
-
-  .btn-primary {
-    @apply inline-flex items-center gap-1.5 px-4 py-2.5 rounded-lg transition-colors;
-    border: 1px solid var(--color-ctp-blue);
-    background-color: color-mix(in srgb, var(--color-ctp-blue) 8%, transparent);
-    color: var(--color-ctp-blue);
-  }
-
-  .btn-primary:hover {
-    background-color: color-mix(in srgb, var(--color-ctp-blue) 15%, transparent);
-  }
-
-  .btn-secondary {
-    @apply inline-flex items-center gap-1.5 px-4 py-2.5 rounded-lg transition-colors;
-    background-color: var(--site-surface);
-    border: 1px solid color-mix(in srgb, var(--site-border) 70%, transparent);
-  }
-
-  .btn-secondary:hover {
-    border-color: color-mix(in srgb, var(--color-ctp-blue) 30%, transparent);
-  }
-
-  .btn-ghost {
-    @apply inline-flex items-center gap-1.5 transition-colors;
-    color: var(--color-ctp-subtext0);
-  }
-
-  .btn-ghost:hover {
-    color: var(--color-ctp-blue);
   }
 
   .btn-disabled {
@@ -432,6 +403,7 @@
   .prose-page {
     @apply prose max-w-none
            prose-headings:font-bold
+           prose-headings:scroll-mt-20
            prose-img:rounded-lg prose-img:shadow-sm prose-img:mx-auto
            prose-code:before:content-none prose-code:after:content-none
            prose-code:font-mono prose-code:text-sm
@@ -710,24 +682,6 @@
     border-color: color-mix(in srgb, var(--color-ctp-surface1) 70%, transparent);
   }
 
-  .recent-article-link {
-    @apply flex items-baseline gap-4 py-4;
-  }
-
-  .recent-article-date {
-    @apply shrink-0 text-sm tabular-nums w-22;
-    color: var(--color-ctp-subtext0);
-  }
-
-  .recent-article-title {
-    @apply text-sm font-medium;
-    color: var(--color-ctp-text);
-  }
-
-  .recent-article-link:hover .recent-article-title {
-    color: var(--color-ctp-blue);
-  }
-
   .related-section {
     @apply mt-12 pt-8 border-t;
     border-color: color-mix(in srgb, var(--color-ctp-surface1) 70%, transparent);
@@ -888,7 +842,8 @@
     color: var(--color-ctp-blue);
   }
 
-  .tag-cloud-wrap {
+  .tag-cloud-wrap,
+  .category-cloud-wrap {
     @apply flex flex-wrap gap-2;
   }
 
@@ -1127,10 +1082,6 @@
     @apply w-5 h-5;
   }
 
-  .icon-shrink-0 {
-    @apply shrink-0;
-  }
-
   .icon-chevron {
     @apply w-3 h-3 transition-transform;
   }
@@ -1139,17 +1090,9 @@
     @apply w-5 h-5;
   }
 
-  .is-hidden {
-    @apply hidden;
-  }
-
   /* Content width containers */
   .container-content {
     @apply max-w-2xl xl:max-w-3xl mx-auto px-5 sm:px-6 xl:px-8;
-  }
-
-  .container-content-narrow {
-    @apply max-w-2xl mx-auto px-5 sm:px-6;
   }
 
   .container-content-wide {
@@ -1159,10 +1102,6 @@
   /* Vertical spacing utilities */
   .section-spacing {
     @apply pb-16;
-  }
-
-  .section-spacing-sm {
-    @apply pb-12;
   }
 
   .section-spacing-lg {
@@ -1195,16 +1134,6 @@
     --tw-prose-pre-bg:        var(--color-ctp-mantle);
     --tw-prose-th-borders:    var(--color-ctp-surface1);
     --tw-prose-td-borders:    var(--color-ctp-surface0);
-  }
-
-  .prose-code {
-    @apply prose-code:before:content-none prose-code:after:content-none
-           prose-code:font-mono prose-code:text-sm
-           prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded;
-  }
-
-  .prose-toc {
-    @apply prose-headings:scroll-mt-20;
   }
 
   /* Prevent code blocks from overflowing viewport on mobile */
@@ -1301,30 +1230,16 @@ button { cursor: pointer; }
 }
 
 /* List item hover accent */
-.list-accent {
-  @apply relative pl-0 transition-[padding-left] duration-200;
-}
 .list-entry {
   @apply relative pl-0 transition-[padding-left] duration-200;
-}
-.list-accent::before {
-  content: '';
-  @apply absolute left-0 top-0 bottom-0 w-0 rounded-xs transition-[width] duration-200;
-  background-color: var(--color-ctp-blue);
 }
 .list-entry::before {
   content: '';
   @apply absolute left-0 top-0 bottom-0 w-0 rounded-xs transition-[width] duration-200;
   background-color: var(--color-ctp-blue);
 }
-.list-accent:hover {
-  @apply pl-4;
-}
 .list-entry:hover {
   @apply pl-4;
-}
-.list-accent:hover::before {
-  @apply w-[3px];
 }
 .list-entry:hover::before {
   @apply w-[3px];

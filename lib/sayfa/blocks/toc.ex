@@ -28,7 +28,7 @@ defmodule Sayfa.Blocks.TOC do
   @impl true
   def render(assigns) do
     content = Map.get(assigns, :content)
-    variant = Map.get(assigns, :variant, :sidebar)
+    variant = Map.get(assigns, :variant, Sayfa.Config.get(:toc_variant, :sidebar))
     t = Map.get(assigns, :t, Sayfa.I18n.default_translate_function())
     toc = get_toc(content)
 

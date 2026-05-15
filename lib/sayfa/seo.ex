@@ -91,7 +91,7 @@ defmodule Sayfa.SEO do
   @doc """
   Generates a JSON-LD structured data script tag.
 
-  For articles/notes, generates a `BlogArtice` schema. For pages, generates a
+  For articles/notes, generates a `BlogPosting` schema. For pages, generates a
   `WebPage` schema. For nil (list pages), generates a `WebSite` schema.
 
   ## Examples
@@ -272,7 +272,7 @@ defmodule Sayfa.SEO do
     |> then(&Regex.replace(~r/<[^>]*>/, &1, ""))
     |> then(&Regex.replace(~r/\s+/, &1, " "))
     |> String.trim()
-    |> String.slice(0, 160)
+    |> String.slice(0, Sayfa.Config.get(:seo_description_length, 160))
   end
 
   defp meta(name, content) do

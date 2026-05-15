@@ -5,20 +5,5 @@ defmodule Sayfa.ContentTypes.Project do
   Projects live in `content/projects/` and are rendered at `/projects/{slug}/`.
   """
 
-  @behaviour Sayfa.Behaviours.ContentType
-
-  @impl true
-  def name, do: :project
-
-  @impl true
-  def directory, do: "projects"
-
-  @impl true
-  def url_prefix, do: "projects"
-
-  @impl true
-  def default_layout, do: "project"
-
-  @impl true
-  def required_fields, do: [:title]
+  use Sayfa.ContentTypes.Base, name: :project, required_fields: [:title]
 end

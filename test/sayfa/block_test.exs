@@ -8,7 +8,6 @@ defmodule Sayfa.BlockTest do
   alias Sayfa.Blocks.Footer
   alias Sayfa.Blocks.Header
   alias Sayfa.Blocks.ReadingTime, as: ReadingTimeBlock
-  alias Sayfa.Blocks.RecentArticles
   alias Sayfa.Blocks.RecentContent
   alias Sayfa.Blocks.SocialLinks
   alias Sayfa.Blocks.TagCloud
@@ -16,8 +15,8 @@ defmodule Sayfa.BlockTest do
   alias Sayfa.Content
 
   describe "default_blocks/0" do
-    test "returns 15 built-in blocks" do
-      assert length(Block.default_blocks()) == 15
+    test "returns 14 built-in blocks" do
+      assert length(Block.default_blocks()) == 14
     end
 
     test "all modules implement the block behaviour" do
@@ -41,7 +40,6 @@ defmodule Sayfa.BlockTest do
         :footer,
         :social_links,
         :toc,
-        :recent_articles,
         :tag_cloud,
         :reading_time,
         :code_copy,
@@ -504,131 +502,6 @@ defmodule Sayfa.BlockTest do
 
     test "returns empty string when content is nil" do
       assert TOCBlock.render(%{}) == ""
-    end
-  end
-
-  describe "RecentArticles" do
-    test "renders recent articles" do
-      contents = [
-        %Content{
-          title: "Article A",
-          body: "",
-          date: ~D[2024-06-01],
-          slug: "Article-a",
-          meta: %{"content_type" => "articles", "url_prefix" => "articles"}
-        },
-        %Content{
-          title: "Article B",
-          body: "",
-          date: ~D[2024-01-01],
-          slug: "Article-b",
-          meta: %{"content_type" => "articles", "url_prefix" => "articles"}
-        },
-        %Content{title: "Page", body: "", meta: %{"content_type" => "pages"}}
-      ]
-
-      html = RecentArticles.render(%{contents: contents, limit: 2})
-      assert html =~ "Recent Articles"
-      assert html =~ "Article A"
-      assert html =~ "Article B"
-      refute html =~ "Page"
-    end
-
-    test "returns empty string with no articles" do
-      assert RecentArticles.render(%{contents: []}) == ""
-    end
-
-    test "includes lang_prefix in article URLs" do
-      contents = [
-        %Content{
-          title: "Merhaba",
-          body: "",
-          date: ~D[2024-06-01],
-          slug: "merhaba",
-          meta: %{"content_type" => "articles", "url_prefix" => "articles", "lang_prefix" => "tr"}
-        }
-      ]
-
-      html = RecentArticles.render(%{contents: contents, limit: 5})
-      assert html =~ "/tr/articles/merhaba"
-    end
-
-    test "filters contents by language" do
-      contents = [
-        %Content{
-          title: "English Article",
-          body: "",
-          date: ~D[2024-06-01],
-          slug: "english-Article",
-          lang: :en,
-          meta: %{"content_type" => "articles", "url_prefix" => "articles"}
-        },
-        %Content{
-          title: "Turkish Article",
-          body: "",
-          date: ~D[2024-06-01],
-          slug: "turkish-Article",
-          lang: :tr,
-          meta: %{"content_type" => "articles", "url_prefix" => "articles", "lang_prefix" => "tr"}
-        }
-      ]
-
-      html =
-        RecentArticles.render(%{
-          contents: contents,
-          lang: :tr,
-          site: %{default_lang: :en}
-        })
-
-      assert html =~ "Turkish Article"
-      refute html =~ "English Article"
-    end
-
-    test "view all link includes lang prefix for non-default language" do
-      contents = [
-        %Content{
-          title: "Turkish Article",
-          body: "",
-          date: ~D[2024-06-01],
-          slug: "Article",
-          lang: :tr,
-          meta: %{"content_type" => "articles", "url_prefix" => "articles", "lang_prefix" => "tr"}
-        }
-      ]
-
-      html =
-        RecentArticles.render(%{
-          contents: contents,
-          lang: :tr,
-          site: %{default_lang: :en},
-          show_view_all: true
-        })
-
-      assert html =~ ~s(href="/tr/articles/")
-    end
-
-    test "view all link has no prefix for default language" do
-      contents = [
-        %Content{
-          title: "English Article",
-          body: "",
-          date: ~D[2024-06-01],
-          slug: "Article",
-          lang: :en,
-          meta: %{"content_type" => "articles", "url_prefix" => "articles"}
-        }
-      ]
-
-      html =
-        RecentArticles.render(%{
-          contents: contents,
-          lang: :en,
-          site: %{default_lang: :en},
-          show_view_all: true
-        })
-
-      assert html =~ ~s(href="/articles/")
-      refute html =~ ~s(href="/en/articles/")
     end
   end
 

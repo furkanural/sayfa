@@ -5,20 +5,5 @@ defmodule Sayfa.ContentTypes.Talk do
   Talks live in `content/talks/` and are rendered at `/talks/{slug}/`.
   """
 
-  @behaviour Sayfa.Behaviours.ContentType
-
-  @impl true
-  def name, do: :talk
-
-  @impl true
-  def directory, do: "talks"
-
-  @impl true
-  def url_prefix, do: "talks"
-
-  @impl true
-  def default_layout, do: "talk"
-
-  @impl true
-  def required_fields, do: [:title]
+  use Sayfa.ContentTypes.Base, name: :talk, required_fields: [:title]
 end

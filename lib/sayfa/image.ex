@@ -52,10 +52,10 @@ defmodule Sayfa.Image do
   def responsive(src, opts) do
     alt = Keyword.fetch!(opts, :alt)
     class = Keyword.get(opts, :class, "")
-    loading = Keyword.get(opts, :loading, "lazy")
-    decoding = Keyword.get(opts, :decoding, "async")
+    loading = Keyword.get(opts, :loading, Sayfa.Config.get(:image_loading, "lazy"))
+    decoding = Keyword.get(opts, :decoding, Sayfa.Config.get(:image_decoding, "async"))
     sizes = Keyword.get(opts, :sizes, "100vw")
-    widths = Keyword.get(opts, :widths, [400, 800, 1200])
+    widths = Keyword.get(opts, :widths, Sayfa.Config.get(:image_widths, [400, 800, 1200]))
 
     srcset = generate_srcset(src, widths)
 
