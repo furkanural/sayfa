@@ -18,8 +18,6 @@ defmodule Sayfa.Excerpt do
 
   """
 
-  @default_length 160
-
   @doc """
   Extracts an excerpt from content.
 
@@ -30,7 +28,7 @@ defmodule Sayfa.Excerpt do
 
   ## Options
 
-  - `:length` - Maximum length of excerpt (default: #{@default_length})
+  - `:length` - Maximum length of excerpt (default: 160)
 
   ## Examples
 
@@ -72,7 +70,7 @@ defmodule Sayfa.Excerpt do
   defp strip_html(_), do: ""
 
   defp truncate(text, opts) when is_binary(text) do
-    max_length = Keyword.get(opts, :length, @default_length)
+    max_length = Keyword.get(opts, :length, Sayfa.Config.get(:excerpt_length, 160))
 
     if String.length(text) <= max_length do
       text

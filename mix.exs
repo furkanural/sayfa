@@ -50,13 +50,22 @@ defmodule Sayfa.MixProject do
         "LICENSE"
       ],
       groups_for_modules: [
-        Core: [Sayfa, Sayfa.Builder, Sayfa.Config, Sayfa.Content, Sayfa.Content.Raw],
+        Core: [
+          Sayfa,
+          Sayfa.Builder,
+          Sayfa.Config,
+          Sayfa.Content,
+          Sayfa.Content.Raw,
+          Sayfa.ContentType,
+          Sayfa.Validator
+        ],
         "Content Types": [
           Sayfa.ContentTypes.Article,
           Sayfa.ContentTypes.Note,
+          Sayfa.ContentTypes.Page,
           Sayfa.ContentTypes.Project,
           Sayfa.ContentTypes.Talk,
-          Sayfa.ContentTypes.Page
+          Sayfa.ContentTypes.Base
         ],
         "Templates & Blocks": [Sayfa.Template, Sayfa.Theme, Sayfa.Block],
         Blocks: [
@@ -64,7 +73,6 @@ defmodule Sayfa.MixProject do
           Sayfa.Blocks.Footer,
           Sayfa.Blocks.SocialLinks,
           Sayfa.Blocks.Toc,
-          Sayfa.Blocks.RecentArticles,
           Sayfa.Blocks.TagCloud,
           Sayfa.Blocks.CategoryCloud,
           Sayfa.Blocks.ReadingTime,
@@ -74,7 +82,9 @@ defmodule Sayfa.MixProject do
           Sayfa.Blocks.Breadcrumb,
           Sayfa.Blocks.LanguageSwitcher,
           Sayfa.Blocks.RelatedContent,
-          Sayfa.Blocks.Analytics
+          Sayfa.Blocks.Analytics,
+          Sayfa.Blocks.Cloud,
+          Sayfa.Blocks.Helpers
         ],
         Features: [
           Sayfa.Feed,
@@ -84,7 +94,11 @@ defmodule Sayfa.MixProject do
           Sayfa.ReadingTime,
           Sayfa.Toc,
           Sayfa.I18n,
-          Sayfa.Markdown
+          Sayfa.Markdown,
+          Sayfa.DateFormat,
+          Sayfa.Excerpt,
+          Sayfa.Image,
+          Sayfa.Hooks.ResponsiveImages
         ],
         Behaviours: [
           Sayfa.Behaviours.Block,
@@ -102,9 +116,13 @@ defmodule Sayfa.MixProject do
           Mix.Tasks.Sayfa.Build,
           Mix.Tasks.Sayfa.Serve,
           Mix.Tasks.Sayfa.Upgrade,
+          Mix.Tasks.Sayfa.Clean,
           Mix.Tasks.Sayfa.Gen.Layout,
           Mix.Tasks.Sayfa.Gen.Content,
-          Mix.Tasks.Sayfa.Gen.Lang
+          Mix.Tasks.Sayfa.Gen.Lang,
+          Mix.Tasks.Sayfa.Gen.Block,
+          Mix.Tasks.Sayfa.Gen.ContentType,
+          Mix.Tasks.Sayfa.Gen.Images
         ]
       ]
     ]
@@ -115,7 +133,7 @@ defmodule Sayfa.MixProject do
       licenses: ["MIT"],
       links: %{"GitHub" => @source_url},
       authors: ["Furkan Ural"],
-      files: ~w(lib priv .formatter.exs mix.exs README.md LICENSE CHANGELOG.md)
+      files: ~w(lib priv .formatter.exs mix.exs README.md LICENSE CHANGELOG.md CONTRIBUTING.md)
     ]
   end
 end

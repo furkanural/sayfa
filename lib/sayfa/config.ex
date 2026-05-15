@@ -46,7 +46,22 @@ defmodule Sayfa.Config do
     static_dir: "static",
     highlight_theme: "github_light",
     view_transitions: false,
-    words_per_minute: 200
+    words_per_minute: 200,
+    fingerprint: true,
+    excerpt_length: 160,
+    feed_summary_length: 300,
+    seo_description_length: 160,
+    live_reload_interval_ms: 1000,
+    rebuild_debounce_ms: 200,
+    watched_extensions: ~w(.md .eex .html .css .js .exs .yaml .yml .json),
+    image_loading: "lazy",
+    image_decoding: "async",
+    image_widths: [400, 800, 1200],
+    recent_articles_limit: 5,
+    recent_content_limit: 5,
+    related_content_limit: 3,
+    code_copy_selector: "pre code",
+    toc_variant: :sidebar
   }
 
   @doc """

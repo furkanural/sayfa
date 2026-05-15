@@ -43,7 +43,8 @@ defmodule Sayfa.Tailwind do
       #=> :ok
 
   """
-  @spec compile(map(), String.t(), keyword()) :: :ok | :skipped
+  @spec compile(map(), String.t(), keyword()) ::
+          :ok | :skipped | {:error, {:tailwind_failed, non_neg_integer()}}
   def compile(config, output_dir, opts \\ []) do
     case resolve_input_css(config) do
       nil ->
@@ -70,7 +71,7 @@ defmodule Sayfa.Tailwind do
 
           code ->
             Logger.warning("TailwindCSS compilation failed (exit #{code})")
-            :ok
+            {:error, {:tailwind_failed, code}}
         end
     end
   end

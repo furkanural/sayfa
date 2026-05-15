@@ -13,7 +13,8 @@ defmodule Sayfa.DevServer.Watcher do
 
   require Logger
 
-  @relevant_extensions ~w(.md .eex .html .css .js .exs .yaml .yml .json)
+  defp relevant_extensions,
+    do: Sayfa.Config.get(:watched_extensions, ~w(.md .eex .html .css .js .exs .yaml .yml .json))
 
   # --- Public API ---
 
@@ -24,6 +25,7 @@ defmodule Sayfa.DevServer.Watcher do
 
   - `:dirs` — list of directories to watch
   """
+  @spec start_link(keyword()) :: GenServer.on_start()
   def start_link(opts) do
     GenServer.start_link(__MODULE__, opts, name: __MODULE__)
   end
@@ -68,6 +70,6 @@ defmodule Sayfa.DevServer.Watcher do
   @doc false
   def relevant_file?(path) do
     ext = Path.extname(path)
-    ext in @relevant_extensions
+    ext in relevant_extensions()
   end
 end

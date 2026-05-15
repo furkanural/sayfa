@@ -114,26 +114,26 @@ defmodule Sayfa.Blocks.Header do
   defp render_nav(nav, lang_switcher_desktop, lang_switcher_mobile, page_url) do
     desktop_items =
       Enum.map_join(nav, "", fn {label, url} ->
-        classes =
+        {classes, attrs} =
           if active?(url, page_url) do
-            "header-nav-link-active\" aria-current=\"page"
+            {"header-nav-link-active", " aria-current=\"page\""}
           else
-            "header-nav-link"
+            {"header-nav-link", ""}
           end
 
-        "<a href=\"#{Block.escape_html(url)}\" class=\"#{classes}\">#{Block.escape_html(label)}</a>"
+        "<a href=\"#{Block.escape_html(url)}\" class=\"#{classes}\"#{attrs}>#{Block.escape_html(label)}</a>"
       end)
 
     mobile_items =
       Enum.map_join(nav, "", fn {label, url} ->
-        classes =
+        {classes, attrs} =
           if active?(url, page_url) do
-            "header-mobile-link-active\" aria-current=\"page"
+            {"header-mobile-link-active", " aria-current=\"page\""}
           else
-            "header-mobile-link"
+            {"header-mobile-link", ""}
           end
 
-        "<a href=\"#{Block.escape_html(url)}\" class=\"#{classes}\">#{Block.escape_html(label)}</a>"
+        "<a href=\"#{Block.escape_html(url)}\" class=\"#{classes}\"#{attrs}>#{Block.escape_html(label)}</a>"
       end)
 
     """

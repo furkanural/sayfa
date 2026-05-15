@@ -271,11 +271,11 @@ defmodule Sayfa.Template do
 
     block_fn = Sayfa.Block.build_helper(block_ctx)
 
-    layout_path =
+    layout_path_or_error =
       case Keyword.get(opts, :layouts_dir) do
         nil ->
           Sayfa.Theme.resolve_layout(layout_name, config) ||
-            raise "Layout not found: #{layout_name}"
+            {:error, {:layout_not_found, layout_name}}
 
         dir ->
           Path.join(dir, "#{layout_name}.html.eex")
@@ -300,7 +300,8 @@ defmodule Sayfa.Template do
       t: t_fn
     ]
 
-    with {:ok, layout_html} <- render_file(layout_path, assigns) do
+    with layout_path when is_binary(layout_path) <- layout_path_or_error,
+         {:ok, layout_html} <- render_file(layout_path, assigns) do
       render_file(base_path, [inner_content: layout_html] ++ assigns)
     end
   end

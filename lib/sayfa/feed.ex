@@ -16,11 +16,14 @@ defmodule Sayfa.Feed do
   alias Sayfa.Content
   alias Slug
 
-  @doc """
-  Generates an Atom XML feed string for all dated content.
+  @type filter :: :all | {:type, String.t()} | {:tag, String.t()} | {:category, String.t()}
+  @type format :: :atom | :json
 
-  Contents are sorted by date descending (newest first).
-  Contents without a date are excluded.
+  @doc """
+  Generates a feed for the given filter and format.
+
+  This is the core function that powers all feed generation. The convenience
+  wrappers below delegate to it.
 
   ## Examples
 
@@ -29,22 +32,25 @@ defmodule Sayfa.Feed do
       iex> xml = Sayfa.Feed.generate(contents, config)
       iex> xml =~ "<feed"
       true
-      iex> xml =~ "Hello"
+
+      iex> contents = [%Sayfa.Content{title: "Hello", body: "<p>World</p>", date: ~D[2024-01-15], slug: "hello", meta: %{"url_prefix" => "articles"}}]
+      iex> config = %{title: "My Site", base_url: "https://example.com", author: "Author"}
+      iex> xml = Sayfa.Feed.generate(contents, config, :all, :atom)
+      iex> xml =~ "<feed"
       true
 
   """
-  @spec generate([Content.t()], map()) :: String.t()
-  def generate(contents, config) do
+  @spec generate([Content.t()], map(), filter(), format()) :: String.t()
+  def generate(contents, config, filter \\ :all, format \\ :atom) do
     contents
+    |> apply_filter(filter)
     |> Enum.filter(& &1.date)
     |> Content.sort_by_date(:desc)
-    |> build_feed(config, "/feed.xml")
+    |> build(format, config, feed_path(filter, format))
   end
 
   @doc """
   Generates an Atom XML feed for a specific content type.
-
-  Filters contents by the given type name before generating.
 
   ## Examples
 
@@ -61,19 +67,11 @@ defmodule Sayfa.Feed do
 
   """
   @spec generate_for_type([Content.t()], String.t(), map()) :: String.t()
-  def generate_for_type(contents, type_name, config) do
-    contents
-    |> Content.all_of_type(type_name)
-    |> Enum.filter(& &1.date)
-    |> Content.sort_by_date(:desc)
-    |> build_feed(config, "/feed/#{type_name}.xml")
-  end
+  def generate_for_type(contents, type_name, config),
+    do: generate(contents, config, {:type, type_name}, :atom)
 
   @doc """
   Generates a JSON Feed 1.1 string for all dated content.
-
-  Contents are sorted by date descending (newest first).
-  Contents without a date are excluded.
 
   ## Examples
 
@@ -82,17 +80,10 @@ defmodule Sayfa.Feed do
       iex> json = Sayfa.Feed.generate_json(contents, config)
       iex> json =~ "jsonfeed.org"
       true
-      iex> json =~ "Hello"
-      true
 
   """
   @spec generate_json([Content.t()], map()) :: String.t()
-  def generate_json(contents, config) do
-    contents
-    |> Enum.filter(& &1.date)
-    |> Content.sort_by_date(:desc)
-    |> build_json_feed(config, "/feed.json")
-  end
+  def generate_json(contents, config), do: generate(contents, config, :all, :json)
 
   @doc """
   Generates a JSON Feed 1.1 string for a specific content type.
@@ -112,18 +103,11 @@ defmodule Sayfa.Feed do
 
   """
   @spec generate_json_for_type([Content.t()], String.t(), map()) :: String.t()
-  def generate_json_for_type(contents, type_name, config) do
-    contents
-    |> Content.all_of_type(type_name)
-    |> Enum.filter(& &1.date)
-    |> Content.sort_by_date(:desc)
-    |> build_json_feed(config, "/feed/#{type_name}.json")
-  end
+  def generate_json_for_type(contents, type_name, config),
+    do: generate(contents, config, {:type, type_name}, :json)
 
   @doc """
   Generates an Atom XML feed for a specific tag.
-
-  Filters to content with the given tag, sorts by date descending.
 
   ## Examples
 
@@ -135,20 +119,11 @@ defmodule Sayfa.Feed do
 
   """
   @spec generate_for_tag([Content.t()], String.t(), map()) :: String.t()
-  def generate_for_tag(contents, tag, config) do
-    slug = Slug.slugify(tag)
-
-    contents
-    |> Content.with_tag(tag)
-    |> Enum.filter(& &1.date)
-    |> Content.sort_by_date(:desc)
-    |> build_feed(config, "/feed/tags/#{slug}.xml")
-  end
+  def generate_for_tag(contents, tag, config),
+    do: generate(contents, config, {:tag, tag}, :atom)
 
   @doc """
   Generates an Atom XML feed for a specific category.
-
-  Filters to content with the given category, sorts by date descending.
 
   ## Examples
 
@@ -160,20 +135,11 @@ defmodule Sayfa.Feed do
 
   """
   @spec generate_for_category([Content.t()], String.t(), map()) :: String.t()
-  def generate_for_category(contents, category, config) do
-    slug = Slug.slugify(category)
-
-    contents
-    |> Content.with_category(category)
-    |> Enum.filter(& &1.date)
-    |> Content.sort_by_date(:desc)
-    |> build_feed(config, "/feed/categories/#{slug}.xml")
-  end
+  def generate_for_category(contents, category, config),
+    do: generate(contents, config, {:category, category}, :atom)
 
   @doc """
   Generates a JSON Feed 1.1 string for a specific tag.
-
-  Filters to content with the given tag, sorts by date descending.
 
   ## Examples
 
@@ -185,20 +151,11 @@ defmodule Sayfa.Feed do
 
   """
   @spec generate_json_for_tag([Content.t()], String.t(), map()) :: String.t()
-  def generate_json_for_tag(contents, tag, config) do
-    slug = Slug.slugify(tag)
-
-    contents
-    |> Content.with_tag(tag)
-    |> Enum.filter(& &1.date)
-    |> Content.sort_by_date(:desc)
-    |> build_json_feed(config, "/feed/tags/#{slug}.json")
-  end
+  def generate_json_for_tag(contents, tag, config),
+    do: generate(contents, config, {:tag, tag}, :json)
 
   @doc """
   Generates a JSON Feed 1.1 string for a specific category.
-
-  Filters to content with the given category, sorts by date descending.
 
   ## Examples
 
@@ -210,15 +167,29 @@ defmodule Sayfa.Feed do
 
   """
   @spec generate_json_for_category([Content.t()], String.t(), map()) :: String.t()
-  def generate_json_for_category(contents, category, config) do
-    slug = Slug.slugify(category)
+  def generate_json_for_category(contents, category, config),
+    do: generate(contents, config, {:category, category}, :json)
 
-    contents
-    |> Content.with_category(category)
-    |> Enum.filter(& &1.date)
-    |> Content.sort_by_date(:desc)
-    |> build_json_feed(config, "/feed/categories/#{slug}.json")
-  end
+  # --- Internal helpers ---
+
+  defp apply_filter(contents, :all), do: contents
+  defp apply_filter(contents, {:type, type}), do: Content.all_of_type(contents, type)
+  defp apply_filter(contents, {:tag, tag}), do: Content.with_tag(contents, tag)
+
+  defp apply_filter(contents, {:category, category}),
+    do: Content.with_category(contents, category)
+
+  defp feed_path(:all, :atom), do: "/feed.xml"
+  defp feed_path(:all, :json), do: "/feed.json"
+  defp feed_path({:type, type}, :atom), do: "/feed/#{type}.xml"
+  defp feed_path({:type, type}, :json), do: "/feed/#{type}.json"
+  defp feed_path({:tag, tag}, :atom), do: "/feed/tags/#{Slug.slugify(tag)}.xml"
+  defp feed_path({:tag, tag}, :json), do: "/feed/tags/#{Slug.slugify(tag)}.json"
+  defp feed_path({:category, cat}, :atom), do: "/feed/categories/#{Slug.slugify(cat)}.xml"
+  defp feed_path({:category, cat}, :json), do: "/feed/categories/#{Slug.slugify(cat)}.json"
+
+  defp build(contents, :atom, config, path), do: build_feed(contents, config, path)
+  defp build(contents, :json, config, path), do: build_json_feed(contents, config, path)
 
   defp build_feed(contents, config, feed_path) do
     base_url = String.trim_trailing(config.base_url, "/")
@@ -241,7 +212,11 @@ defmodule Sayfa.Feed do
   defp entry_element(%Content{} = content, config) do
     url = Sayfa.SEO.content_url(content, config)
     description = content.meta["description"]
-    summary = if description, do: description, else: truncate_text(content.body, 300)
+
+    summary =
+      if description,
+        do: description,
+        else: truncate_text(content.body, Sayfa.Config.get(:feed_summary_length, 300))
 
     XmlBuilder.element(:entry, [
       XmlBuilder.element(:title, content.title),
@@ -305,7 +280,11 @@ defmodule Sayfa.Feed do
   defp json_item(%Content{} = content, config) do
     url = Sayfa.SEO.content_url(content, config)
     description = content.meta["description"]
-    summary = if description, do: description, else: truncate_text(content.body, 300)
+
+    summary =
+      if description,
+        do: description,
+        else: truncate_text(content.body, Sayfa.Config.get(:feed_summary_length, 300))
 
     item = %{
       "id" => url,

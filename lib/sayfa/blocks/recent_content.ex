@@ -19,6 +19,7 @@ defmodule Sayfa.Blocks.RecentContent do
   @behaviour Sayfa.Behaviours.Block
 
   alias Sayfa.Block
+  alias Sayfa.Blocks.Helpers
   alias Sayfa.Content
   alias Sayfa.I18n
 
@@ -28,14 +29,14 @@ defmodule Sayfa.Blocks.RecentContent do
   @impl true
   def render(assigns) do
     contents = Map.get(assigns, :contents, [])
-    limit = Map.get(assigns, :limit, 5)
+    limit = Map.get(assigns, :limit, Sayfa.Config.get(:recent_content_limit, 5))
     t = Map.get(assigns, :t, I18n.default_translate_function())
     lang = Map.get(assigns, :lang)
     site = Map.get(assigns, :site, %{})
 
-    contents = filter_by_lang(contents, lang)
+    contents = Helpers.filter_by_lang(contents, lang)
 
-    lang_prefix = lang_prefix_path(lang, site)
+    lang_prefix = Helpers.lang_prefix_path(lang, site)
 
     {featured, rest} = extract_featured(contents)
     featured_html = render_featured(featured, t, lang, site)
@@ -222,20 +223,5 @@ defmodule Sayfa.Blocks.RecentContent do
               <span class="entry-link-title">#{title}</span>
             </a>\
     """
-  end
-
-  defp filter_by_lang(contents, nil), do: contents
-
-  defp filter_by_lang(contents, lang) do
-    Enum.filter(contents, &(&1.lang == lang))
-  end
-
-  defp lang_prefix_path(nil, _site), do: ""
-
-  defp lang_prefix_path(lang, site) do
-    case I18n.language_prefix(lang, site) do
-      "" -> ""
-      prefix -> "/#{prefix}"
-    end
   end
 end

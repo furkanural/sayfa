@@ -14,22 +14,26 @@ defmodule Sayfa.DevServer.Plug do
   plug(:match)
   plug(:dispatch)
 
-  @live_reload_script """
-  <script>
-  (function() {
-    var lastId = null;
-    setInterval(function() {
-      fetch('/__sayfa/build_id')
-        .then(function(r) { return r.text(); })
-        .then(function(id) {
-          if (lastId === null) { lastId = id; }
-          else if (id !== lastId) { location.reload(); }
-        })
-        .catch(function() {});
-    }, 1000);
-  })();
-  </script>
-  """
+  defp live_reload_script do
+    interval = Sayfa.Config.get(:live_reload_interval_ms, 1000)
+
+    """
+    <script>
+    (function() {
+      var lastId = null;
+      setInterval(function() {
+        fetch('/__sayfa/build_id')
+          .then(function(r) { return r.text(); })
+          .then(function(id) {
+            if (lastId === null) { lastId = id; }
+            else if (id !== lastId) { location.reload(); }
+          })
+          .catch(function() {});
+      }, #{interval});
+    })();
+    </script>
+    """
+  end
 
   get "/__sayfa/build_id" do
     build_id =
@@ -113,10 +117,12 @@ defmodule Sayfa.DevServer.Plug do
 
   @doc false
   def inject_live_reload(html) do
+    script = live_reload_script()
+
     if String.contains?(html, "</body>") do
-      String.replace(html, "</body>", @live_reload_script <> "</body>")
+      String.replace(html, "</body>", script <> "</body>")
     else
-      html <> @live_reload_script
+      html <> script
     end
   end
 end

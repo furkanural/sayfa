@@ -106,13 +106,13 @@ mix test
 
 ## Architecture Highlights
 
-**Sayfa** is an Elixir static site generator (v0.2.0) with a two-layer architecture:
+**Sayfa** is an Elixir static site generator (v0.4.2) with a two-layer architecture:
 1. **Sayfa (this package)** — Reusable Hex package with core SSG functionality
 2. **User sites** — Projects that depend on Sayfa via `{:sayfa, "~> x.x"}`
 
 ### Content Pipeline
 
-Content flows through 5 stages: Load → Parse → Transform → Render → Write
+Content flows through 12 stages: resolve config → discover files → parse → classify → filter drafts → validate → enrich → render → archives → indexes → feeds → sitemap.
 
 Key structs:
 - **`Sayfa.Content.Raw`** — Intermediate (path, front_matter, body_markdown)
@@ -120,7 +120,7 @@ Key structs:
 
 ### Block System
 
-Templates call `<%= @block.(:toc) %>` or `<%= @block.(:recent_articles, limit: 5) %>`.
+Templates call `<%= @block.(:toc) %>` or `<%= @block.(:recent_content, limit: 5) %>`.
 Blocks implement `Sayfa.Behaviours.Block` with `name/0` and `render/1`.
 
 ### Layout Composition (Three-Layer)
@@ -142,12 +142,14 @@ See [Appendix: Project Structure](#project-structure) for full tree.
 
 ## Common Gotchas
 
-- [ ] **MDEx requires Rust** — Users need Rust 1.93.0 for NIF compilation
+- [ ] **MDEx requires Rust** — Users need Rust 1.95.0+ for NIF compilation
 - [ ] **EEx templates** — Use `<%= %>` for output, `<% %>` for logic
 - [ ] **File paths** — Use `Path.join/2` for cross-platform compatibility
 - [ ] **Front matter dates** — YamlElixir returns Date structs, not strings
 - [ ] **Slug generation** — Handle Unicode properly with Slugify
 - [ ] **Optional deps** — `plug_cowboy` and `file_system` are optional; dev server requires them
+- [ ] **TailwindCSS** — `tailwind` is a runtime: false dependency; compilation happens at build time
+- [ ] **Asset fingerprinting** — Skipped in dev mode to prevent CSS loss on hot reload
 
 ---
 
@@ -159,7 +161,7 @@ See [Appendix: Project Structure](#project-structure) for full tree.
 lib/
 ├── sayfa.ex                    # Main public API
 ├── sayfa/
-│   ├── builder.ex              # Build pipeline
+│   ├── builder.ex              # Build pipeline (12 stages)
 │   ├── config.ex               # Configuration
 │   ├── content.ex              # Content loading/parsing
 │   ├── content/
@@ -170,60 +172,91 @@ lib/
 │   ├── theme.ex                # Theme loading
 │   ├── block.ex                # Block registry
 │   ├── tailwind.ex             # TailwindCSS compilation
-│   ├── feed.ex                 # Atom feed
+│   ├── feed.ex                 # Atom/JSON feed generation
 │   ├── sitemap.ex              # Sitemap generation
 │   ├── seo.ex                  # SEO meta tags
 │   ├── pagination.ex           # Pagination
 │   ├── reading_time.ex         # Reading time
-│   ├── toc.ex                  # Table of contents
+│   ├── toc.ex                  # Table of contents generation
 │   ├── i18n.ex                 # Multilingual support
+│   ├── excerpt.ex              # Content excerpt generation
+│   ├── date_format.ex          # Locale-aware date formatting
+│   ├── image.ex                # Image handling
+│   ├── validator.ex            # Content validation
 │   ├── behaviours/             # Extension contracts
 │   │   ├── block.ex
 │   │   ├── hook.ex
 │   │   └── content_type.ex
-│   ├── blocks/                 # Built-in blocks (16)
+│   ├── blocks/                 # Built-in blocks (14)
 │   │   ├── header.ex
 │   │   ├── footer.ex
 │   │   ├── social_links.ex
 │   │   ├── toc.ex
-│   │   ├── recent_articles.ex
 │   │   ├── tag_cloud.ex
 │   │   ├── category_cloud.ex
+│   │   ├── cloud.ex            # Shared cloud rendering logic
 │   │   ├── reading_time.ex
 │   │   ├── code_copy.ex
-│   │   ├── recent_content.ex
+│   │   ├── recent_content.ex   # Groups all content types
 │   │   ├── copy_link.ex
 │   │   ├── breadcrumb.ex
 │   │   ├── language_switcher.ex
-│   │   ├── related_articles.ex
 │   │   ├── related_content.ex
-│   │   └── analytics.ex
-│   ├── content_types/          # Built-in content types
+│   │   ├── analytics.ex
+│   │   └── helpers.ex          # Shared block helpers
+│   ├── content_types/          # Built-in content types (5)
 │   │   ├── article.ex
 │   │   ├── note.ex
 │   │   ├── project.ex
 │   │   ├── talk.ex
-│   │   └── page.ex
-│   └── dev_server/             # Dev server (optional)
+│   │   ├── page.ex
+│   │   └── base.ex             # Macro for content type definitions
+│   ├── hooks/                  # Built-in hooks
+│   │   └── responsive_images.ex  # Rewrites <img> to <picture> with WebP/AVIF
+│   └── dev_server/             # Dev server (optional deps)
 │       ├── supervisor.ex
 │       ├── plug.ex
 │       ├── watcher.ex
 │       └── rebuilder.ex
-└── mix/tasks/                  # CLI commands
+└── mix/tasks/                  # CLI commands (11 tasks)
     ├── sayfa.new.ex
     ├── sayfa.build.ex
+    ├── sayfa.clean.ex          # Remove build output directory
+    ├── sayfa.serve.ex
+    ├── sayfa.upgrade.ex        # Sync new theme files from package
     ├── sayfa.gen.layout.ex
     ├── sayfa.gen.content.ex
     ├── sayfa.gen.block.ex
     ├── sayfa.gen.content_type.ex
     ├── sayfa.gen.images.ex
-    └── sayfa.serve.ex
+    └── sayfa.gen.lang.ex       # Add a new language to an existing site
 
 priv/
-├── templates/new_site/         # mix sayfa.new scaffolding
+├── templates/
+│   ├── new_site/               # mix sayfa.new scaffolding
+│   ├── gen_block/              # Block generator template
+│   ├── gen_content_type/       # Content type generator template
+│   └── gen_images/             # Image optimization templates
 ├── translations/               # 14 built-in UI languages
 └── default_theme/
-    └── layouts/                # base, home, list, note, page, article
+    ├── layouts/                # 9 layouts
+    │   ├── 404.html.eex
+    │   ├── article.html.eex
+    │   ├── base.html.eex
+    │   ├── home.html.eex
+    │   ├── list.html.eex
+    │   ├── note.html.eex
+    │   ├── page.html.eex
+    │   ├── project.html.eex
+    │   └── talk.html.eex
+    └── assets/
+        ├── css/
+        │   ├── main.css
+        │   └── vendor/
+        │       └── catppuccin-mocha.css
+        └── js/
+            ├── enhancements.js
+            └── enhancements.min.js
 ```
 
 ### Code Conventions
@@ -234,6 +267,7 @@ priv/
 - Blocks: `Sayfa.Blocks.BlockName`
 - Content types: `Sayfa.ContentTypes.TypeName`
 - Mix tasks: `Mix.Tasks.Sayfa.TaskName`
+- Hooks: `Sayfa.Hooks.HookName`
 
 **Function Naming:**
 - `!` suffix for raising functions: `parse!`, `build!`
@@ -257,7 +291,7 @@ priv/
 
 - `Sayfa.Behaviours.Block` — `name/0`, `render/1`
 - `Sayfa.Behaviours.Hook` — `stage/0`, `run/2` (stages: `:before_parse`, `:after_parse`, `:before_render`, `:after_render`)
-- `Sayfa.Behaviours.ContentType` — content type contracts
+- `Sayfa.Behaviours.ContentType` — `name/0`, `directory/0`, `url_prefix/0`, `default_layout/0`, `required_fields/0`
 
 ### Configuration
 
@@ -290,7 +324,7 @@ mix sayfa.serve       # Dev server with hot reload
 ### CI/CD
 
 **CI** (`.github/workflows/ci.yml`) — Runs on push/PR to `main`:
-1. Setup Rust 1.93.0, Elixir 1.19.5/OTP 28
+1. Setup Rust 1.95.0, Elixir 1.19.5/OTP 28
 2. Cache deps and `_build`
 3. `mix compile --warnings-as-errors`
 4. `mix format --check-formatted`
@@ -319,11 +353,11 @@ No dates in URLs — keeps them clean and evergreen.
 ```yaml
 ---
 title: "Required title"           # Required
-date: 2024-01-15                  # Required for articles/notes
+date: 2024-01-15                  # Required for articles/notes/others
+description: "For SEO"            # Optional
 updated: 2024-01-20               # Optional
 lang: en                          # Optional (default: site default)
 slug: custom-slug                 # Optional (default: from filename)
-description: "For SEO"            # Optional
 categories: [cat1, cat2]          # Optional
 tags: [tag1, tag2]                # Optional
 draft: false                      # Optional (default: false)
@@ -340,23 +374,24 @@ translations:                     # Optional (auto-linked by builder)
 | Requirement | Version | Source |
 |-------------|---------|--------|
 | Elixir | 1.19.5 | `mise.toml` |
-| OTP | 28 | `mise.toml` |
-| Rust | 1.93.0 (stable) | `mise.toml` — required for MDEx NIF |
+| OTP | 28 | CI / `mise.toml` |
+| Rust | 1.95.0 (stable) | CI — required for MDEx NIF |
 
 ### Dependencies
 
 ```elixir
 # Core
-{:mdex, "~> 0.2"},                                      # Markdown (Rust NIF)
-{:yaml_elixir, "~> 2.9"},                               # YAML front matter
+{:mdex, "~> 0.12"},                                     # Markdown (Rust NIF)
+{:yaml_elixir, "~> 2.12"},                              # YAML front matter
 {:slugify, "~> 1.3"},                                   # URL slugs
-{:xml_builder, "~> 2.2"},                               # Atom/Sitemap XML
+{:xml_builder, "~> 2.4"},                               # Atom/Sitemap XML
+{:tailwind, "~> 0.4", runtime: false},                  # TailwindCSS compilation
 
 # Optional
-{:plug_cowboy, "~> 2.7", optional: true},               # Dev server
-{:file_system, "~> 1.0", optional: true},               # File watching
+{:plug_cowboy, "~> 2.8", optional: true},               # Dev server
+{:file_system, "~> 1.1", optional: true},               # File watching
 
 # Dev/Test only
-{:ex_doc, "~> 0.34", only: :dev, runtime: false},       # Documentation
+{:ex_doc, "~> 0.40", only: :dev, runtime: false},       # Documentation
 {:credo, "~> 1.7", only: [:dev, :test], runtime: false}  # Linting
 ```

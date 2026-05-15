@@ -159,7 +159,7 @@ defmodule Sayfa.Blocks.LanguageSwitcher do
       ~s(<span class="lang-current-code">#{current_code}</span>) <>
       chevron_svg <>
       ~s(</button>) <>
-      ~s(<div id="#{menu_id}" class="lang-menu is-hidden" role="listbox" aria-label="Language">) <>
+      ~s(<div id="#{menu_id}" class="lang-menu hidden" role="listbox" aria-label="Language">) <>
       dropdown_items <>
       ~s(</div>) <>
       ~s(</div>)

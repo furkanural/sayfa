@@ -10,7 +10,7 @@ defmodule Sayfa.DevServer.Rebuilder do
 
   require Logger
 
-  @debounce_ms 200
+  defp debounce_ms, do: Sayfa.Config.get(:rebuild_debounce_ms, 200)
 
   # --- Public API ---
 
@@ -21,6 +21,7 @@ defmodule Sayfa.DevServer.Rebuilder do
 
   - `:config` — keyword list of build options passed to `Sayfa.Builder.build/1`
   """
+  @spec start_link(keyword()) :: GenServer.on_start()
   def start_link(opts) do
     GenServer.start_link(__MODULE__, opts, name: __MODULE__)
   end
@@ -81,13 +82,13 @@ defmodule Sayfa.DevServer.Rebuilder do
   # --- Private ---
 
   defp schedule_rebuild(%{timer_ref: nil} = state) do
-    ref = Process.send_after(self(), :do_rebuild, @debounce_ms)
+    ref = Process.send_after(self(), :do_rebuild, debounce_ms())
     %{state | timer_ref: ref}
   end
 
   defp schedule_rebuild(%{timer_ref: old_ref} = state) do
     Process.cancel_timer(old_ref)
-    ref = Process.send_after(self(), :do_rebuild, @debounce_ms)
+    ref = Process.send_after(self(), :do_rebuild, debounce_ms())
     %{state | timer_ref: ref}
   end
 

@@ -1,7 +1,7 @@
 /* 1. Reading progress bar */
 (function () {
   var article = document.querySelector("article");
-  var prose = article && article.querySelector(".prose");
+  var prose = article && article.querySelector(".prose-article, .prose-page, .prose-content");
   if (!article || !prose) return;
 
   var bar = document.createElement("div");
@@ -102,21 +102,21 @@
 
     btn.addEventListener("click", function (e) {
       e.stopPropagation();
-      var isHidden = menu.classList.contains("is-hidden");
-      menu.classList.toggle("is-hidden");
+      var isHidden = menu.classList.contains("hidden");
+      menu.classList.toggle("hidden");
       btn.setAttribute("aria-expanded", String(isHidden));
     });
 
     document.addEventListener("click", function (e) {
       if (!switcher.contains(e.target)) {
-        menu.classList.add("is-hidden");
+        menu.classList.add("hidden");
         btn.setAttribute("aria-expanded", "false");
       }
     });
 
     document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape" && !menu.classList.contains("is-hidden")) {
-        menu.classList.add("is-hidden");
+      if (e.key === "Escape" && !menu.classList.contains("hidden")) {
+        menu.classList.add("hidden");
         btn.setAttribute("aria-expanded", "false");
         btn.focus();
       }

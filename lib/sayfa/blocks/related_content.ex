@@ -33,7 +33,7 @@ defmodule Sayfa.Blocks.RelatedContent do
   def render(assigns) do
     content = Map.get(assigns, :content)
     contents = Map.get(assigns, :contents, [])
-    limit = Map.get(assigns, :limit, 3)
+    limit = Map.get(assigns, :limit, Sayfa.Config.get(:related_content_limit, 3))
     t = Map.get(assigns, :t, Sayfa.I18n.default_translate_function())
     lang = Map.get(assigns, :lang)
     site = Map.get(assigns, :site, %{})

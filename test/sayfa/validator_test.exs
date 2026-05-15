@@ -57,5 +57,20 @@ defmodule Sayfa.ValidatorTest do
       content = make_content(meta: %{"content_type" => "custom_type"})
       assert :ok = Validator.validate_one(content)
     end
+
+    test "returns :ok for projects without date (warning logged)" do
+      content = make_content(meta: %{"content_type" => "projects"})
+      assert :ok = Validator.validate_one(content)
+    end
+
+    test "returns :ok for talks without date (warning logged)" do
+      content = make_content(meta: %{"content_type" => "talks"})
+      assert :ok = Validator.validate_one(content)
+    end
+
+    test "returns :ok for pages without title (warning logged)" do
+      content = make_content(title: "", meta: %{"content_type" => "pages"})
+      assert :ok = Validator.validate_one(content)
+    end
   end
 end

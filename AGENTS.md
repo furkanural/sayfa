@@ -4,16 +4,17 @@ Guidance for coding agents working in the Sayfa repository.
 
 ## Project Snapshot
 
-- Project: **Sayfa** - an Elixir static site generator.
+- Project: **Sayfa** — an Elixir static site generator.
 - Package role: reusable Hex package (not a single website app).
 - Architecture: core library here + user sites consuming it.
 - Main language: Elixir (`.ex`, `.exs`) with EEx templates and some JS/CSS assets.
+- Current version: **v0.4.2**
 
 ## Runtime and Toolchain
 
 - Elixir: `1.19.5` (compatible `~> 1.19` in `mix.exs`).
 - OTP: `28`.
-- Rust: `1.93.0` stable (required by `mdex` NIF dependency).
+- Rust: `1.95.0` stable (required by `mdex` NIF dependency).
 - Common setup command: `mix deps.get`.
 
 ## Build, Lint, and Test Commands
@@ -51,6 +52,8 @@ This mirrors `.github/workflows/ci.yml`.
 ## Development Commands
 
 - Start dev server with watch/rebuild: `mix sayfa.serve`
+- Clean build output: `mix sayfa.clean [--output dir]`
+- Upgrade/sync theme files: `mix sayfa.upgrade [--apply] [--force] [--theme NAME]`
 - Clean/build via API or mix tasks as needed for feature validation.
 
 ## Repository Layout (high-value paths)
@@ -58,8 +61,10 @@ This mirrors `.github/workflows/ci.yml`.
 - Public API: `lib/sayfa.ex`
 - Core pipeline: `lib/sayfa/builder.ex`
 - Content parsing/domain model: `lib/sayfa/content.ex`, `lib/sayfa/content/raw.ex`
+- Content type macro: `lib/sayfa/content_types/base.ex`
 - Behaviours: `lib/sayfa/behaviours/`
 - Built-in blocks: `lib/sayfa/blocks/`
+- Built-in hooks: `lib/sayfa/hooks/`
 - Content types: `lib/sayfa/content_types/`
 - Dev server: `lib/sayfa/dev_server/`
 - Mix tasks: `lib/mix/tasks/`
@@ -83,6 +88,7 @@ Follow existing project style from `CLAUDE.md`, code samples, and formatter defa
 - Behaviours: `Sayfa.Behaviours.BehaviourName`
 - Blocks: `Sayfa.Blocks.BlockName`
 - Content types: `Sayfa.ContentTypes.TypeName`
+- Hooks: `Sayfa.Hooks.HookName`
 - Dev server modules: `Sayfa.DevServer.ModuleName`
 - Mix tasks: `Mix.Tasks.Sayfa.TaskName`
 
@@ -132,12 +138,13 @@ Follow existing project style from `CLAUDE.md`, code samples, and formatter defa
 
 ## Domain-Specific Implementation Notes
 
-- Respect content pipeline stages: load -> parse -> transform -> render -> write.
-- Keep the Raw -> Content two-struct boundary clear.
+- Respect content pipeline stages: resolve config → discover files → parse → classify → filter drafts → validate → enrich → render → archives → indexes → feeds → sitemap.
+- Keep the Raw → Content two-struct boundary clear.
 - Do not break block behaviour contracts (`name/0`, `render/1`).
 - Do not break hook stage contracts (`:before_parse`, `:after_parse`, `:before_render`, `:after_render`).
 - Preserve i18n behavior, including hreflang enrichment and RTL direction support.
 - Keep URL conventions stable (no date segments in generated content URLs).
+- Asset fingerprinting is skipped in dev mode to prevent CSS loss on hot reload.
 
 ## JavaScript Asset Rule (important)
 

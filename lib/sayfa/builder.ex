@@ -128,9 +128,7 @@ defmodule Sayfa.Builder do
 
       timed_sync("Copy static files", verbose, fn -> copy_static_files(config) end)
 
-      timed_sync("TailwindCSS compilation", verbose, fn ->
-        Tailwind.compile(config, config.output_dir)
-      end)
+      compile_tailwind(config, verbose)
 
       maybe_digest_assets(config, verbose)
 
@@ -214,6 +212,21 @@ defmodule Sayfa.Builder do
         File.cp!(src_path, dest_path)
       end
     end)
+  end
+
+  defp compile_tailwind(config, verbose) do
+    case timed_sync("TailwindCSS compilation", verbose, fn ->
+           Tailwind.compile(config, config.output_dir)
+         end) do
+      :ok ->
+        :ok
+
+      :skipped ->
+        :skipped
+
+      {:error, reason} ->
+        Logger.error("[sayfa] TailwindCSS compilation failed: #{inspect(reason)}")
+    end
   end
 
   defp maybe_digest_assets(config, verbose) do
