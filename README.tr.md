@@ -38,14 +38,14 @@ Elixir ile yazilmis basit ve genisletilebilir bir statik site ureteci. **Sayfa**
 Sayfa **iki katmanli bir mimari** kullanir:
 
 1. **Sayfa** (bu paket) — Temel statik site uretim motoru: Markdown ayristirma, sablon olusturma, besleme uretimi, blok sistemi ve dahasi.
-2. **Siteniz** — `{:sayfa, "~> 0.4"}` ile Sayfa'ya bagli bir proje. Siz icerigi, temayi ve yapilandirmayi saglarsiniz; Sayfa derlemeyi halleder.
+2. **Siteniz** — `{:sayfa, "~> 0.5"}` ile Sayfa'ya bagli bir proje. Siz icerigi, temayi ve yapilandirmayi saglarsiniz; Sayfa derlemeyi halleder.
 
 ```
 ┌──────────────────────────────────────────────────────┐
 │                    SITENIZ                            │
 │   content/     themes/     lib/blocks/    config/    │
 └──────────────────────────┬───────────────────────────┘
-                           │ {:sayfa, "~> 0.4"}
+                           │ {:sayfa, "~> 0.5"}
                            ▼
 ┌──────────────────────────────────────────────────────┐
 │                 SAYFA (Hex Paketi)                    │
@@ -293,7 +293,7 @@ Tum sablonlar su degiskenleri alir:
 Bloklar, `@block` yardimcisi ile cagirilan yeniden kullanilabilir EEx bilesenleridir:
 
 ```eex
-<%= @block.(:recent_articles, limit: 5) %>
+<%= @block.(:recent_content, limit: 5) %>
 <%= @block.(:tag_cloud) %>
 <%= @block.(:language_switcher, variant: :desktop) %>
 <%= @block.(:breadcrumb) %>
@@ -307,7 +307,7 @@ Bloklar, `@block` yardimcisi ile cagirilan yeniden kullanilabilir EEx bilesenler
 | Altbilgi | `:footer` | Site altbilgisi |
 | Sosyal Baglantilar | `:social_links` | Sosyal medya baglanti ikonlari |
 | Icerik Tablosu | `:toc` | Basliklardan otomatik uretilen icerik tablosu |
-| Son Makaleler | `:recent_articles` | Son makalelerin listesi |
+| Son Icerikler | `:recent_content` | Herhangi bir icerik turunun son ogeleri |
 | Etiket Bulutu | `:tag_cloud` | Sayili etiket bulutu |
 | Kategori Bulutu | `:category_cloud` | Sayili kategori bulutu |
 | Okuma Suresi | `:reading_time` | Tahmini okuma suresi |
@@ -316,7 +316,7 @@ Bloklar, `@block` yardimcisi ile cagirilan yeniden kullanilabilir EEx bilesenler
 | Icerik Yolu | `:breadcrumb` | Bolume geri baglantisi ve SEO icin JSON-LD `BreadcrumbList` yapisal verisi |
 | Son Icerikler | `:recent_content` | Herhangi bir icerik turunun son ogeler |
 | Dil Degistirici | `:language_switcher` | Icerik cevirileri arasinda gecis; ayni sayfada birden fazla ornek icin `variant:` destekler (`:desktop`, `:mobile`) |
-| Ilgili Makaleler | `:related_articles` | Etiket/kategoriye gore ilgili makaleler |
+| Ilgili Icerikler | `:related_content` | Etiket/kategoriye gore ilgili icerikler (turu otomatik algilar; `type:` atamasini kabul eder) |
 | Ilgili Icerikler | `:related_content` | Etiket/kategoriye gore ilgili icerikler (turu otomatik algilar; `type:` atamasini kabul eder) |
 
 ### Ozel Bloklar

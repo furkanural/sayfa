@@ -105,7 +105,7 @@ Blocks are reusable components you can use in your EEx templates:
 
 ```elixir
 # In your templates:
-<%%= @block.(:recent_articles, limit: 5) %>
+<%%= @block.(:recent_content, limit: 5) %>
 <%%= @block.(:tag_cloud) %>
 ```
 

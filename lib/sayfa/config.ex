@@ -57,7 +57,6 @@ defmodule Sayfa.Config do
     image_loading: "lazy",
     image_decoding: "async",
     image_widths: [400, 800, 1200],
-    recent_articles_limit: 5,
     recent_content_limit: 5,
     related_content_limit: 3,
     code_copy_selector: "pre code",

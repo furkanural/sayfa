@@ -60,7 +60,7 @@ defmodule Mix.Tasks.Sayfa.New do
       title: title,
       languages: languages,
       default_lang: hd(languages),
-      sayfa_version: "0.4"
+      sayfa_version: "0.5"
     ]
 
     if File.exists?(path) do

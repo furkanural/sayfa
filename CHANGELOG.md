@@ -7,6 +7,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-05-15
+
+### Added
+
+- `mix sayfa.clean` task to remove the build output directory
+- `Sayfa.Blocks.Cloud` shared module for tag/category cloud rendering
+- `Sayfa.Blocks.Helpers` shared block utilities
+- `Sayfa.ContentTypes.Base` macro to reduce content type boilerplate
+
+### Changed
+
+- Refactored `CategoryCloud` and `TagCloud` to use the new `Cloud` module
+- Refactored all built-in content types (`Article`, `Note`, `Page`, `Project`, `Talk`) to use `Base` macro
+- Dev server modules (`Plug`, `Rebuilder`, `Watcher`, `Supervisor`) refactored for clarity
+- Builder, Config, Template, Validator, Feed, Excerpt, Tailwind, SEO, and Image modules updated
+- Default theme CSS and JS synced
+
+### Removed
+
+- Deprecated `Sayfa.Blocks.RecentArticles` block (superseded by `RecentContent` in v0.4.0)
+
+### Fixed
+
+- Added `scroll-padding-top` to prevent anchor links hiding behind the sticky header
+- Trimmed dead CSS classes and fixed JS selectors in the default theme
+- Replaced `is-hidden` workaround with proper Tailwind `hidden` class
+- Fixed reading progress bar selector guard, ToC scroll-spy selector, and copy-link null guard
+- Modernized JS: `const`/`let`, arrow functions, `dataset` API
+- Resolved Elixir 1.19 compiler warnings
+- Made slug generation resilient in `mix sayfa.gen.content`
+- Ensured `sayfa.gen.content` tests write to temp directories
+
+### Dependencies
+
+- Bumped `mdex` from 0.11.6 to 0.12.2
+- Bumped `plug_cowboy` from 2.8.0 to 2.8.1
+- Bumped `credo` from 1.7.16 to 1.7.18
+
 ## [0.4.2] - 2026-03-06
 
 ### Breaking Changes
@@ -197,6 +235,7 @@ Initial release of Sayfa — a static site generator built in Elixir.
 - Build caching for incremental rebuilds
 - Verbose logging with per-stage timing
 
+[0.5.0]: https://github.com/furkanural/sayfa/compare/v0.4.2...v0.5.0
 [0.4.2]: https://github.com/furkanural/sayfa/compare/v0.4.1...v0.4.2
 [0.4.1]: https://github.com/furkanural/sayfa/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/furkanural/sayfa/compare/v0.3.3...v0.4.0

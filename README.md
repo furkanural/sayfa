@@ -39,14 +39,14 @@ A simple, extensible static site generator built in Elixir. **Sayfa** means "pag
 Sayfa follows a **two-layer architecture**:
 
 1. **Sayfa** (this package) — A reusable Hex package with the core static site generation engine: markdown parsing, template rendering, feed generation, block system, and more.
-2. **Your site** — A project that depends on Sayfa via `{:sayfa, "~> 0.4"}`. You bring your content, theme, and configuration; Sayfa handles the build.
+2. **Your site** — A project that depends on Sayfa via `{:sayfa, "~> 0.5"}`. You bring your content, theme, and configuration; Sayfa handles the build.
 
 ```
 ┌──────────────────────────────────────────────────────┐
 │                  YOUR WEBSITE                        │
 │   content/     themes/     lib/blocks/    config/    │
 └──────────────────────────┬───────────────────────────┘
-                           │ {:sayfa, "~> 0.4"}
+                           │ {:sayfa, "~> 0.5"}
                            ▼
 ┌──────────────────────────────────────────────────────┐
 │                  SAYFA (Hex Package)                 │
@@ -294,7 +294,7 @@ All templates receive these assigns:
 Blocks are reusable EEx components invoked via the `@block` helper:
 
 ```eex
-<%= @block.(:recent_articles, limit: 5) %>
+<%= @block.(:recent_content, limit: 5) %>
 <%= @block.(:tag_cloud) %>
 <%= @block.(:language_switcher, variant: :desktop) %>
 <%= @block.(:breadcrumb) %>
@@ -308,7 +308,7 @@ Blocks are reusable EEx components invoked via the `@block` helper:
 | Footer | `:footer` | Site footer |
 | Social Links | `:social_links` | Social media link icons |
 | Table of Contents | `:toc` | Auto-generated TOC from headings |
-| Recent Articles | `:recent_articles` | List of recent articles |
+| Recent Content | `:recent_content` | Recent items from any content type |
 | Tag Cloud | `:tag_cloud` | Tag cloud with counts |
 | Category Cloud | `:category_cloud` | Category cloud with counts |
 | Reading Time | `:reading_time` | Estimated reading time |
@@ -317,7 +317,7 @@ Blocks are reusable EEx components invoked via the `@block` helper:
 | Breadcrumb | `:breadcrumb` | Back link to section with JSON-LD `BreadcrumbList` structured data for SEO |
 | Recent Content | `:recent_content` | Recent items from any content type |
 | Language Switcher | `:language_switcher` | Switch between content translations; supports `variant:` assign (`:desktop`, `:mobile`) for multiple instances on the same page |
-| Related Articles | `:related_articles` | Articles related by tags/categories |
+| Related Content | `:related_content` | Content related by tags/categories (auto-detects type; accepts `type:` assign) |
 | Related Content | `:related_content` | Content related by tags/categories (auto-detects type; accepts `type:` assign) |
 
 ### Custom Blocks

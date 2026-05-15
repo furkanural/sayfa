@@ -5,7 +5,7 @@ defmodule Sayfa.Behaviours.Block do
   A block is a reusable EEx component that renders HTML. Blocks are invoked
   in templates via the `@block` helper function:
 
-      <%= @block.(:recent_articles, limit: 5) %>
+      <%= @block.(:recent_content, limit: 5) %>
       <%= @block.(:toc) %>
 
   ## Assigns
@@ -14,7 +14,7 @@ defmodule Sayfa.Behaviours.Block do
 
   - `:site` — the resolved site config map
   - `:content` — the current `Sayfa.Content` struct (may be `nil` for list pages)
-  - `:contents` — list of all site contents (for blocks like `recent_articles`)
+  - `:contents` — list of all site contents (for blocks like `recent_content`)
   - `:lang` — the current language atom
 
   Plus any additional options passed by the template caller.

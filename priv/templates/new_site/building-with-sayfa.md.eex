@@ -77,7 +77,7 @@ Blocks are reusable components you can use in your templates:
 
 ```elixir
 # In your EEx templates:
-<%%= @block.(:recent_articles, limit: 5) %>
+<%%= @block.(:recent_content, limit: 5) %>
 <%%= @block.(:tag_cloud) %>
 ```
 
@@ -92,7 +92,6 @@ Sayfa includes 16 built-in blocks you can use in your layouts:
 - `:language_switcher` — Switch between translations
 
 ### Content Blocks
-- `:recent_articles` — Recent articles list
 - `:recent_content` — Recent items from any content type
 - `:related_content` — Related content by tags/categories
 
@@ -109,7 +108,7 @@ Use blocks in your custom layouts:
 
 ```elixir
 <%%= @block.(:breadcrumb, []) %>
-<%%= @block.(:recent_articles, limit: 5) %>
+<%%= @block.(:recent_content, limit: 5) %>
 <%%= @block.(:related_content, limit: 3) %>
 ```
 
