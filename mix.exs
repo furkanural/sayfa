@@ -28,6 +28,7 @@ defmodule Sayfa.MixProject do
   defp deps do
     [
       {:mdex, "~> 0.12"},
+      {:lumis, "~> 0.1"},
       {:yaml_elixir, "~> 2.12"},
       {:slugify, "~> 1.3"},
       {:xml_builder, "~> 2.4"},
