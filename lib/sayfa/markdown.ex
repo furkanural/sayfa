@@ -72,7 +72,8 @@ defmodule Sayfa.Markdown do
         unsafe_: true
       ],
       syntax_highlight: [
-        formatter: {:html_inline, theme: theme}
+        engine: :lumis,
+        opts: [formatter: {:html_inline, theme: theme}]
       ]
     ]
   end
