@@ -29,7 +29,7 @@ jobs:
           otp-version: "28"
 
       - name: Cache deps and _build
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             deps
@@ -74,7 +74,7 @@ jobs:
           otp-version: "28"
 
       - name: Cache deps and _build
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             deps
