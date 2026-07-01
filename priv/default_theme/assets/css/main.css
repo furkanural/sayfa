@@ -1738,9 +1738,7 @@ html.site-root {
 .cloud-tag-sm:hover { background: var(--border); color: var(--accent); }
 
 /* Pagination and errors. */
-.pagination-nav,
 .pagination { display: flex; gap: var(--space-2); justify-content: center; align-items: center; margin-top: var(--space-6); flex-wrap: wrap; }
-.pagination-label,
 .pagination-btn { padding: var(--space-1) var(--space-2); background-color: var(--surface-2); color: var(--text); border: 1px solid var(--border); border-radius: var(--radius-md); text-decoration: none; transition: all var(--transition-fast); min-width: 2.5rem; text-align: center; }
 .pagination-btn:hover:not(:disabled):not(.current) { background-color: var(--border); border-color: var(--accent); }
 .pagination-btn.current { background-color: var(--accent); color: var(--accent-contrast); border-color: var(--accent); }

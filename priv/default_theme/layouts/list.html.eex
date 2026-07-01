@@ -93,29 +93,28 @@
   <% end %>
   <% end %>
   <%= if assigns[:pagination] && @pagination do %>
-    <nav class="pagination-nav" aria-label="Pagination">
+    <% base_path = @pagination.url |> String.split("/page/") |> hd() |> String.trim_trailing("/") %>
+    <% page_url = fn
+      1 -> base_path <> "/"
+      page -> base_path <> "/page/#{page}/"
+    end %>
+    <nav class="pagination" aria-label="Pagination">
   <%= if @pagination.has_prev do %>
-      <a href="<%= @pagination.prev_url %>" rel="prev" class="btn-primary-sm">
-        <svg class="icon-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
-        <%= @t.("previous") %>
-      </a>
+      <a href="<%= @pagination.prev_url %>" rel="prev" class="pagination-btn">← <%= @t.("previous") %></a>
   <% else %>
-      <span class="btn-primary-sm btn-disabled" aria-disabled="true" tabindex="-1">
-        <svg class="icon-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
-        <%= @t.("previous") %>
-      </span>
+      <button class="pagination-btn" type="button" disabled>← <%= @t.("previous") %></button>
   <% end %>
-      <span class="pagination-label"><%= @pagination.page_number %> / <%= @pagination.total_pages %></span>
+  <%= for page <- 1..@pagination.total_pages do %>
+    <%= if page == @pagination.page_number do %>
+      <span class="pagination-btn current" aria-current="page"><%= page %></span>
+    <% else %>
+      <a href="<%= page_url.(page) %>" class="pagination-btn"><%= page %></a>
+    <% end %>
+  <% end %>
   <%= if @pagination.has_next do %>
-      <a href="<%= @pagination.next_url %>" rel="next" class="btn-primary-sm">
-        <%= @t.("next") %>
-        <svg class="icon-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-      </a>
+      <a href="<%= @pagination.next_url %>" rel="next" class="pagination-btn"><%= @t.("next") %> →</a>
   <% else %>
-      <span class="btn-primary-sm btn-disabled" aria-disabled="true" tabindex="-1">
-        <%= @t.("next") %>
-        <svg class="icon-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-      </span>
+      <button class="pagination-btn" type="button" disabled><%= @t.("next") %> →</button>
   <% end %>
     </nav>
   <% end %>
