@@ -4,7 +4,7 @@
     <header class="content-header-sm">
       <h1 class="page-title-lg"><%= @content.title %></h1>
     </header>
-    <div class="prose-page">
+    <div class="article-content">
       <%= @inner_content %>
     </div>
   </article>

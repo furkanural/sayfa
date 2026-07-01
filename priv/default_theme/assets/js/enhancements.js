@@ -42,12 +42,18 @@
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
-        const link = document.querySelector(
+        const links = document.querySelectorAll(
           '.toc-list a[href="#' + entry.target.id + '"]'
         );
-        if (link && entry.isIntersecting) {
-          tocLinks.forEach((a) => a.classList.remove("toc-active"));
-          link.classList.add("toc-active");
+        if (links.length && entry.isIntersecting) {
+          tocLinks.forEach((a) => {
+            a.classList.remove("toc-active");
+            a.classList.remove("active");
+          });
+          links.forEach((link) => {
+            link.classList.add("toc-active");
+            link.classList.add("active");
+          });
         }
       });
     },
@@ -69,6 +75,7 @@
   toggle.addEventListener("click", () => {
     const isHidden = menu.classList.contains("hidden");
     menu.classList.toggle("hidden");
+    menu.classList.toggle("open", isHidden);
     openIcon.classList.toggle("hidden", isHidden);
     closeIcon.classList.toggle("hidden", !isHidden);
     toggle.setAttribute("aria-expanded", String(isHidden));
@@ -78,6 +85,7 @@
     if (e.key === "Escape") {
       if (menu && !menu.classList.contains("hidden")) {
         menu.classList.add("hidden");
+        menu.classList.remove("open");
         openIcon.classList.remove("hidden");
         closeIcon.classList.add("hidden");
         toggle.setAttribute("aria-expanded", "false");
@@ -135,18 +143,18 @@
 
   document.querySelectorAll(selector).forEach((block) => {
     const pre = block.parentNode;
-    if (pre.parentNode.classList.contains("code-block-wrap")) return;
+    if (pre.parentNode.classList.contains("code-block-wrapper")) return;
 
     const lang = block.className.replace(/^language-/, "") || "";
 
     const wrapper = document.createElement("div");
-    wrapper.className = "code-block-wrap not-prose";
+    wrapper.className = "code-block-wrapper not-prose";
 
     const header = document.createElement("div");
     header.className = "code-block-header";
 
     header.innerHTML =
-      '<span class="code-block-lang">' +
+      '<span class="code-language">' +
       lang +
       "</span>" +
       '<button class="copy-btn code-copy-btn">' +
@@ -158,7 +166,7 @@
 
     const btn = header.querySelector(".copy-btn");
     btn.addEventListener("click", () => {
-      const code = btn.closest(".code-block-wrap").querySelector("code").textContent;
+      const code = btn.closest(".code-block-wrapper").querySelector("code").textContent;
       navigator.clipboard
         .writeText(code)
         .then(() => {
@@ -197,8 +205,10 @@
     navigator.clipboard
       .writeText(window.location.href)
       .then(() => {
+        btn.classList.add("copied");
         span.textContent = copiedText;
         setTimeout(() => {
+          btn.classList.remove("copied");
           span.textContent = copyText;
         }, 2000);
       })

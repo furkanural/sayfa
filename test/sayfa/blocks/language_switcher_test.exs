@@ -87,7 +87,7 @@ defmodule Sayfa.Blocks.LanguageSwitcherTest do
       assigns = %{site: @multi_lang_site, content: content, lang: :en}
       html = LanguageSwitcher.render(assigns)
 
-      assert html =~ ~s(<span class="lang-item-current)
+      assert html =~ ~s(<span class="language-option current)
       assert html =~ "English</span>"
       assert html =~ ~s(<a href="/tr/articles/hello/")
     end
@@ -146,7 +146,7 @@ defmodule Sayfa.Blocks.LanguageSwitcherTest do
       html = LanguageSwitcher.render(assigns)
 
       # Current lang (EN) rendered as non-clickable span; other lang gets home link
-      assert html =~ ~s(lang-item-current)
+      assert html =~ ~s(language-option current)
       assert html =~ "English"
       assert html =~ ~s(href="/tr/")
     end
@@ -171,7 +171,7 @@ defmodule Sayfa.Blocks.LanguageSwitcherTest do
 
       # Current lang (TR) rendered as non-clickable span; default lang gets home link
       assert html =~ ~s(href="/")
-      assert html =~ ~s(lang-item-current)
+      assert html =~ ~s(language-option current)
       assert html =~ "Türkçe"
     end
 
@@ -180,7 +180,7 @@ defmodule Sayfa.Blocks.LanguageSwitcherTest do
       html = LanguageSwitcher.render(assigns)
 
       # Current lang (EN) rendered as non-clickable span; other lang gets home link
-      assert html =~ ~s(lang-item-current)
+      assert html =~ ~s(language-option current)
       assert html =~ "English"
       assert html =~ ~s(href="/tr/")
     end
@@ -202,7 +202,7 @@ defmodule Sayfa.Blocks.LanguageSwitcherTest do
       assigns = %{site: @multi_lang_site, content: content, lang: :en}
       html = LanguageSwitcher.render(assigns)
 
-      assert html =~ ~s(id="lang-menu" class="lang-menu hidden)
+      assert html =~ ~s(id="lang-menu" class="language-dropdown hidden)
       assert html =~ ~s(aria-expanded="false")
     end
 

@@ -47,8 +47,8 @@ defmodule Sayfa.Blocks.TOC do
     heading = Block.escape_html(t.("on_this_page"))
 
     """
-    <nav class="toc-nav" aria-label="#{heading}">\
-      <h2 class="toc-heading">#{heading}</h2>\
+    <nav class="toc" aria-label="#{heading}">\
+      <h2 class="toc-title">#{heading}</h2>\
       <ul class="toc-list">\
     #{items}\
       </ul>\
@@ -57,16 +57,13 @@ defmodule Sayfa.Blocks.TOC do
   end
 
   defp render_mobile(toc, t) do
-    items = Enum.map_join(toc, "\n", &render_mobile_entry/1)
+    items = Enum.map_join(toc, "\n", &render_sidebar_entry/1)
     heading = Block.escape_html(t.("on_this_page"))
 
     """
-    <details class="toc-mobile-box">\
-      <summary class="toc-mobile-summary">\
-        <svg class="toc-summary-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="10" x2="20" y1="18" y2="18"/></svg>\
-        #{heading}\
-      </summary>\
-      <ul class="toc-mobile-list">\
+    <details class="toc-mobile">\
+      <summary>#{heading}</summary>\
+      <ul class="toc-list">\
     #{items}\
       </ul>\
     </details>\
@@ -77,24 +74,9 @@ defmodule Sayfa.Blocks.TOC do
     {id, text, level} = normalize_entry(entry)
     escaped_id = Block.escape_html(id)
     escaped_text = Block.escape_html(text)
+    level_class = if level > 2, do: "toc-link-l3", else: "toc-link-l2"
 
-    if level > 2 do
-      "    <li><a href=\"##{escaped_id}\" class=\"toc-link-l3\">#{escaped_text}</a></li>"
-    else
-      "    <li><a href=\"##{escaped_id}\" class=\"toc-link-l2\">#{escaped_text}</a></li>"
-    end
-  end
-
-  defp render_mobile_entry(entry) do
-    {id, text, level} = normalize_entry(entry)
-    escaped_id = Block.escape_html(id)
-    escaped_text = Block.escape_html(text)
-
-    if level > 2 do
-      "    <li class=\"toc-mobile-item-l3\"><a href=\"##{escaped_id}\" class=\"toc-mobile-link-l3\">#{escaped_text}</a></li>"
-    else
-      "    <li><a href=\"##{escaped_id}\" class=\"toc-mobile-link-l2\">#{escaped_text}</a></li>"
-    end
+    "    <li class=\"toc-item\"><a href=\"##{escaped_id}\" class=\"toc-link #{level_class}\">#{escaped_text}</a></li>"
   end
 
   defp get_toc(nil), do: []
