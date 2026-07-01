@@ -141,7 +141,6 @@ defmodule Sayfa.Blocks.LanguageSwitcher do
     current_code = current_lang |> to_string() |> String.upcase()
     dropdown_items = Enum.map_join(items, "", &render_dropdown_item(&1, current_lang))
 
-    # Generate unique IDs based on variant
     id_suffix = if variant == :default, do: "", else: "-#{variant}"
     switcher_id = "lang-switcher#{id_suffix}"
     toggle_id = "lang-toggle#{id_suffix}"
@@ -153,24 +152,24 @@ defmodule Sayfa.Blocks.LanguageSwitcher do
     chevron_svg =
       ~s(<svg class="icon-chevron" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>)
 
-    ~s(<div class="lang-switcher" id="#{switcher_id}">) <>
-      ~s(<button id="#{toggle_id}" class="lang-toggle" aria-expanded="false" aria-haspopup="listbox" aria-label="Language">) <>
+    ~s(<div class="language-switcher" id="#{switcher_id}">) <>
+      ~s(<button id="#{toggle_id}" class="language-toggle" aria-expanded="false" aria-haspopup="listbox" aria-label="Language">) <>
       globe_svg <>
       ~s(<span class="lang-current-code">#{current_code}</span>) <>
       chevron_svg <>
       ~s(</button>) <>
-      ~s(<div id="#{menu_id}" class="lang-menu hidden" role="listbox" aria-label="Language">) <>
+      ~s(<div id="#{menu_id}" class="language-dropdown hidden" role="listbox" aria-label="Language">) <>
       dropdown_items <>
       ~s(</div>) <>
       ~s(</div>)
   end
 
   defp render_dropdown_item({lang, lang_name, _url}, lang) do
-    ~s(<span class="lang-item-current">#{Block.escape_html(lang_name)}</span>)
+    ~s(<span class="language-option current">#{Block.escape_html(lang_name)}</span>)
   end
 
   defp render_dropdown_item({_lang, lang_name, url}, _current_lang) do
-    ~s(<a href="#{Block.escape_html(url)}" class="lang-item-link">#{Block.escape_html(lang_name)}</a>)
+    ~s(<a href="#{Block.escape_html(url)}" class="language-option">#{Block.escape_html(lang_name)}</a>)
   end
 
   defp get_language_name(lang, languages) do

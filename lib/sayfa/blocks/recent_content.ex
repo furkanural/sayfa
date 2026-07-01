@@ -92,7 +92,7 @@ defmodule Sayfa.Blocks.RecentContent do
 
     tag_html =
       if first_tag do
-        ~s(<span class="chip-tag"><svg class="icon-2_5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><line x1="4" x2="20" y1="9" y2="9"/><line x1="4" x2="20" y1="15" y2="15"/><line x1="10" x2="8" y1="3" y2="21"/><line x1="16" x2="14" y1="3" y2="21"/></svg>#{Block.escape_html(first_tag)}</span>)
+        ~s(<span class="chip tag">#{Block.escape_html(first_tag)}</span>)
       else
         ""
       end
@@ -153,15 +153,15 @@ defmodule Sayfa.Blocks.RecentContent do
 
     date_html =
       if content.date do
-        ~s(<time datetime="#{content.date}" class="content-card-date">#{Sayfa.DateFormat.format(content.date, lang || :en, site)}</time>)
+        ~s(<time datetime="#{content.date}" class="card-date">#{Sayfa.DateFormat.format(content.date, lang || :en, site)}</time>)
       else
         ""
       end
 
     """
-            <a href="#{url}" class="content-card content-card-note">
-              <h3 class="content-card-title">#{title}</h3>
-              <div class="content-card-date-wrap">#{date_html}</div>
+            <a href="#{url}" class="card card-note">
+              <h3 class="card-title">#{title}</h3>
+              <div class="card-date-wrap">#{date_html}</div>
             </a>\
     """
   end
@@ -175,33 +175,33 @@ defmodule Sayfa.Blocks.RecentContent do
 
     description_html =
       if description do
-        ~s(<p class="content-card-excerpt-clamp">#{Block.escape_html(description)}</p>)
+        ~s(<p class="card-excerpt-clamp">#{Block.escape_html(description)}</p>)
       else
         ""
       end
 
     status_html =
       if status do
-        ~s(<span class="chip-status">#{Block.escape_html(status)}</span>)
+        ~s(<span class="status-chip">#{Block.escape_html(status)}</span>)
       else
         ""
       end
 
     tag_html =
       if first_tag do
-        ~s(<span class="chip-tag"><svg class="icon-2_5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><line x1="4" x2="20" y1="9" y2="9"/><line x1="4" x2="20" y1="15" y2="15"/><line x1="10" x2="8" y1="3" y2="21"/><line x1="16" x2="14" y1="3" y2="21"/></svg>#{Block.escape_html(first_tag)}</span>)
+        ~s(<span class="chip tag">#{Block.escape_html(first_tag)}</span>)
       else
         ""
       end
 
     """
-            <a href="#{url}" class="content-card content-card-project">
-              <div class="content-card-header">
-                <h3 class="content-card-title">#{title}</h3>
+            <a href="#{url}" class="card card-project">
+              <div class="card-header">
+                <h3 class="card-title">#{title}</h3>
                 #{status_html}
               </div>
               #{description_html}
-              <div class="content-card-meta">#{tag_html}</div>
+              <div class="card-meta">#{tag_html}</div>
             </a>\
     """
   end
