@@ -19,8 +19,8 @@ defmodule Sayfa.Blocks.Header do
         logo_dark: "/images/logo-dark.svg"
 
   When `logo` is set, an `<img>` is rendered instead of the plain text title.
-  When both `logo` and `logo_dark` are set, the light logo is hidden in dark
-  mode and the dark logo is shown (`dark:hidden` / `hidden dark:block`).
+  When both `logo` and `logo_dark` are set, both logo variants are rendered and
+  the theme CSS shows the appropriate image for the active color scheme.
 
   ## Examples
 

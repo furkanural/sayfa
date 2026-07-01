@@ -373,7 +373,7 @@ defmodule Sayfa.Content do
   Renders the Markdown body to HTML and maps front matter fields.
 
   An optional config map may be passed as the second argument. The
-  `highlight_theme` key selects the syntax highlighting theme (default: `"github_light"`).
+  `highlight_theme` key selects the syntax highlighting theme (default: `"catppuccin_latte"`).
 
   ## Examples
 
@@ -390,7 +390,7 @@ defmodule Sayfa.Content do
   @spec from_raw(Raw.t()) :: {:ok, t()} | {:error, term()}
   @spec from_raw(Raw.t(), map()) :: {:ok, t()} | {:error, term()}
   def from_raw(%Raw{} = raw, config \\ %{}) do
-    theme = Map.get(config, :highlight_theme, "github_light")
+    theme = Map.get(config, :highlight_theme, "catppuccin_latte")
 
     with {:ok, html} <- Sayfa.Markdown.render(raw.body_markdown, theme) do
       slug = slug_from_filename(raw.filename)

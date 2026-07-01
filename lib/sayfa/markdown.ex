@@ -22,7 +22,7 @@ defmodule Sayfa.Markdown do
   Renders a Markdown string to HTML.
 
   Headings include anchor IDs for linking (e.g., `<h1 id="hello">...</h1>`).
-  An optional `theme` string selects the syntax highlighting theme (default: `"github_light"`).
+  An optional `theme` string selects the syntax highlighting theme (default: `"catppuccin_latte"`).
 
   ## Examples
 
@@ -36,7 +36,7 @@ defmodule Sayfa.Markdown do
   """
   @spec render(String.t()) :: {:ok, String.t()} | {:error, term()}
   @spec render(String.t(), String.t()) :: {:ok, String.t()} | {:error, term()}
-  def render(markdown, theme \\ "github_light") when is_binary(markdown) do
+  def render(markdown, theme \\ "catppuccin_latte") when is_binary(markdown) do
     MDEx.to_html(markdown, opts(theme))
   end
 
@@ -52,7 +52,7 @@ defmodule Sayfa.Markdown do
   """
   @spec render!(String.t()) :: String.t()
   @spec render!(String.t(), String.t()) :: String.t()
-  def render!(markdown, theme \\ "github_light") when is_binary(markdown) do
+  def render!(markdown, theme \\ "catppuccin_latte") when is_binary(markdown) do
     case render(markdown, theme) do
       {:ok, html} -> html
       {:error, reason} -> raise "Markdown rendering failed: #{inspect(reason)}"

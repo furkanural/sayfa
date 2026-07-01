@@ -44,7 +44,7 @@ defmodule Sayfa.Config do
     social_links: [],
     tailwind_version: "4.1.12",
     static_dir: "static",
-    highlight_theme: "github_light",
+    highlight_theme: "catppuccin_latte",
     view_transitions: false,
     words_per_minute: 200,
     fingerprint: true,
