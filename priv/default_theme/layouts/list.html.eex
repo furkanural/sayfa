@@ -7,13 +7,13 @@
   <%   json_link = Enum.find(@feed_links, fn l -> l.type == "application/feed+json" end) %>
       <div class="feed-links">
   <%= if atom_link do %>
-        <a href="<%= atom_link.url %>" class="feed-link" title="<%= @t.("subscribe_via_atom") %>">
+        <a href="<%= atom_link.url %>" class="feed-link" title="<%= Sayfa.Block.escape_html(@t.("subscribe_via_atom")) %>">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.18 15.64a2.18 2.18 0 0 1 2.18 2.18C8.36 19 7.38 20 6.18 20C5 20 4 19 4 17.82a2.18 2.18 0 0 1 2.18-2.18M4 4.44A15.56 15.56 0 0 1 19.56 20h-2.83A12.73 12.73 0 0 0 4 7.27V4.44m0 5.66a9.9 9.9 0 0 1 9.9 9.9h-2.83A7.07 7.07 0 0 0 4 12.93V10.1z"/></svg>
           Atom
         </a>
   <% end %>
   <%= if json_link do %>
-        <a href="<%= json_link.url %>" class="feed-link" title="<%= @t.("subscribe_via_json") %>">
+        <a href="<%= json_link.url %>" class="feed-link" title="<%= Sayfa.Block.escape_html(@t.("subscribe_via_json")) %>">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5,3H7V5H5V10A2,2 0 0,1 3,12A2,2 0 0,1 5,14V19H7V21H5C3.93,20.73 3,20.1 3,19V15A2,2 0 0,0 1,13H0V11H1A2,2 0 0,0 3,9V5A2,2 0 0,1 5,3M19,3A2,2 0 0,1 21,5V9A2,2 0 0,0 23,11H24V13H23A2,2 0 0,0 21,15V19A2,2 0 0,1 19,21H17V19H19V14A2,2 0 0,1 21,12A2,2 0 0,1 19,10V5H17V3H19M12,15A1,1 0 0,1 13,16A1,1 0 0,1 12,17A1,1 0 0,1 11,16A1,1 0 0,1 12,15M8,15A1,1 0 0,1 9,16A1,1 0 0,1 8,17A1,1 0 0,1 7,16A1,1 0 0,1 8,15M16,15A1,1 0 0,1 17,16A1,1 0 0,1 16,17A1,1 0 0,1 15,16A1,1 0 0,1 16,15Z"/></svg>
           JSON
         </a>

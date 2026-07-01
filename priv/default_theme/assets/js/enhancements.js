@@ -93,6 +93,16 @@
       }
     }
   });
+
+  window.addEventListener("resize", () => {
+    if (window.innerWidth > 768 && !menu.classList.contains("hidden")) {
+      menu.classList.add("hidden");
+      menu.classList.remove("open");
+      openIcon.classList.remove("hidden");
+      closeIcon.classList.add("hidden");
+      toggle.setAttribute("aria-expanded", "false");
+    }
+  });
 })();
 
 /* 4. Language switcher dropdown */
