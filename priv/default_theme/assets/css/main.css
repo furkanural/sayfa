@@ -152,6 +152,20 @@
    CATPPUCCIN LATTE (Light Mode)
    ============================================================================ */
 
+/* Color scheme — drives code-block light/dark() switching (Lumis multi-themes).
+   :root follows the system preference; the explicit classes let a future
+   manual toggle force a scheme, and code colors track it automatically. */
+:root {
+  color-scheme: light dark;
+}
+.theme-light {
+  color-scheme: light;
+}
+.dark,
+.theme-dark {
+  color-scheme: dark;
+}
+
 :root,
 .theme-light {
   /* Catppuccin Latte Palette */
