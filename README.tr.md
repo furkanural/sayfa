@@ -38,14 +38,14 @@ Elixir ile yazilmis basit ve genisletilebilir bir statik site ureteci. **Sayfa**
 Sayfa **iki katmanli bir mimari** kullanir:
 
 1. **Sayfa** (bu paket) — Temel statik site uretim motoru: Markdown ayristirma, sablon olusturma, besleme uretimi, blok sistemi ve dahasi.
-2. **Siteniz** — `{:sayfa, "~> 0.5"}` ile Sayfa'ya bagli bir proje. Siz icerigi, temayi ve yapilandirmayi saglarsiniz; Sayfa derlemeyi halleder.
+2. **Siteniz** — `{:sayfa, "~> 0.6"}` ile Sayfa'ya bagli bir proje. Siz icerigi, temayi ve yapilandirmayi saglarsiniz; Sayfa derlemeyi halleder.
 
 ```
 ┌──────────────────────────────────────────────────────┐
 │                    SITENIZ                            │
 │   content/     themes/     lib/blocks/    config/    │
 └──────────────────────────┬───────────────────────────┘
-                           │ {:sayfa, "~> 0.5"}
+                           │ {:sayfa, "~> 0.6"}
                            ▼
 ┌──────────────────────────────────────────────────────┐
 │                 SAYFA (Hex Paketi)                    │
@@ -314,9 +314,7 @@ Bloklar, `@block` yardimcisi ile cagirilan yeniden kullanilabilir EEx bilesenler
 | Kod Kopyalama | `:code_copy` | Kod bloklari icin kopyalama dugmesi |
 | Baglanti Kopyalama | `:copy_link` | Sayfa URL'sini panoya kopyala |
 | Icerik Yolu | `:breadcrumb` | Bolume geri baglantisi ve SEO icin JSON-LD `BreadcrumbList` yapisal verisi |
-| Son Icerikler | `:recent_content` | Herhangi bir icerik turunun son ogeler |
 | Dil Degistirici | `:language_switcher` | Icerik cevirileri arasinda gecis; ayni sayfada birden fazla ornek icin `variant:` destekler (`:desktop`, `:mobile`) |
-| Ilgili Icerikler | `:related_content` | Etiket/kategoriye gore ilgili icerikler (turu otomatik algilar; `type:` atamasini kabul eder) |
 | Ilgili Icerikler | `:related_content` | Etiket/kategoriye gore ilgili icerikler (turu otomatik algilar; `type:` atamasini kabul eder) |
 
 ### Ozel Bloklar
@@ -538,8 +536,8 @@ config :sayfa, :site,
   # logo: "/images/logo.svg",
   # logo_dark: "/images/logo-dark.svg",  # karanlik modda logo yerine gosterilir
 
-  # Kod bloklari icin sozdizimi vurgulama temasi
-  # highlight_theme: "catppuccin_latte",
+  # Kod bloklari icin sozdizimi vurgulama temasi (tek isim veya [light: ..., dark: ...] cifti)
+  # highlight_theme: [light: "catppuccin_latte", dark: "catppuccin_mocha"],
 
   # Sayfa gecisleri icin View Transitions API
   # view_transitions: false,
@@ -566,11 +564,11 @@ config :sayfa, :site,
 | `theme` | String | `"default"` | Aktif tema adi |
 | `theme_parent` | String | `"default"` | Miras icin ust tema |
 | `static_dir` | String | `"static"` | Statik varliklar dizini |
-| `tailwind_version` | String | `"4.1.12"` | Kullanilacak TailwindCSS surumu |
+| `tailwind_version` | String | `"4.3.0"` | Kullanilacak TailwindCSS surumu |
 | `logo` | String | `nil` | Logo gorsel yolu (baslikta yazi basliginin yerine goster) |
 | `logo_dark` | String | `nil` | Karanlik mod logosu yolu (karanlik modda `logo` yerine gosterilir) |
 | `social_links` | Map | `%{}` | Sosyal medya baglantilari (github, twitter, vb.) |
-| `highlight_theme` | String | `"catppuccin_latte"` | Kod bloklari icin sozdizimi vurgulama temasi |
+| `highlight_theme` | String veya keyword | `[light: "catppuccin_latte", dark: "catppuccin_mocha"]` | Kod bloklari icin sozdizimi vurgulama temasi; tek tema adi veya `[light: ..., dark: ...]` cifti kabul eder |
 | `view_transitions` | Boolean | `false` | Sayfa gecisleri icin View Transitions API'yi etkinlestir |
 | `port` | Integer | `4000` | Gelistirme sunucusu portu |
 | `verbose` | Boolean | `false` | Ayrintili derleme loglama |

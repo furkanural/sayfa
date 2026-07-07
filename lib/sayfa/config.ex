@@ -42,7 +42,7 @@ defmodule Sayfa.Config do
     author: nil,
     description: "",
     social_links: [],
-    tailwind_version: "4.1.12",
+    tailwind_version: "4.3.0",
     static_dir: "static",
     highlight_theme: [light: "catppuccin_latte", dark: "catppuccin_mocha"],
     view_transitions: false,
