@@ -39,14 +39,14 @@ A simple, extensible static site generator built in Elixir. **Sayfa** means "pag
 Sayfa follows a **two-layer architecture**:
 
 1. **Sayfa** (this package) — A reusable Hex package with the core static site generation engine: markdown parsing, template rendering, feed generation, block system, and more.
-2. **Your site** — A project that depends on Sayfa via `{:sayfa, "~> 0.5"}`. You bring your content, theme, and configuration; Sayfa handles the build.
+2. **Your site** — A project that depends on Sayfa via `{:sayfa, "~> 0.6"}`. You bring your content, theme, and configuration; Sayfa handles the build.
 
 ```
 ┌──────────────────────────────────────────────────────┐
 │                  YOUR WEBSITE                        │
 │   content/     themes/     lib/blocks/    config/    │
 └──────────────────────────┬───────────────────────────┘
-                           │ {:sayfa, "~> 0.5"}
+                           │ {:sayfa, "~> 0.6"}
                            ▼
 ┌──────────────────────────────────────────────────────┐
 │                  SAYFA (Hex Package)                 │
@@ -315,9 +315,7 @@ Blocks are reusable EEx components invoked via the `@block` helper:
 | Code Copy | `:code_copy` | Copy button for code blocks |
 | Copy Link | `:copy_link` | Copy page URL to clipboard |
 | Breadcrumb | `:breadcrumb` | Back link to section with JSON-LD `BreadcrumbList` structured data for SEO |
-| Recent Content | `:recent_content` | Recent items from any content type |
 | Language Switcher | `:language_switcher` | Switch between content translations; supports `variant:` assign (`:desktop`, `:mobile`) for multiple instances on the same page |
-| Related Content | `:related_content` | Content related by tags/categories (auto-detects type; accepts `type:` assign) |
 | Related Content | `:related_content` | Content related by tags/categories (auto-detects type; accepts `type:` assign) |
 
 ### Custom Blocks
@@ -542,8 +540,8 @@ config :sayfa, :site,
   # logo: "/images/logo.svg",
   # logo_dark: "/images/logo-dark.svg",  # shown in dark mode instead of logo
 
-  # Syntax highlighting theme for code blocks (uses MDEx/syntect themes)
-  # highlight_theme: "catppuccin_latte",
+  # Syntax highlighting theme for code blocks (single name or [light: ..., dark: ...] pair)
+  # highlight_theme: [light: "catppuccin_latte", dark: "catppuccin_mocha"],
 
   # View Transitions API for smooth page navigation
   # view_transitions: false,
@@ -570,11 +568,11 @@ config :sayfa, :site,
 | `theme` | String | `"default"` | Active theme name |
 | `theme_parent` | String | `"default"` | Parent theme for inheritance |
 | `static_dir` | String | `"static"` | Directory for static assets |
-| `tailwind_version` | String | `"4.1.12"` | TailwindCSS version to use |
+| `tailwind_version` | String | `"4.3.0"` | TailwindCSS version to use |
 | `logo` | String | `nil` | Path to logo image (replaces text title in header) |
 | `logo_dark` | String | `nil` | Path to dark-mode logo (shown instead of `logo` in dark mode) |
 | `social_links` | Map | `%{}` | Social media links (github, twitter, etc.) |
-| `highlight_theme` | String | `"catppuccin_latte"` | Syntax highlighting theme for code blocks |
+| `highlight_theme` | String or keyword | `[light: "catppuccin_latte", dark: "catppuccin_mocha"]` | Syntax highlighting theme(s) for code blocks; accepts a single theme name or a `[light: ..., dark: ...]` pair |
 | `view_transitions` | Boolean | `false` | Enable View Transitions API for smooth page navigation |
 | `port` | Integer | `4000` | Dev server port |
 | `verbose` | Boolean | `false` | Verbose build logging |

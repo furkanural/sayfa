@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-07-07
+
+### Added
+
+- **Light/dark syntax highlighting themes**: `highlight_theme` now accepts a single theme name or a `[light: "...", dark: "..."]` pair. The default is Catppuccin Latte (light) / Mocha (dark), and code blocks follow the reader's color scheme via CSS `light-dark()`.
+- **Feed icons on list pages**: Content index, tag archive, and category archive pages now render Atom and JSON Feed icons alongside the feed subscription links.
+- **Reference theme re-skin**: The default theme has been ported to a new visual design, including updated layouts, block markup, CSS tokens/components, and interaction selectors.
+
+### Changed
+
+- Switched syntax highlighting from Lumis `html_inline` to `html_multi_themes` so colors adapt automatically to light/dark mode.
+- Bumped default TailwindCSS version from 4.1.12 to 4.3.0.
+
+### Fixed
+
+- Aligned pagination controls with the reference theme (numbered pages, disabled states).
+- Adapted syntax highlighting for the mdex 0.13.0 / lumis API.
+- Addressed default theme review findings and polished the re-skin.
+
+### Dependencies
+
+- Bumped `mdex` from 0.12.2 to 0.13.1
+- Added `lumis` 0.6.0 (highlighting engine for mdex)
+- Bumped `tailwind` from 0.4.1 to 0.5.1
+- Bumped `yaml_elixir` from 2.12.1 to 2.12.2
+- Bumped `credo` from 1.7.18 to 1.7.19
+- Bumped `ex_doc` from 0.40.2 to 0.40.3
+
 ## [0.5.0] - 2026-05-15
 
 ### Added
@@ -235,6 +263,7 @@ Initial release of Sayfa — a static site generator built in Elixir.
 - Build caching for incremental rebuilds
 - Verbose logging with per-stage timing
 
+[0.6.0]: https://github.com/furkanural/sayfa/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/furkanural/sayfa/compare/v0.4.2...v0.5.0
 [0.4.2]: https://github.com/furkanural/sayfa/compare/v0.4.1...v0.4.2
 [0.4.1]: https://github.com/furkanural/sayfa/compare/v0.4.0...v0.4.1

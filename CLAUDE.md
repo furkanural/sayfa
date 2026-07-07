@@ -106,7 +106,7 @@ mix test
 
 ## Architecture Highlights
 
-**Sayfa** is an Elixir static site generator (v0.4.2) with a two-layer architecture:
+**Sayfa** is an Elixir static site generator (v0.6.0) with a two-layer architecture:
 1. **Sayfa (this package)** — Reusable Hex package with core SSG functionality
 2. **User sites** — Projects that depend on Sayfa via `{:sayfa, "~> x.x"}`
 
