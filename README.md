@@ -543,7 +543,7 @@ config :sayfa, :site,
   # logo_dark: "/images/logo-dark.svg",  # shown in dark mode instead of logo
 
   # Syntax highlighting theme for code blocks (uses MDEx/syntect themes)
-  # highlight_theme: "github_light",
+  # highlight_theme: "catppuccin_latte",
 
   # View Transitions API for smooth page navigation
   # view_transitions: false,
@@ -574,7 +574,7 @@ config :sayfa, :site,
 | `logo` | String | `nil` | Path to logo image (replaces text title in header) |
 | `logo_dark` | String | `nil` | Path to dark-mode logo (shown instead of `logo` in dark mode) |
 | `social_links` | Map | `%{}` | Social media links (github, twitter, etc.) |
-| `highlight_theme` | String | `"github_light"` | Syntax highlighting theme for code blocks |
+| `highlight_theme` | String | `"catppuccin_latte"` | Syntax highlighting theme for code blocks |
 | `view_transitions` | Boolean | `false` | Enable View Transitions API for smooth page navigation |
 | `port` | Integer | `4000` | Dev server port |
 | `verbose` | Boolean | `false` | Verbose build logging |

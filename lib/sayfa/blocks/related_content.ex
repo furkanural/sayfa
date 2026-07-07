@@ -49,7 +49,7 @@ defmodule Sayfa.Blocks.RelatedContent do
         items = Enum.map_join(related, "\n", &render_item(&1, lang, site))
 
         """
-        <section class="related-section">\
+        <section class="related-content">\
           <h2 class="related-title">#{heading}</h2>\
           <div class="related-grid">\
         #{items}\
@@ -97,22 +97,22 @@ defmodule Sayfa.Blocks.RelatedContent do
 
     date_html =
       if item.date do
-        "<time class=\"content-card-date\">#{Sayfa.DateFormat.format(item.date, lang || :en, site)}</time>"
+        "<time class=\"card-date\">#{Sayfa.DateFormat.format(item.date, lang || :en, site)}</time>"
       else
         ""
       end
 
     cat_html =
       if first_cat do
-        "<span class=\"chip-category\"><svg class=\"icon-2_5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z\"/></svg>#{Block.escape_html(first_cat)}</span>"
+        "<span class=\"chip category\">#{Block.escape_html(first_cat)}</span>"
       else
         ""
       end
 
     """
-        <a href="#{url}" class="content-card">\
-          <h3 class="content-card-title-clamp">#{title}</h3>\
-          <div class="content-card-meta">#{date_html} #{cat_html}</div>\
+        <a href="#{url}" class="card">\
+          <h3 class="card-title-clamp">#{title}</h3>\
+          <div class="card-meta">#{date_html} #{cat_html}</div>\
         </a>\
     """
   end

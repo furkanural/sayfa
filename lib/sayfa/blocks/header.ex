@@ -19,8 +19,8 @@ defmodule Sayfa.Blocks.Header do
         logo_dark: "/images/logo-dark.svg"
 
   When `logo` is set, an `<img>` is rendered instead of the plain text title.
-  When both `logo` and `logo_dark` are set, the light logo is hidden in dark
-  mode and the dark logo is shown (`dark:hidden` / `hidden dark:block`).
+  When both `logo` and `logo_dark` are set, both logo variants are rendered and
+  the theme CSS shows the appropriate image for the active color scheme.
 
   ## Examples
 
@@ -45,9 +45,7 @@ defmodule Sayfa.Blocks.Header do
     nav = Map.get(assigns, :nav, [])
     page_url = Map.get(assigns, :page_url)
 
-    # Generate desktop and mobile language switchers with unique IDs
-    lang_switcher_desktop = LanguageSwitcher.render(Map.put(assigns, :variant, :desktop))
-    lang_switcher_mobile = LanguageSwitcher.render(Map.put(assigns, :variant, :mobile))
+    lang_switcher = LanguageSwitcher.render(Map.put(assigns, :variant, :desktop))
 
     lang = Map.get(assigns, :lang)
     default_lang = Map.get(site, :default_lang, :en)
@@ -55,7 +53,6 @@ defmodule Sayfa.Blocks.Header do
     home_url = if lang_prefix == "", do: "/", else: "#{lang_prefix}/"
 
     nav = prefix_nav_urls(nav, lang_prefix)
-    nav_html = render_nav(nav, lang_switcher_desktop, lang_switcher_mobile, page_url)
 
     {brand_html, link_class} =
       if logo do
@@ -65,16 +62,14 @@ defmodule Sayfa.Blocks.Header do
         {site_title, "header-brand-text"}
       end
 
-    """
-    <header class="header-shell">\
-      <div class="header-container">\
-        <div class="header-row">\
-          <a href="#{home_url}" class="#{link_class}">#{brand_html}</a>\
-    #{nav_html}\
-        </div>\
-      </div>\
-    </header>\
-    """
+    brand_link = ~s(<a href="#{home_url}" class="#{link_class}">#{brand_html}</a>)
+
+    render_header(
+      brand_link,
+      nav,
+      lang_switcher,
+      page_url
+    )
   end
 
   defp render_logo_img(logo, nil, alt) do
@@ -103,22 +98,34 @@ defmodule Sayfa.Blocks.Header do
     end)
   end
 
-  defp render_nav([], "", "", _page_url), do: ""
+  # Header with no nav links: brand on the left, language switcher (if any) on
+  # the right.
+  defp render_header(brand_link, [], lang_switcher, _page_url) do
+    right =
+      if lang_switcher == "" do
+        ""
+      else
+        ~s(<div class="header-nav-right">#{lang_switcher}</div>)
+      end
 
-  defp render_nav([], lang_switcher_desktop, _lang_switcher_mobile, _page_url) do
     """
-          <div class="header-nav-only">#{lang_switcher_desktop}</div>\
+    <header class="site-header">\
+      <nav class="header-nav container-content-wide" aria-label="Primary">\
+        <div class="header-nav-left">#{brand_link}</div>\
+    #{right}\
+      </nav>\
+    </header>\
     """
   end
 
-  defp render_nav(nav, lang_switcher_desktop, lang_switcher_mobile, page_url) do
+  defp render_header(brand_link, nav, lang_switcher, page_url) do
     desktop_items =
       Enum.map_join(nav, "", fn {label, url} ->
         {classes, attrs} =
           if active?(url, page_url) do
-            {"header-nav-link-active", " aria-current=\"page\""}
+            {"nav-link active", " aria-current=\"page\""}
           else
-            {"header-nav-link", ""}
+            {"nav-link", ""}
           end
 
         "<a href=\"#{Block.escape_html(url)}\" class=\"#{classes}\"#{attrs}>#{Block.escape_html(label)}</a>"
@@ -137,18 +144,24 @@ defmodule Sayfa.Blocks.Header do
       end)
 
     """
-          <div class="header-nav-wrap">\
-            <nav class="header-desktop-nav" aria-label="Primary">#{desktop_items}#{lang_switcher_desktop}</nav>\
-    #{if lang_switcher_mobile != "", do: "<div class=\"header-mobile-switcher\">#{lang_switcher_mobile}</div>", else: ""}\
-            <button id="menu-toggle" class="header-menu-toggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="mobile-menu">\
-              <svg class="icon-menu menu-open" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true"><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/></svg>\
-              <svg class="icon-menu menu-close hidden" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>\
-            </button>\
-          </div>\
+    <header class="site-header">\
+      <nav class="header-nav container-content-wide" aria-label="Primary">\
+        <div class="header-nav-left">\
+          #{brand_link}\
+          <div class="nav-menu header-desktop-nav">#{desktop_items}</div>\
         </div>\
-        <nav id="mobile-menu" class="header-mobile-menu hidden" aria-label="Mobile primary">\
-          <div class="header-mobile-list">#{mobile_items}</div>\
-        </nav>\
+        <div class="header-nav-right">\
+          #{lang_switcher}\
+          <button id="menu-toggle" class="mobile-menu-toggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="mobile-menu">\
+            <svg class="icon-menu menu-open" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true"><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/></svg>\
+            <svg class="icon-menu menu-close hidden" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>\
+          </button>\
+        </div>\
+      </nav>\
+      <nav id="mobile-menu" class="nav-menu header-mobile-menu hidden" aria-label="Mobile primary">\
+        <div class="header-mobile-list">#{mobile_items}</div>\
+      </nav>\
+    </header>\
     """
   end
 

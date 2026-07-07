@@ -539,7 +539,7 @@ config :sayfa, :site,
   # logo_dark: "/images/logo-dark.svg",  # karanlik modda logo yerine gosterilir
 
   # Kod bloklari icin sozdizimi vurgulama temasi
-  # highlight_theme: "github_light",
+  # highlight_theme: "catppuccin_latte",
 
   # Sayfa gecisleri icin View Transitions API
   # view_transitions: false,
@@ -570,7 +570,7 @@ config :sayfa, :site,
 | `logo` | String | `nil` | Logo gorsel yolu (baslikta yazi basliginin yerine goster) |
 | `logo_dark` | String | `nil` | Karanlik mod logosu yolu (karanlik modda `logo` yerine gosterilir) |
 | `social_links` | Map | `%{}` | Sosyal medya baglantilari (github, twitter, vb.) |
-| `highlight_theme` | String | `"github_light"` | Kod bloklari icin sozdizimi vurgulama temasi |
+| `highlight_theme` | String | `"catppuccin_latte"` | Kod bloklari icin sozdizimi vurgulama temasi |
 | `view_transitions` | Boolean | `false` | Sayfa gecisleri icin View Transitions API'yi etkinlestir |
 | `port` | Integer | `4000` | Gelistirme sunucusu portu |
 | `verbose` | Boolean | `false` | Ayrintili derleme loglama |

@@ -66,7 +66,7 @@ defmodule Sayfa.BlockTest do
     test "renders known block" do
       helper = Block.build_helper(site: %{title: "Test"}, content: nil, contents: [], lang: :en)
       result = helper.(:footer, [])
-      assert result =~ "footer-shell"
+      assert result =~ "site-footer"
     end
 
     test "returns empty string for unknown block" do
@@ -195,7 +195,7 @@ defmodule Sayfa.BlockTest do
   describe "Header" do
     test "renders with site title" do
       html = Header.render(%{site: %{title: "My Blog"}})
-      assert html =~ "<header class=\"header-shell"
+      assert html =~ "<header class=\"site-header"
       assert html =~ "My Blog"
     end
 
@@ -206,17 +206,17 @@ defmodule Sayfa.BlockTest do
           nav: [{"Home", "/"}, {"About", "/about/"}]
         })
 
-      assert html =~ "<nav class=\"header-desktop-nav"
+      assert html =~ "header-desktop-nav"
       assert html =~ "Home"
       assert html =~ "/about/"
     end
 
     test "renders without navigation" do
       html = Header.render(%{site: %{title: "Blog"}, nav: []})
-      refute html =~ "<nav"
+      refute html =~ ~s(id="menu-toggle")
     end
 
-    test "language switcher appears next to hamburger in mobile layout" do
+    test "renders a single language switcher next to the hamburger" do
       html =
         Header.render(%{
           site: %{
@@ -229,15 +229,14 @@ defmodule Sayfa.BlockTest do
           page_url: "/articles/"
         })
 
-      # Desktop variant (hidden on mobile)
+      # A single switcher is rendered (visible at all breakpoints)
       assert html =~ ~s(id="lang-switcher-desktop")
       assert html =~ ~s(id="lang-toggle-desktop")
       assert html =~ ~s(id="lang-menu-desktop")
 
-      # Mobile variant (visible on mobile)
-      assert html =~ ~s(id="lang-switcher-mobile")
-      assert html =~ ~s(id="lang-toggle-mobile")
-      assert html =~ ~s(id="lang-menu-mobile")
+      # No duplicate mobile-only switcher
+      refute html =~ ~s(id="lang-switcher-mobile")
+      refute html =~ "header-mobile-switcher"
 
       # Hamburger menu button
       assert html =~ ~s(id="menu-toggle")
@@ -288,10 +287,10 @@ defmodule Sayfa.BlockTest do
         })
 
       # "Articles" link should have active styling
-      assert html =~ ~r/href="\/articles\/"[^>]*header-nav-link-active/
+      assert html =~ ~r/href="\/articles\/"[^>]*nav-link active/
       # "Home" and "About" should not have active styling
-      assert html =~ ~r/href="\/"[^>]*header-nav-link"/
-      assert html =~ ~r/href="\/about\/"[^>]*header-nav-link"/
+      assert html =~ ~r/href="\/"[^>]*nav-link"/
+      assert html =~ ~r/href="\/about\/"[^>]*nav-link"/
     end
 
     test "applies active class to home only for exact /" do
@@ -304,9 +303,9 @@ defmodule Sayfa.BlockTest do
         })
 
       # Home should be active
-      assert html =~ ~r/href="\/"[^>]*header-nav-link-active/
+      assert html =~ ~r/href="\/"[^>]*nav-link active/
       # Articles should not be active
-      assert html =~ ~r/href="\/articles\/"[^>]*header-nav-link"/
+      assert html =~ ~r/href="\/articles\/"[^>]*nav-link"/
     end
 
     test "no active class when page_url is nil" do
@@ -319,7 +318,7 @@ defmodule Sayfa.BlockTest do
         })
 
       # All items should have default styling
-      refute html =~ "header-nav-link-active"
+      refute html =~ "nav-link active"
     end
 
     test "active state works with language-prefixed URLs" do
@@ -332,7 +331,7 @@ defmodule Sayfa.BlockTest do
         })
 
       # Yazılar should be active (its URL becomes /tr/articles/ which matches /tr/articles/merhaba/)
-      assert html =~ ~r/href="\/tr\/articles\/"[^>]*header-nav-link-active/
+      assert html =~ ~r/href="\/tr\/articles\/"[^>]*nav-link active/
     end
 
     test "localized homepage is not active on subpages" do
@@ -345,9 +344,9 @@ defmodule Sayfa.BlockTest do
         })
 
       # Ana Sayfa (/tr/) should NOT be active when on /tr/articles/
-      assert html =~ ~r/href="\/tr\/"[^>]*header-nav-link"/
+      assert html =~ ~r/href="\/tr\/"[^>]*nav-link"/
       # Yazılar should be active
-      assert html =~ ~r/href="\/tr\/articles\/"[^>]*header-nav-link-active/
+      assert html =~ ~r/href="\/tr\/articles\/"[^>]*nav-link active/
     end
 
     test "localized homepage is active on exact match" do
@@ -360,9 +359,9 @@ defmodule Sayfa.BlockTest do
         })
 
       # Ana Sayfa should be active on /tr/
-      assert html =~ ~r/href="\/tr\/"[^>]*header-nav-link-active/
+      assert html =~ ~r/href="\/tr\/"[^>]*nav-link active/
       # Yazılar should NOT be active
-      assert html =~ ~r/href="\/tr\/articles\/"[^>]*header-nav-link"/
+      assert html =~ ~r/href="\/tr\/articles\/"[^>]*nav-link"/
     end
 
     test "nav URLs are unchanged for default language" do
@@ -382,7 +381,7 @@ defmodule Sayfa.BlockTest do
   describe "Footer" do
     test "renders with year and author" do
       html = Footer.render(%{year: 2024, author: "Jane"})
-      assert html =~ "<footer class=\"footer-shell"
+      assert html =~ "<footer class=\"site-footer"
       assert html =~ "2024"
       assert html =~ "Jane"
     end
@@ -432,7 +431,7 @@ defmodule Sayfa.BlockTest do
           links: [{"GitHub", "https://github.com"}, {"Twitter", "https://twitter.com"}]
         })
 
-      assert html =~ "<div class=\"social-links-wrap"
+      assert html =~ "<div class=\"social-links"
       assert html =~ "GitHub"
       assert html =~ "https://github.com"
       assert html =~ "rel=\"noopener\""
@@ -470,7 +469,7 @@ defmodule Sayfa.BlockTest do
       }
 
       html = TOCBlock.render(%{content: content})
-      assert html =~ "<nav class=\"toc-nav\""
+      assert html =~ "<nav class=\"toc\""
       assert html =~ "#intro"
       assert html =~ "Introduction"
       assert html =~ "Details"
@@ -571,7 +570,7 @@ defmodule Sayfa.BlockTest do
       assert html =~ "Copy link"
       assert html =~ "data-action=\"copy-link\""
       assert html =~ "<button"
-      assert html =~ "copy-link-btn"
+      assert html =~ "copy-link"
     end
   end
 

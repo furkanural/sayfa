@@ -8,7 +8,7 @@
   <%= @block.(:recent_content, limit: 5) %>
 
   <%= if Map.get(@site, :social_links, []) != [] do %>
-  <section class="container-content section-spacing">
+  <section class="home-connect-section container-content-wide">
     <h2 class="home-connect-title"><%= @t.("connect") %></h2>
     <%= @block.(:social_links, links: @site.social_links) %>
   </section>

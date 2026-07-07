@@ -61,7 +61,7 @@ defmodule Sayfa.Tailwind do
           ["-i", input_path, "-o", output_path] ++
             if(minify, do: ["--minify"], else: [])
 
-        version = Map.get(config, :tailwind_version, "4.1.12")
+        version = Map.get(config, :tailwind_version, "4.3.0")
         configure(version, args)
 
         case Tailwind.install_and_run(@profile, []) do

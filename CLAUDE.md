@@ -251,9 +251,7 @@ priv/
     │   └── talk.html.eex
     └── assets/
         ├── css/
-        │   ├── main.css
-        │   └── vendor/
-        │       └── catppuccin-mocha.css
+        │   └── main.css
         └── js/
             ├── enhancements.js
             └── enhancements.min.js

@@ -30,7 +30,7 @@ defmodule Sayfa.Blocks.SocialLinks do
     else
       items = Enum.map_join(links, "\n  ", &render_link/1)
 
-      "<div class=\"social-links-wrap\">\n  #{items}\n</div>"
+      "<div class=\"social-links\">\n  #{items}\n</div>"
     end
   end
 
@@ -40,6 +40,6 @@ defmodule Sayfa.Blocks.SocialLinks do
     escaped_url = Block.escape_html(url)
     rel = Block.social_rel(label)
 
-    "<a href=\"#{escaped_url}\" rel=\"#{rel}\" class=\"social-link-btn\">#{icon} #{escaped_label}</a>"
+    "<a href=\"#{escaped_url}\" rel=\"#{rel}\" class=\"social-link\" aria-label=\"#{escaped_label}\">#{icon}<span class=\"visually-hidden\">#{escaped_label}</span></a>"
   end
 end
