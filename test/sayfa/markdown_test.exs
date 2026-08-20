@@ -5,8 +5,8 @@ defmodule Sayfa.MarkdownTest do
   describe "render/1" do
     test "renders heading with anchor id" do
       assert {:ok, html} = Sayfa.Markdown.render("# Hello")
-      assert html =~ ~s(id="hello")
-      assert html =~ "Hello</h1>"
+      assert html =~ ~s(<h1 id="hello">)
+      assert html =~ ~s(Hello<a href="#hello")
     end
 
     test "renders inline formatting" do
@@ -44,8 +44,8 @@ defmodule Sayfa.MarkdownTest do
   describe "render!/1" do
     test "returns HTML directly" do
       html = Sayfa.Markdown.render!("# Hello")
-      assert html =~ ~s(id="hello")
-      assert html =~ "Hello</h1>"
+      assert html =~ ~s(<h1 id="hello">)
+      assert html =~ ~s(Hello<a href="#hello")
     end
   end
 end

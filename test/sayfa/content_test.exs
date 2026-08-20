@@ -80,7 +80,7 @@ defmodule Sayfa.ContentTest do
     test "renders markdown to HTML in body" do
       raw = "---\ntitle: Test\n---\n# Heading\n\n**bold** text"
       assert {:ok, content} = Content.parse(raw)
-      assert content.body =~ "<h1>"
+      assert content.body =~ ~s(<h1 id="heading">)
       assert content.body =~ "<strong>bold</strong>"
     end
   end
