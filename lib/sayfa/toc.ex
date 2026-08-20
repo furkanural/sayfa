@@ -10,7 +10,7 @@ defmodule Sayfa.TOC do
 
   ## Examples
 
-      iex> html = ~s(<h2><a href="#intro" aria-hidden="true" class="anchor" id="intro"></a>Introduction</h2>)
+      iex> html = ~s(<h2 id="intro">Introduction<a href="#intro" aria-label="Link to heading 'Introduction'" data-heading-content="Introduction" class="anchor"></a></h2>)
       iex> Sayfa.TOC.extract(html)
       [%{level: 2, text: "Introduction", id: "intro"}]
 
@@ -25,7 +25,7 @@ defmodule Sayfa.TOC do
 
   ## Examples
 
-      iex> html = ~s(<h2><a href="#intro" aria-hidden="true" class="anchor" id="intro"></a>Introduction</h2>)
+      iex> html = ~s(<h2 id="intro">Introduction<a href="#intro" aria-label="Link to heading 'Introduction'" data-heading-content="Introduction" class="anchor"></a></h2>)
       iex> Sayfa.TOC.extract(html)
       [%{level: 2, text: "Introduction", id: "intro"}]
 
@@ -38,7 +38,7 @@ defmodule Sayfa.TOC do
   """
   @spec extract(String.t()) :: [%{level: integer(), text: String.t(), id: String.t()}]
   def extract(html) when is_binary(html) do
-    ~r/<h([2-6])><a [^>]*id="([^"]*)"[^>]*><\/a>(.+?)<\/h\1>/s
+    ~r/<h([2-6]) id="([^"]*)"[^>]*>(.+?)<\/h\1>/s
     |> Regex.scan(html)
     |> Enum.map(fn [_, level, id, text] ->
       %{

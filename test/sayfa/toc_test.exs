@@ -7,11 +7,11 @@ defmodule Sayfa.TOCTest do
   describe "extract/1" do
     test "extracts h2-h6 headings" do
       html = """
-      <h2><a href="#intro" aria-hidden="true" class="anchor" id="intro"></a>Introduction</h2>
+      <h2 id="intro">Introduction<a href="#intro" aria-label="Link to heading 'Introduction'" data-heading-content="Introduction" class="anchor"></a></h2>
       <p>Some text</p>
-      <h3><a href="#details" aria-hidden="true" class="anchor" id="details"></a>Details</h3>
+      <h3 id="details">Details<a href="#details" aria-label="Link to heading 'Details'" data-heading-content="Details" class="anchor"></a></h3>
       <p>More text</p>
-      <h4><a href="#sub" aria-hidden="true" class="anchor" id="sub"></a>Sub-section</h4>
+      <h4 id="sub">Sub-section<a href="#sub" aria-label="Link to heading 'Sub-section'" data-heading-content="Sub-section" class="anchor"></a></h4>
       """
 
       result = TOC.extract(html)
@@ -25,8 +25,8 @@ defmodule Sayfa.TOCTest do
 
     test "skips h1 headings" do
       html = """
-      <h1><a href="#title" aria-hidden="true" class="anchor" id="title"></a>Title</h1>
-      <h2><a href="#intro" aria-hidden="true" class="anchor" id="intro"></a>Introduction</h2>
+      <h1 id="title">Title<a href="#title" aria-label="Link to heading 'Title'" data-heading-content="Title" class="anchor"></a></h1>
+      <h2 id="intro">Introduction<a href="#intro" aria-label="Link to heading 'Introduction'" data-heading-content="Introduction" class="anchor"></a></h2>
       """
 
       result = TOC.extract(html)
@@ -36,7 +36,7 @@ defmodule Sayfa.TOCTest do
 
     test "handles inline tags in heading text" do
       html =
-        ~s(<h2><a href="#code" aria-hidden="true" class="anchor" id="code"></a>Using <code>IO.puts</code></h2>)
+        ~s(<h2 id="code">Using <code>IO.puts</code><a href="#code" aria-label="Link to heading 'Using IO.puts'" data-heading-content="Using IO.puts" class="anchor"></a></h2>)
 
       result = TOC.extract(html)
       assert [%{text: "Using IO.puts", id: "code"}] = result

@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Adapted TOC extraction to the mdex 0.13.5 heading anchor format: anchors now render after the heading text with an accessible `aria-label`, and the heading element itself carries the `id`.
+
+### Dependencies
+
+- Bumped `lumis` from 0.6.2 to 0.7.0
+- Bumped `mdex` from 0.13.3 to 0.13.5
+
 ## [0.6.0] - 2026-07-07
 
 ### Added
