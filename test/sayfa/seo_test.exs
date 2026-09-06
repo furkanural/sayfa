@@ -98,6 +98,44 @@ defmodule Sayfa.SEOTest do
       assert html =~ "&quot;"
       assert html =~ "&lt;"
     end
+
+    test "includes markdown alternate link tag" do
+      content = %Content{
+        title: "Hello",
+        body: "<p>Body</p>",
+        slug: "hello",
+        meta: %{"url_prefix" => "articles"}
+      }
+
+      html = SEO.meta_tags(content, @config)
+
+      assert html =~
+               ~s(<link rel="alternate" type="text/markdown" href="https://example.com/articles/hello.md">)
+    end
+
+    test "omits markdown alternate tag for the index slug" do
+      content = %Content{
+        title: "Home",
+        body: "<p>Body</p>",
+        slug: "index",
+        meta: %{"url_prefix" => ""}
+      }
+
+      html = SEO.meta_tags(content, @config)
+      refute html =~ "text/markdown"
+    end
+
+    test "omits markdown alternate tag when mirrors are disabled" do
+      content = %Content{
+        title: "Hello",
+        body: "<p>Body</p>",
+        slug: "hello",
+        meta: %{"url_prefix" => "articles"}
+      }
+
+      html = SEO.meta_tags(content, Map.put(@config, :markdown_mirrors, false))
+      refute html =~ "text/markdown"
+    end
   end
 
   describe "meta_tags/2 with nil content" do

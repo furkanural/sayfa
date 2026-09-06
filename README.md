@@ -98,6 +98,7 @@ Sayfa follows a **two-layer architecture**:
 - Atom feed generation
 - Sitemap XML
 - SEO meta tags (Open Graph, description)
+- Markdown mirrors (`/articles/slug.md`) and `llms.txt` for AI/LLM consumers
 
 ### Developer Experience
 - `mix sayfa.new` project generator
@@ -314,6 +315,7 @@ Blocks are reusable EEx components invoked via the `@block` helper:
 | Reading Time | `:reading_time` | Estimated reading time |
 | Code Copy | `:code_copy` | Copy button for code blocks |
 | Copy Link | `:copy_link` | Copy page URL to clipboard |
+| Markdown Link | `:markdown_link` | "Copy as Markdown" button for the page's `.md` mirror (icon-only on mobile) |
 | Breadcrumb | `:breadcrumb` | Back link to section with JSON-LD `BreadcrumbList` structured data for SEO |
 | Language Switcher | `:language_switcher` | Switch between content translations; supports `variant:` assign (`:desktop`, `:mobile`) for multiple instances on the same page |
 | Related Content | `:related_content` | Content related by tags/categories (auto-detects type; accepts `type:` assign) |
@@ -506,6 +508,12 @@ A `sitemap.xml` is generated at the root of the `dist/` directory containing all
 
 Templates automatically include Open Graph and description meta tags based on front matter fields.
 
+### Markdown for AI/LLM Consumers
+
+Every content page also gets a clean Markdown mirror at the same URL with `.md` appended — `/articles/hello` → `/articles/hello.md` — containing the title, publication metadata, and the original Markdown body. HTML pages advertise their mirror with `<link rel="alternate" type="text/markdown">`, and a site-level `/llms.txt` index (following the [llms.txt](https://llmstxt.org/) convention) lists all mirrors grouped by content type.
+
+Disable both with `markdown_mirrors: false` in your site config.
+
 ---
 
 ## Configuration
@@ -527,6 +535,7 @@ config :sayfa, :site,
   output_dir: "dist",
   articles_per_page: 10,
   drafts: false,
+  markdown_mirrors: true,
 
   # Language
   default_lang: :en,

@@ -1148,6 +1148,27 @@ a:hover .card-title {
   color: var(--success);
 }
 
+.content-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin-inline-start: auto;
+}
+
+@media (max-width: 48rem) {
+  .content-actions {
+    margin-inline-start: 0;
+  }
+
+  .copy-link {
+    padding: 0.375rem;
+  }
+
+  .copy-link span {
+    display: none;
+  }
+}
+
 /* ============================================================================
    SOCIAL LINKS
    ============================================================================ */

@@ -13,6 +13,7 @@ defmodule Sayfa.SEO do
   """
 
   alias Sayfa.Content
+  alias Sayfa.MarkdownMirror
 
   @article_types ~w(articles notes)
 
@@ -62,6 +63,7 @@ defmodule Sayfa.SEO do
     |> maybe_add_og_updated_time(content)
     |> maybe_add_twitter_site(config)
     |> maybe_add_twitter_creator(content, config)
+    |> maybe_add_markdown_alternate(content, config)
     |> Enum.join("\n")
   end
 
@@ -295,6 +297,21 @@ defmodule Sayfa.SEO do
   end
 
   defp maybe_add_image(tags, _content), do: tags
+
+  defp maybe_add_markdown_alternate(tags, %Content{} = content, config) do
+    if MarkdownMirror.enabled?(config) do
+      case MarkdownMirror.url(content) do
+        nil ->
+          tags
+
+        mirror_url ->
+          href = String.trim_trailing(config.base_url, "/") <> mirror_url
+          tags ++ [~s(<link rel="alternate" type="text/markdown" href="#{escape_attr(href)}">)]
+      end
+    else
+      tags
+    end
+  end
 
   defp maybe_add_article_tags(tags, %Content{} = content, config) do
     content_type = content.meta["content_type"]

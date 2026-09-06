@@ -28,7 +28,10 @@
   <%= if @content.meta["reading_time"] do %>
             <%= @block.(:reading_time, []) %>
   <% end %>
-            <%= @block.(:copy_link, []) %>
+            <div class="content-actions">
+              <%= @block.(:copy_link, []) %>
+              <%= @block.(:markdown_link, []) %>
+            </div>
           </div>
   <%= if @content.categories != [] do %>
   <% cat_base = if (@content.meta["lang_prefix"] || "") == "", do: "/categories/", else: "/#{@content.meta["lang_prefix"]}/categories/" %>

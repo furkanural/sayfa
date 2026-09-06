@@ -225,3 +225,31 @@
       .catch(() => {});
   });
 })();
+
+/* 7. Copy markdown buttons */
+(function () {
+  document.addEventListener("click", (e) => {
+    const btn = e.target.closest('[data-action="copy-markdown"]');
+    if (!btn) return;
+
+    const span = btn.querySelector("span");
+    if (!span) return;
+
+    const url = btn.dataset.url;
+    const copyText = btn.dataset.copyText;
+    const copiedText = btn.dataset.copiedText;
+
+    fetch(url)
+      .then((r) => r.text())
+      .then((text) => navigator.clipboard.writeText(text))
+      .then(() => {
+        btn.classList.add("copied");
+        span.textContent = copiedText;
+        setTimeout(() => {
+          btn.classList.remove("copied");
+          span.textContent = copyText;
+        }, 2000);
+      })
+      .catch(() => {});
+  });
+})();
