@@ -3,6 +3,9 @@
     <%= @block.(:breadcrumb, []) %>
     <header class="content-header-sm">
       <h1 class="page-title-lg"><%= @content.title %></h1>
+      <div class="content-meta-row-tight">
+        <%= @block.(:markdown_link, []) %>
+      </div>
     </header>
     <div class="article-content">
       <%= @inner_content %>

@@ -50,6 +50,7 @@ defmodule Sayfa.Block do
       Sayfa.Blocks.CodeCopy,
       Sayfa.Blocks.RecentContent,
       Sayfa.Blocks.CopyLink,
+      Sayfa.Blocks.MarkdownLink,
       Sayfa.Blocks.Breadcrumb,
       Sayfa.Blocks.LanguageSwitcher,
       Sayfa.Blocks.RelatedContent,

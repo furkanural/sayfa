@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Markdown mirrors for AI/LLM consumers: every content page now also emits a clean Markdown file at the same URL with `.md` appended (e.g. `/articles/hello.md`), advertised in the HTML head via `<link rel="alternate" type="text/markdown">`, plus a site-level `/llms.txt` index following the llms.txt convention. Disable with `markdown_mirrors: false` (#35)
+- New `:markdown_link` block rendering a visible "View Markdown" link and "Copy Markdown" button in the meta row of article/note/project/talk/page layouts, so readers can discover and copy the LLM-friendly version. Custom themes with copied layouts need to add `<%= @block.(:markdown_link, []) %>` manually (or re-copy the layout) (#35)
+
 ### Fixed
 
 - Adapted TOC extraction to the mdex 0.13.5 heading anchor format: anchors now render after the heading text with an accessible `aria-label`, and the heading element itself carries the `id`.

@@ -187,7 +187,7 @@ lib/
 │   │   ├── block.ex
 │   │   ├── hook.ex
 │   │   └── content_type.ex
-│   ├── blocks/                 # Built-in blocks (14)
+│   ├── blocks/                 # Built-in blocks (15)
 │   │   ├── header.ex
 │   │   ├── footer.ex
 │   │   ├── social_links.ex
@@ -199,6 +199,7 @@ lib/
 │   │   ├── code_copy.ex
 │   │   ├── recent_content.ex   # Groups all content types
 │   │   ├── copy_link.ex
+│   │   ├── markdown_link.ex    # View/Copy links to the page's .md mirror
 │   │   ├── breadcrumb.ex
 │   │   ├── language_switcher.ex
 │   │   ├── related_content.ex

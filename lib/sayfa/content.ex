@@ -405,7 +405,8 @@ defmodule Sayfa.Content do
              content
              | source_path: raw.path,
                slug: content.slug || slug,
-               date: content.date || filename_date
+               date: content.date || filename_date,
+               meta: Map.put(content.meta, "body_markdown", raw.body_markdown)
            }}
 
         error ->

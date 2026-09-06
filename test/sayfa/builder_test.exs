@@ -101,8 +101,8 @@ defmodule Sayfa.BuilderTest do
 
       assert {:ok, result} = Builder.build(build_opts(ctx))
 
-      # 1 individual + 1 articles index + 1 feed.xml + 1 feed.json + 1 feed/articles.xml + 1 feed/articles.json + 1 sitemap.xml = 7
-      assert result.files_written == 7
+      # 1 individual + 1 articles index + 1 feed.xml + 1 feed.json + 1 feed/articles.xml + 1 feed/articles.json + 1 sitemap.xml + 1 llms.txt = 8
+      assert result.files_written == 8
       assert result.content_count == 1
     end
 
@@ -117,8 +117,8 @@ defmodule Sayfa.BuilderTest do
 
       assert {:ok, result} = Builder.build(build_opts(ctx, drafts: true))
 
-      # 1 individual + 1 articles index + 1 feed.xml + 1 feed.json + 1 feed/articles.xml + 1 feed/articles.json + 1 sitemap.xml = 7
-      assert result.files_written == 7
+      # 1 individual + 1 articles index + 1 feed.xml + 1 feed.json + 1 feed/articles.xml + 1 feed/articles.json + 1 sitemap.xml + 1 llms.txt = 8
+      assert result.files_written == 8
       assert result.content_count == 1
     end
 
@@ -129,8 +129,8 @@ defmodule Sayfa.BuilderTest do
 
     test "builds with no content files", ctx do
       assert {:ok, result} = Builder.build(build_opts(ctx))
-      # feed.xml + feed.json + sitemap.xml always generated
-      assert result.files_written == 3
+      # feed.xml + feed.json + sitemap.xml + llms.txt always generated
+      assert result.files_written == 4
       assert result.content_count == 0
     end
 
@@ -145,8 +145,8 @@ defmodule Sayfa.BuilderTest do
       """)
 
       assert {:ok, result} = Builder.build(build_opts(ctx))
-      # 1 individual + 1 feed.xml + 1 feed.json + 1 sitemap.xml = 4
-      assert result.files_written == 4
+      # 1 individual + 1 feed.xml + 1 feed.json + 1 sitemap.xml + 1 llms.txt = 5
+      assert result.files_written == 5
 
       # home layout wraps with <section class="home">
       # (default theme layout)
@@ -1058,6 +1058,119 @@ defmodule Sayfa.BuilderTest do
 
       tr_index = File.read!(Path.join(ctx.output_dir, "tr/articles/index.html"))
       assert tr_index =~ ~s(lang="tr")
+    end
+  end
+
+  describe "markdown mirrors and llms.txt" do
+    test "writes a .md mirror next to each content page", ctx do
+      File.write!(Path.join(ctx.articles_dir, "2024-01-15-hello-world.md"), """
+      ---
+      title: "Hello World"
+      date: 2024-01-15
+      tags: [elixir]
+      description: "First post"
+      ---
+
+      This is my first article.
+      """)
+
+      {:ok, _result} = Builder.build(build_opts(ctx))
+
+      mirror_path = Path.join([ctx.output_dir, "articles", "hello-world.md"])
+      assert File.exists?(mirror_path)
+
+      mirror = File.read!(mirror_path)
+      assert mirror =~ "# Hello World"
+      assert mirror =~ "Published 2024-01-15"
+      assert mirror =~ "Tags: elixir"
+      assert mirror =~ "This is my first article."
+    end
+
+    test "advertises the mirror in the HTML head", ctx do
+      File.write!(Path.join(ctx.articles_dir, "2024-01-15-hello-world.md"), """
+      ---
+      title: "Hello World"
+      date: 2024-01-15
+      ---
+
+      This is my first article.
+      """)
+
+      {:ok, _result} = Builder.build(build_opts(ctx))
+
+      html = File.read!(Path.join([ctx.output_dir, "articles", "hello-world", "index.html"]))
+      assert html =~ ~s(<link rel="alternate" type="text/markdown")
+      assert html =~ "articles/hello-world.md"
+      # Visible affordance in the meta row
+      assert html =~ ~s(data-action="copy-markdown")
+      assert html =~ ~s(href="/articles/hello-world.md")
+    end
+
+    test "writes llms.txt linking to the mirrors", ctx do
+      File.write!(Path.join(ctx.articles_dir, "2024-01-15-hello-world.md"), """
+      ---
+      title: "Hello World"
+      date: 2024-01-15
+      ---
+
+      This is my first article.
+      """)
+
+      {:ok, _result} = Builder.build(build_opts(ctx))
+
+      llms_path = Path.join(ctx.output_dir, "llms.txt")
+      assert File.exists?(llms_path)
+
+      llms = File.read!(llms_path)
+      assert llms =~ "## Articles"
+      assert llms =~ "[Hello World]("
+      assert llms =~ "articles/hello-world.md"
+    end
+
+    test "writes mirrors for non-default languages", ctx do
+      tr_dir = Path.join(ctx.content_dir, "tr/articles")
+      File.mkdir_p!(tr_dir)
+
+      File.write!(Path.join(tr_dir, "merhaba.md"), """
+      ---
+      title: "Merhaba"
+      date: 2024-01-15
+      ---
+
+      Merhaba Dünya
+      """)
+
+      opts =
+        build_opts(ctx,
+          default_lang: :en,
+          languages: [en: [name: "English"], tr: [name: "Türkçe"]]
+        )
+
+      {:ok, _result} = Builder.build(opts)
+
+      mirror_path = Path.join([ctx.output_dir, "tr", "articles", "merhaba.md"])
+      assert File.exists?(mirror_path)
+      assert File.read!(mirror_path) =~ "Merhaba Dünya"
+    end
+
+    test "does not write mirrors or llms.txt when disabled", ctx do
+      File.write!(Path.join(ctx.articles_dir, "2024-01-15-hello-world.md"), """
+      ---
+      title: "Hello World"
+      date: 2024-01-15
+      ---
+
+      This is my first article.
+      """)
+
+      {:ok, _result} = Builder.build(build_opts(ctx, markdown_mirrors: false))
+
+      refute File.exists?(Path.join([ctx.output_dir, "articles", "hello-world.md"]))
+      refute File.exists?(Path.join(ctx.output_dir, "llms.txt"))
+
+      html = File.read!(Path.join([ctx.output_dir, "articles", "hello-world", "index.html"]))
+      refute html =~ "text/markdown"
+      refute html =~ "copy-markdown"
     end
   end
 end

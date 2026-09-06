@@ -16,6 +16,7 @@ defmodule Sayfa.Builder do
   10. **Indexes** — generate paginated content type index pages
   11. **Feeds** — generate Atom feeds (main + per-type)
   12. **Sitemap** — generate XML sitemap
+  13. **llms.txt** — generate Markdown mirrors and the `llms.txt` index for LLM/AI consumers
 
   ## Examples
 
@@ -36,6 +37,8 @@ defmodule Sayfa.Builder do
   alias Sayfa.Excerpt
   alias Sayfa.Feed
   alias Sayfa.I18n
+  alias Sayfa.LlmsTxt
+  alias Sayfa.MarkdownMirror
   alias Sayfa.Pagination
   alias Sayfa.ReadingTime
   alias Sayfa.Sitemap
@@ -117,7 +120,9 @@ defmodule Sayfa.Builder do
          {:ok, feed_count} <-
            timed("Generate feeds", verbose, fn -> build_feeds(contents, config) end),
          {:ok, sitemap_count} <-
-           timed("Generate sitemap", verbose, fn -> build_sitemap(contents, config) end) do
+           timed("Generate sitemap", verbose, fn -> build_sitemap(contents, config) end),
+         {:ok, llms_count} <-
+           timed("Generate llms.txt", verbose, fn -> build_llms_txt(contents, config) end) do
       timed_sync("Generate robots.txt", verbose, fn -> build_robots_txt(config) end)
 
       timed_sync("Generate 404 page", verbose, fn -> generate_404_page(config) end)
@@ -139,7 +144,8 @@ defmodule Sayfa.Builder do
       {:ok,
        %Result{
          files_written:
-           individual_count + archive_count + index_count + feed_count + sitemap_count,
+           individual_count + archive_count + index_count + feed_count + sitemap_count +
+             llms_count,
          content_count: length(contents),
          elapsed_ms: elapsed,
          content_cache: new_cache
@@ -477,6 +483,7 @@ defmodule Sayfa.Builder do
             dir = Path.dirname(output_path)
             File.mkdir_p!(dir)
             File.write!(output_path, final_html)
+            maybe_write_markdown_mirror(content, output_path, config)
             :ok
 
           {:error, _} = error ->
@@ -486,6 +493,21 @@ defmodule Sayfa.Builder do
       {:error, _} = error ->
         error
     end
+  end
+
+  defp maybe_write_markdown_mirror(content, html_path, config) do
+    if MarkdownMirror.enabled?(config) do
+      case MarkdownMirror.path(content, html_path) do
+        nil ->
+          :ok
+
+        mirror_path ->
+          File.mkdir_p!(Path.dirname(mirror_path))
+          File.write!(mirror_path, MarkdownMirror.render(content, config))
+      end
+    end
+
+    :ok
   end
 
   defp output_path_for(content, output_dir) do
@@ -992,6 +1014,21 @@ defmodule Sayfa.Builder do
     File.write!(path, xml)
 
     {:ok, 1}
+  end
+
+  # --- llms.txt ---
+
+  defp build_llms_txt(contents, config) do
+    if MarkdownMirror.enabled?(config) do
+      text = LlmsTxt.generate(contents, config)
+      path = Path.join(config.output_dir, "llms.txt")
+      File.mkdir_p!(Path.dirname(path))
+      File.write!(path, text)
+
+      {:ok, 1}
+    else
+      {:ok, 0}
+    end
   end
 
   # --- robots.txt ---
