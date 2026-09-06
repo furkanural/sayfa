@@ -39,14 +39,14 @@ A simple, extensible static site generator built in Elixir. **Sayfa** means "pag
 Sayfa follows a **two-layer architecture**:
 
 1. **Sayfa** (this package) — A reusable Hex package with the core static site generation engine: markdown parsing, template rendering, feed generation, block system, and more.
-2. **Your site** — A project that depends on Sayfa via `{:sayfa, "~> 0.6"}`. You bring your content, theme, and configuration; Sayfa handles the build.
+2. **Your site** — A project that depends on Sayfa via `{:sayfa, "~> 0.7"}`. You bring your content, theme, and configuration; Sayfa handles the build.
 
 ```
 ┌──────────────────────────────────────────────────────┐
 │                  YOUR WEBSITE                        │
 │   content/     themes/     lib/blocks/    config/    │
 └──────────────────────────┬───────────────────────────┘
-                           │ {:sayfa, "~> 0.6"}
+                           │ {:sayfa, "~> 0.7"}
                            ▼
 ┌──────────────────────────────────────────────────────┐
 │                  SAYFA (Hex Package)                 │
