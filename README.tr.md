@@ -38,14 +38,14 @@ Elixir ile yazilmis basit ve genisletilebilir bir statik site ureteci. **Sayfa**
 Sayfa **iki katmanli bir mimari** kullanir:
 
 1. **Sayfa** (bu paket) — Temel statik site uretim motoru: Markdown ayristirma, sablon olusturma, besleme uretimi, blok sistemi ve dahasi.
-2. **Siteniz** — `{:sayfa, "~> 0.6"}` ile Sayfa'ya bagli bir proje. Siz icerigi, temayi ve yapilandirmayi saglarsiniz; Sayfa derlemeyi halleder.
+2. **Siteniz** — `{:sayfa, "~> 0.7"}` ile Sayfa'ya bagli bir proje. Siz icerigi, temayi ve yapilandirmayi saglarsiniz; Sayfa derlemeyi halleder.
 
 ```
 ┌──────────────────────────────────────────────────────┐
 │                    SITENIZ                            │
 │   content/     themes/     lib/blocks/    config/    │
 └──────────────────────────┬───────────────────────────┘
-                           │ {:sayfa, "~> 0.6"}
+                           │ {:sayfa, "~> 0.7"}
                            ▼
 ┌──────────────────────────────────────────────────────┐
 │                 SAYFA (Hex Paketi)                    │
@@ -97,6 +97,7 @@ Sayfa **iki katmanli bir mimari** kullanir:
 - Atom besleme üretimi
 - Sitemap XML
 - SEO meta etiketleri (Open Graph, aciklama)
+- AI/LLM tuketicileri icin Markdown aynalari (`/articles/slug.md`) ve `llms.txt`
 
 ### Gelistirici Deneyimi
 - `mix sayfa.new` proje ureticisi
@@ -313,6 +314,7 @@ Bloklar, `@block` yardimcisi ile cagirilan yeniden kullanilabilir EEx bilesenler
 | Okuma Suresi | `:reading_time` | Tahmini okuma suresi |
 | Kod Kopyalama | `:code_copy` | Kod bloklari icin kopyalama dugmesi |
 | Baglanti Kopyalama | `:copy_link` | Sayfa URL'sini panoya kopyala |
+| Markdown Baglantisi | `:markdown_link` | Sayfanin `.md` aynasi icin "Markdown olarak kopyala" dugmesi (mobilde yalnizca simge) |
 | Icerik Yolu | `:breadcrumb` | Bolume geri baglantisi ve SEO icin JSON-LD `BreadcrumbList` yapisal verisi |
 | Dil Degistirici | `:language_switcher` | Icerik cevirileri arasinda gecis; ayni sayfada birden fazla ornek icin `variant:` destekler (`:desktop`, `:mobile`) |
 | Ilgili Icerikler | `:related_content` | Etiket/kategoriye gore ilgili icerikler (turu otomatik algilar; `type:` atamasini kabul eder) |
@@ -498,6 +500,12 @@ Tum yayinlanmis sayfalari iceren bir `sitemap.xml`, `dist/` dizininin kokunde ur
 ### SEO Meta Etiketleri
 
 Sablonlar, on bilgi alanlarina dayali Open Graph ve aciklama meta etiketlerini otomatik olarak icerir.
+
+### AI/LLM Tuketicileri icin Markdown
+
+Her icerik sayfasi, ayni URL'nin sonuna `.md` eklenmis temiz bir Markdown aynasi alir — `/articles/hello` → `/articles/hello.md` — baslik, yayin meta verileri ve orijinal Markdown govdesini icerir. HTML sayfalari aynalarini `<link rel="alternate" type="text/markdown">` ile duyurur ve site genelindeki `/llms.txt` dizini ([llms.txt](https://llmstxt.org/) gelenegini izleyerek) tum aynalari icerik turune gore gruplandirilmis olarak listeler.
+
+Ikisini de kapatmak icin site yapilandirmanizda `markdown_mirrors: false` kullanin.
 
 ---
 

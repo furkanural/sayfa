@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-09-06
+
 ### Added
 
 - Markdown mirrors for AI/LLM consumers: every content page now also emits a clean Markdown file at the same URL with `.md` appended (e.g. `/articles/hello.md`), advertised in the HTML head via `<link rel="alternate" type="text/markdown">`, plus a site-level `/llms.txt` index following the llms.txt convention. Disable with `markdown_mirrors: false` (#35)
@@ -18,8 +20,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Dependencies
 
-- Bumped `lumis` from 0.6.2 to 0.7.0
-- Bumped `mdex` from 0.13.3 to 0.13.5
+- Bumped `mdex` from 0.13.1 to 0.13.5
+- Bumped `lumis` from 0.6.0 to 0.8.0
+- Bumped `plug_cowboy` from 2.8.1 to 2.9.0
+- Bumped `xml_builder` from 2.4.0 to 2.4.1
+- Bumped `ex_doc` from 0.40.3 to 0.40.4
 
 ## [0.6.0] - 2026-07-07
 
@@ -277,6 +282,7 @@ Initial release of Sayfa — a static site generator built in Elixir.
 - Build caching for incremental rebuilds
 - Verbose logging with per-stage timing
 
+[0.7.0]: https://github.com/furkanural/sayfa/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/furkanural/sayfa/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/furkanural/sayfa/compare/v0.4.2...v0.5.0
 [0.4.2]: https://github.com/furkanural/sayfa/compare/v0.4.1...v0.4.2
