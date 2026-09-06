@@ -22,10 +22,10 @@ defmodule Sayfa.Blocks.MarkdownLinkTest do
       html = MarkdownLink.render(%{site: %{}, content: make_content(), lang: :en})
 
       assert html =~ ~s(href="/articles/hello.md")
-      assert html =~ "View Markdown"
+      assert html =~ "View as Markdown"
       assert html =~ ~s(data-action="copy-markdown")
       assert html =~ ~s(data-url="/articles/hello.md")
-      assert html =~ "Copy Markdown"
+      assert html =~ "Copy page"
       assert html =~ ~s(data-copied-text="Copied!")
     end
 
@@ -47,16 +47,16 @@ defmodule Sayfa.Blocks.MarkdownLinkTest do
 
     test "uses the translation function from assigns" do
       t = fn
-        "view_markdown" -> "Markdown'ı görüntüle"
-        "copy_markdown" -> "Markdown'ı kopyala"
+        "view_markdown" -> "Markdown olarak görüntüle"
+        "copy_page" -> "Sayfayı kopyala"
         "copied" -> "Kopyalandı!"
         key -> key
       end
 
       html = MarkdownLink.render(%{site: %{}, content: make_content(), lang: :tr, t: t})
 
-      assert html =~ "Markdown'ı görüntüle"
-      assert html =~ "Markdown'ı kopyala"
+      assert html =~ "Markdown olarak görüntüle"
+      assert html =~ "Sayfayı kopyala"
     end
   end
 end

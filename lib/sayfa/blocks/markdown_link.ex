@@ -2,7 +2,7 @@ defmodule Sayfa.Blocks.MarkdownLink do
   @moduledoc """
   Markdown mirror link block.
 
-  Renders a "View Markdown" link and a "Copy Markdown" button pointing to the
+  Renders a "View as Markdown" link and a "Copy page" button pointing to the
   current page's Markdown mirror (see `Sayfa.MarkdownMirror`), making the
   LLM-friendly version discoverable to human readers — the pattern popularized
   by docs platforms such as Mintlify.
@@ -41,7 +41,7 @@ defmodule Sayfa.Blocks.MarkdownLink do
          true <- MarkdownMirror.enabled?(site),
          url when is_binary(url) <- MarkdownMirror.url(content) do
       view_text = t.("view_markdown")
-      copy_text = t.("copy_markdown")
+      copy_text = t.("copy_page")
       copied_text = t.("copied")
 
       """

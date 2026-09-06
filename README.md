@@ -315,7 +315,7 @@ Blocks are reusable EEx components invoked via the `@block` helper:
 | Reading Time | `:reading_time` | Estimated reading time |
 | Code Copy | `:code_copy` | Copy button for code blocks |
 | Copy Link | `:copy_link` | Copy page URL to clipboard |
-| Markdown Link | `:markdown_link` | "View Markdown" link and "Copy Markdown" button for the page's `.md` mirror |
+| Markdown Link | `:markdown_link` | "View as Markdown" link and "Copy page" button for the page's `.md` mirror |
 | Breadcrumb | `:breadcrumb` | Back link to section with JSON-LD `BreadcrumbList` structured data for SEO |
 | Language Switcher | `:language_switcher` | Switch between content translations; supports `variant:` assign (`:desktop`, `:mobile`) for multiple instances on the same page |
 | Related Content | `:related_content` | Content related by tags/categories (auto-detects type; accepts `type:` assign) |
