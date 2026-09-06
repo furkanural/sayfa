@@ -31,8 +31,10 @@
   <%= if @content.meta["reading_time"] do %>
             <%= @block.(:reading_time, []) %>
   <% end %>
-            <%= @block.(:copy_link, []) %>
-            <%= @block.(:markdown_link, []) %>
+            <div class="content-actions">
+              <%= @block.(:copy_link, []) %>
+              <%= @block.(:markdown_link, []) %>
+            </div>
           </div>
   <%= if @content.meta["video"] || @content.meta["slides"] do %>
           <div class="content-actions-row">

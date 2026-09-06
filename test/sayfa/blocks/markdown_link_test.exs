@@ -18,15 +18,15 @@ defmodule Sayfa.Blocks.MarkdownLinkTest do
   end
 
   describe "render/1" do
-    test "renders view link and copy button for mirrored content" do
+    test "renders copy button for mirrored content" do
       html = MarkdownLink.render(%{site: %{}, content: make_content(), lang: :en})
 
-      assert html =~ ~s(href="/articles/hello.md")
-      assert html =~ "View as Markdown"
       assert html =~ ~s(data-action="copy-markdown")
       assert html =~ ~s(data-url="/articles/hello.md")
-      assert html =~ "Copy page"
+      assert html =~ "Copy as Markdown"
+      assert html =~ ~s(aria-label="Copy as Markdown")
       assert html =~ ~s(data-copied-text="Copied!")
+      refute html =~ "<a "
     end
 
     test "renders nothing without content" do
@@ -47,16 +47,14 @@ defmodule Sayfa.Blocks.MarkdownLinkTest do
 
     test "uses the translation function from assigns" do
       t = fn
-        "view_markdown" -> "Markdown olarak görüntüle"
-        "copy_page" -> "Sayfayı kopyala"
+        "copy_as_markdown" -> "Markdown olarak kopyala"
         "copied" -> "Kopyalandı!"
         key -> key
       end
 
       html = MarkdownLink.render(%{site: %{}, content: make_content(), lang: :tr, t: t})
 
-      assert html =~ "Markdown olarak görüntüle"
-      assert html =~ "Sayfayı kopyala"
+      assert html =~ "Markdown olarak kopyala"
     end
   end
 end

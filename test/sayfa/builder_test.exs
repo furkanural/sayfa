@@ -1103,7 +1103,7 @@ defmodule Sayfa.BuilderTest do
       assert html =~ "articles/hello-world.md"
       # Visible affordance in the meta row
       assert html =~ ~s(data-action="copy-markdown")
-      assert html =~ ~s(href="/articles/hello-world.md")
+      assert html =~ ~s(data-url="/articles/hello-world.md")
     end
 
     test "writes llms.txt linking to the mirrors", ctx do
